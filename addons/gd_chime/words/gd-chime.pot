@@ -1,0 +1,1006 @@
+# gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
+#
+# addons/gd_chime/words/gd-chime.pot: every English phrase, for a translator to start a catalogue
+# from. Written from the code, never by hand: write it again whenever a
+# phrase is added - the commit's check says so.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gd-chime\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: addons/gd_chime/calendar.gd:117
+msgid "The calendar is not open"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:65
+msgid "Calendar"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:66
+msgid "Pick the day"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:67
+msgid "The month before"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:68
+msgid "The month after"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "January"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "February"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "March"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "April"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "May"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "June"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "July"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "August"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "September"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "October"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "November"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:78
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: a month"
+msgid "December"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Mon"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Tue"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Wed"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Thu"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Fri"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Sat"
+msgstr ""
+
+#: addons/gd_chime/calendar.gd:47
+msgid "Sun"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:100
+msgid "There is nothing to go back to"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:118
+msgid "%s is no state"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:131
+#: addons/gd_chime/chart.gd:206
+msgid "%s is not on top"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:149
+#: addons/gd_chime/chart.gd:173
+msgid "Already at %s"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:208
+msgid "%s is not up"
+msgstr ""
+
+#: addons/gd_chime/chart.gd:230
+msgid "There is nothing behind to forget"
+msgstr ""
+
+#: addons/gd_chime/command_search.gd:86
+#: addons/gd_chime/open_menu.gd:68
+msgid "That is no longer there to pick"
+msgstr ""
+
+#: addons/gd_chime/command_search.gd:88
+msgid "Nothing matches"
+msgstr ""
+
+#: addons/gd_chime/command_search.gd:132
+msgid "Command"
+msgstr ""
+
+#: addons/gd_chime/commands.gd:151
+msgid "%s was dispatched from inside heard(); defer it until the ring is over"
+msgstr ""
+
+#: addons/gd_chime/commands.gd:157
+msgid "Nothing handles %s in %s"
+msgstr ""
+
+#: addons/gd_chime/components/primitives/describe_inputs.gd:133
+msgid "The keys move the least"
+msgstr ""
+
+#: addons/gd_chime/components/primitives/describe_inputs.gd:133
+msgid "The keys move the most"
+msgstr ""
+
+#: addons/gd_chime/components/primitives/ui.gd:84
+#: addons/gd_chime/form_actions.gd:45
+msgid "Close"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/bracket.gd:65
+msgid "Won"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/bracket.gd:68
+msgid "To be decided"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/card.gd:97
+msgid "Expecting %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/card.gd:105
+msgid "Less"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/card.gd:105
+msgid "More"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/cell_readout.gd:64
+msgid "%s %d%%"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:37
+msgid "Online"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:38
+msgid "Offline: %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:38
+msgid "%d change awaiting sync"
+msgid_plural "%d changes awaiting sync"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:38
+msgid "Every change is kept"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:48
+msgid "Syncing"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:48
+msgid "Awaiting sync"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/connection_status.gd:50
+msgid "Not kept: %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/countdown.gd:41
+msgid "Now"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:106
+msgid "No groups"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:107
+msgid "Group the rows by"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:124
+msgid "%s picked   %s of %s rows shown   %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:130
+msgid "Working out the view"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:132
+msgid "Out of date: rows shown have changed since"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:133
+msgid "The view took %s ms"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:143
+msgid "Filter the rows"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:155
+msgid "The columns shown"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Add a filter"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Columns"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Group by"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Sort"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Group"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Shut or open the group"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Move"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Pick a run"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Move across"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Pick"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Pick this row"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Pick every row shown"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Clear the picks"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Change the value"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Undo"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Change this cell"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Stop changing"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Resize this column"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Resize the column"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Show or hide the column"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Find a column"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Column"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Comparison"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Find a value"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "This value"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Value"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Type the value"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Turn the filter"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Remove the filter"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/data_grid.gd:94
+#: addons/gd_chime/components/recipes/data_grid.gd:101
+msgid "Bring the view up to date"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/date_range.gd:40
+msgid "From"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/date_range.gd:40
+msgid "To"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/disposition.gd:35
+msgid "The choice is not finished"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/drill_down.gd:44
+msgid "Show the rows behind it"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is over"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is under"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is exactly"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is before"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is after"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is not"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "includes"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "does not include"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is true"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/filter_set.gd:47
+msgid "is false"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_field.gd:80
+msgid "Choose a file"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_field.gd:92
+msgid "Choose"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_field.gd:101
+#: addons/gd_chime/question.gd:128
+msgid "Yes"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_field.gd:101
+#: addons/gd_chime/question.gd:128
+msgid "No"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_review.gd:36
+#: addons/gd_chime/form.gd:161
+msgid "%d answer needs attention"
+msgid_plural "%d answers need attention"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/form_steps.gd:79
+msgid "Step %d of %d"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_steps.gd:140
+msgid "Done"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/form_steps.gd:140
+msgid "%d to fix"
+msgid_plural "%d to fix"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/gallery.gd:63
+#: addons/gd_chime/components/recipes/instruction_bar.gd:28
+msgid "%d of %d"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/kpi_card.gd:84
+msgid "Nothing to compare with %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/kpi_card.gd:88
+msgid "Level with %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/kpi_card.gd:90
+msgid "Up %s%% on %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/kpi_card.gd:91
+msgid "Down %s%% on %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/line_chart.gd:41
+msgid "Circle"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/line_chart.gd:41
+msgid "Square"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/line_chart.gd:41
+msgid "Diamond"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/line_chart.gd:41
+msgid "Triangle"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/live_feed.gd:44
+msgid "Following the newest"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/live_feed.gd:44
+msgid "%d new - show the newest"
+msgid_plural "%d new - show the newest"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/live_feed.gd:44
+msgid "Show the newest"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/loading.gd:62
+msgid "Loading"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/loading.gd:83
+msgid "Could not be loaded: %s"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/long_table.gd:183
+msgid "%d row"
+msgid_plural "%d rows"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/notification_tray.gd:72
+#: addons/gd_chime/components/recipes/notification_tray.gd:111
+msgid "%d more"
+msgid_plural "%d more"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/progress.gd:30
+msgid "%d of %d, %d%%"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/pull_to_refresh.gd:42
+msgid "Let go to refresh"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/pull_to_refresh.gd:42
+msgid "Pull to refresh"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/region_map.gd:38
+msgid "RegionMapName"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/sections.gd:61
+msgid "This group is empty"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/sections.gd:95
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/sections.gd:95
+msgid "No items"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/setting.gd:67
+msgid "On"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/setting.gd:67
+msgid "Off"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/setting.gd:104
+msgid "Press a key or button..."
+msgstr ""
+
+#: addons/gd_chime/components/recipes/type_ahead.gd:69
+msgid "%d match"
+msgid_plural "%d matches"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/gd_chime/components/recipes/type_ahead.gd:69
+msgid "No matches"
+msgstr ""
+
+#: addons/gd_chime/dates.gd:50
+#: addons/gd_chime/formats.gd:110
+msgctxt "dates: the order of the day, the month and the year"
+msgid "{day} {month} {year}"
+msgstr ""
+
+#: addons/gd_chime/dates.gd:64
+#: addons/gd_chime/dates.gd:85
+msgctxt "dates: the mark between a typed day, month and year"
+msgid "/"
+msgstr ""
+
+#: addons/gd_chime/dates.gd:85
+msgctxt "dates: the letters standing for a typed day, month or year"
+msgid "DD"
+msgstr ""
+
+#: addons/gd_chime/dates.gd:85
+msgctxt "dates: the letters standing for a typed day, month or year"
+msgid "MM"
+msgstr ""
+
+#: addons/gd_chime/dates.gd:85
+msgctxt "dates: the letters standing for a typed day, month or year"
+msgid "YYYY"
+msgstr ""
+
+#: addons/gd_chime/documents.gd:84
+msgid "There is no %s to open"
+msgstr ""
+
+#: addons/gd_chime/documents.gd:86
+msgid "%s is not open"
+msgstr ""
+
+#: addons/gd_chime/documents.gd:88
+msgid "Nothing is open"
+msgstr ""
+
+#: addons/gd_chime/documents.gd:89
+msgid "No other document is open"
+msgstr ""
+
+#: addons/gd_chime/drills.gd:51
+msgid "%s in %s"
+msgstr ""
+
+#: addons/gd_chime/driver.gd:106
+msgid "No move was stopped to go on with"
+msgstr ""
+
+#: addons/gd_chime/driver.gd:108
+msgid "%s is no place to go to"
+msgstr ""
+
+#: addons/gd_chime/editing_cell.gd:92
+msgid "Nothing is being changed"
+msgstr ""
+
+#: addons/gd_chime/editing_cell.gd:96
+#: addons/gd_chime/row_selection.gd:116
+msgid "No rows are shown"
+msgstr ""
+
+#: addons/gd_chime/editing_cell.gd:98
+msgid "%s is not changed here"
+msgstr ""
+
+#: addons/gd_chime/feed.gd:127
+msgid "Already following the newest"
+msgstr ""
+
+#: addons/gd_chime/feed.gd:128
+msgid "Nothing has arrived yet"
+msgstr ""
+
+#: addons/gd_chime/feed.gd:129
+msgid "On no entry"
+msgstr ""
+
+#: addons/gd_chime/fetched.gd:95
+msgid "Asking already"
+msgstr ""
+
+#: addons/gd_chime/fetched.gd:96
+#: addons/gd_chime/growing_list.gd:89
+msgid "Still loading"
+msgstr ""
+
+#: addons/gd_chime/fetched.gd:122
+msgid "%s could not be loaded: %s"
+msgstr ""
+
+#: addons/gd_chime/filter_query.gd:131
+msgid "\"%s\""
+msgstr ""
+
+#: addons/gd_chime/filters.gd:175
+msgid "No filters are on"
+msgstr ""
+
+#: addons/gd_chime/filters.gd:179
+msgid "Nothing would match"
+msgstr ""
+
+#: addons/gd_chime/form.gd:116
+msgid "Leave without saving? What changed since the draft was saved will be lost."
+msgstr ""
+
+#: addons/gd_chime/form.gd:118
+msgid "This form has been sent"
+msgstr ""
+
+#: addons/gd_chime/form.gd:121
+msgid "This question is not asked now"
+msgstr ""
+
+#: addons/gd_chime/form.gd:134
+msgid "The draft is saved"
+msgstr ""
+
+#: addons/gd_chime/form.gd:164
+msgid "The form is sent"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Save as draft"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Send"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Start again"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Go to the step"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Change"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Next"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Back"
+msgstr ""
+
+#: addons/gd_chime/form_actions.gd:45
+msgid "Leave without saving"
+msgstr ""
+
+#: addons/gd_chime/formats.gd:88
+#: addons/gd_chime/question.gd:149
+msgctxt "numbers: the mark between thousands"
+msgid ","
+msgstr ""
+
+#: addons/gd_chime/formats.gd:96
+#: addons/gd_chime/question.gd:149
+msgctxt "numbers: the mark before a fraction"
+msgid "."
+msgstr ""
+
+#: addons/gd_chime/formats.gd:101
+msgctxt "money: where the amount and its mark stand"
+msgid "{mark}{amount}"
+msgstr ""
+
+#: addons/gd_chime/formats.gd:109
+msgctxt "dates: the first day of a month"
+msgid "1"
+msgstr ""
+
+#: addons/gd_chime/growing_list.gd:87
+msgid "Everything is showing"
+msgstr ""
+
+#: addons/gd_chime/input_map.gd:103
+msgid "Button %d"
+msgstr ""
+
+#: addons/gd_chime/input_map.gd:193
+msgid "%s is no action to bind"
+msgstr ""
+
+#: addons/gd_chime/input_map.gd:195
+msgid "That is neither a key nor a pad button"
+msgstr ""
+
+#: addons/gd_chime/language.gd:144
+msgid "There are no words in %s"
+msgstr ""
+
+#: addons/gd_chime/language.gd:205
+msgctxt "the script its words are written in"
+msgid "Latn"
+msgstr ""
+
+#: addons/gd_chime/long_list.gd:148
+msgid "Already at the top"
+msgstr ""
+
+#: addons/gd_chime/long_list.gd:150
+msgid "Already at the end"
+msgstr ""
+
+#: addons/gd_chime/notifications.gd:107
+msgid "Already gone"
+msgstr ""
+
+#: addons/gd_chime/open_menu.gd:66
+msgid "Nothing here has a menu"
+msgstr ""
+
+#: addons/gd_chime/panels.gd:103
+msgid "There is no split called %s"
+msgstr ""
+
+#: addons/gd_chime/prompts.gd:131
+msgid "The prompts have no source called %s"
+msgstr ""
+
+#: addons/gd_chime/provisional.gd:137
+msgid "%s was not kept: %s"
+msgstr ""
+
+#: addons/gd_chime/provisional.gd:149
+msgid "%s may not be as the server has it"
+msgstr ""
+
+#: addons/gd_chime/question.gd:87
+msgid "This answer is needed"
+msgstr ""
+
+#: addons/gd_chime/question.gd:95
+msgid "Type a date as %s"
+msgstr ""
+
+#: addons/gd_chime/question.gd:98
+msgid "Type an amount in figures"
+msgstr ""
+
+#: addons/gd_chime/question.gd:101
+msgid "Choose again: this is not one of the options now"
+msgstr ""
+
+#: addons/gd_chime/question.gd:111
+msgid "Only %s files are taken"
+msgstr ""
+
+#: addons/gd_chime/question.gd:113
+msgid "The file is %s and at most %s is taken"
+msgstr ""
+
+#: addons/gd_chime/question.gd:122
+msgid "Not answered"
+msgstr ""
+
+#: addons/gd_chime/question.gd:130
+msgid "%s, %s"
+msgstr ""
+
+#: addons/gd_chime/question.gd:156
+msgid "%s KB"
+msgstr ""
+
+#: addons/gd_chime/question.gd:157
+msgid "%s MB"
+msgstr ""
+
+#: addons/gd_chime/row_edits.gd:94
+msgid "Nothing has changed to take back"
+msgstr ""
+
+#: addons/gd_chime/row_edits.gd:98
+#: addons/gd_chime/row_filters.gd:130
+msgid "%s is not a number"
+msgstr ""
+
+#: addons/gd_chime/row_edits.gd:100
+#: addons/gd_chime/row_filters.gd:132
+msgid "%s is not a date written year-month-day"
+msgstr ""
+
+#: addons/gd_chime/row_edits.gd:102
+msgid "A word is needed here"
+msgstr ""
+
+#: addons/gd_chime/row_edits.gd:117
+msgid "The change to %s"
+msgstr ""
+
+#: addons/gd_chime/row_selection.gd:114
+msgid "Nothing is picked"
+msgstr ""
+
+#: addons/gd_chime/row_selection.gd:118
+msgid "Already at the first row"
+msgstr ""
+
+#: addons/gd_chime/row_selection.gd:120
+msgid "Already at the last row"
+msgstr ""
+
+#: addons/gd_chime/stream.gd:182
+msgid "Already paused"
+msgstr ""
+
+#: addons/gd_chime/stream.gd:182
+msgid "Already running"
+msgstr ""
+
+#: addons/gd_chime/stretch.gd:106
+msgid "That is not a date"
+msgstr ""
+
+#: addons/gd_chime/stretch.gd:109
+msgid "That day has not come yet"
+msgstr ""
+
+#: addons/gd_chime/stretch.gd:111
+msgid "The first day is after the last"
+msgstr ""
+
+#: addons/gd_chime/table_columns.gd:88
+msgid "The last column shown stays"
+msgstr ""
+
+#: addons/gd_chime/table_columns.gd:95
+msgid "The last column has no edge to move"
+msgstr ""
+
+#: addons/gd_chime/table_columns.gd:99
+msgid "As narrow as a column goes"
+msgstr ""
+
+#: addons/gd_chime/theme_tables.gd:44
+msgid "CellWordsStale"
+msgstr ""
+
+#: addons/gd_chime/view_behind.gd:75
+msgid "The view is up to date"
+msgstr ""

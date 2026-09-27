@@ -1,0 +1,14 @@
+{
+  "taken": {
+    "commit": "c2ebb930",
+    "date": "2026-09-20",
+    "runs": 7,
+    "of": "the lowest of the runs"
+  },
+  "numbers": {
+    "draw_us": 60.0,
+    "page_ms_p50": 46.92,
+    "idle_ms_p50": 6.897,
+    "launch_ms": 3919.0
+  }
+}

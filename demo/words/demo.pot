@@ -1,0 +1,4634 @@
+# gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
+#
+# demo/words/demo.pot: every English phrase, for a translator to start a catalogue
+# from. Written from the code, never by hand: write it again whenever a
+# phrase is added - the commit's check says so.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gd-chime\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: demo/apps/console/console.gd:79
+msgid "%d device stopped answering"
+msgid_plural "%d devices stopped answering"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/console/console.gd:61
+msgid "Pause the stream"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+msgid "Inspect the incident"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+msgid "Inspect the device"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+msgid "Show the newest"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+msgid "Move along"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+#: demo/apps/dashboard/dashboard.gd:87
+#: demo/apps/form/form.gd:57
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/pipes/pipes.gd:56
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/workspace/workspace.gd:69
+#: demo/gallery/stall.gd:123
+msgid "Pick"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+msgid "Let go"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+#: demo/apps/dashboard/dashboard.gd:87
+#: demo/apps/form/form.gd:57
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/workspace/workspace.gd:69
+#: demo/gallery/gallery.gd:83
+msgid "Dismiss"
+msgstr ""
+
+#: demo/apps/console/console.gd:61
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/workspace/workspace.gd:69
+msgid "Resize"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:49
+msgid "Devices"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:55
+msgid "Round trips, and incidents a minute"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:63
+#: demo/apps/console/operations.gd:132
+#: demo/apps/console/operations.gd:137
+#: demo/apps/console/operations.gd:33
+msgid "Warning"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:63
+#: demo/apps/console/operations.gd:132
+#: demo/apps/console/operations.gd:137
+#: demo/apps/console/operations.gd:33
+msgid "Offline"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:63
+#: demo/apps/console/operations.gd:95
+msgid "Round trips far slower than usual"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:63
+#: demo/apps/console/operations.gd:95
+msgid "Stopped answering"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:68
+msgid "Move onto an incident to inspect it"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:68
+msgid "Inspect the incident on %s"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:70
+#: demo/apps/dashboard/dashboard_view.gd:135
+msgid "Incidents"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:78
+#: demo/apps/console/operations.gd:75
+msgid "Round trip %d ms"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:78
+#: demo/apps/console/operations.gd:88
+msgid "No reply"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:80
+msgid "Log"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:103
+msgid "Paused: %d events held until you resume, %d missed. %d incidents open"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:105
+msgid "Connected, falling behind: %d events waiting, %d missed, %d a second. %d incidents open"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:106
+msgid "Connected: %d events a second, %d missed. %d incidents open"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:107
+msgid "The link dropped; reconnecting. %d incidents open"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:108
+msgid "Connecting"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:109
+msgid "Not connected"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:115
+msgid "%s at %s: %s"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:116
+#: demo/apps/dashboard/dashboard_view.gd:102
+msgid "Incident"
+msgstr ""
+
+#: demo/apps/console/console_view.gd:129
+msgid "Last round trip %d ms"
+msgstr ""
+
+#: demo/apps/console/operations.gd:58
+msgid "Average round trip"
+msgstr ""
+
+#: demo/apps/console/operations.gd:58
+#: demo/apps/console/operations.gd:59
+msgid "Seconds"
+msgstr ""
+
+#: demo/apps/console/operations.gd:58
+msgid "Round trip, ms"
+msgstr ""
+
+#: demo/apps/console/operations.gd:59
+msgid "Opened"
+msgstr ""
+
+#: demo/apps/console/operations.gd:59
+msgid "Closed"
+msgstr ""
+
+#: demo/apps/console/operations.gd:59
+msgid "A minute"
+msgstr ""
+
+#: demo/apps/console/operations.gd:98
+msgid "%s stopped answering"
+msgstr ""
+
+#: demo/apps/console/operations.gd:132
+#: demo/apps/console/operations.gd:137
+#: demo/apps/console/operations.gd:33
+msgid "Healthy"
+msgstr ""
+
+#: demo/apps/console/operations.gd:132
+#: demo/apps/console/operations.gd:137
+#: demo/apps/console/operations.gd:33
+msgid "Recovering"
+msgstr ""
+
+#: demo/apps/console/operations.gd:137
+msgid "Now %s"
+msgstr ""
+
+#: demo/apps/console/operations.gd:143
+msgid "Move onto an incident first"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:106
+msgid "Incidents that cut customers off"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:106
+#: demo/apps/dashboard/dashboard_view.gd:130
+msgid "Incidents reported"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:106
+msgid "Incidents restored"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/pipes/pipes.gd:56
+#: demo/apps/workspace/workspace.gd:69
+msgid "More"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+msgid "Show the region"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+msgid "Stretch"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+msgid "First day"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+msgid "Last day"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+#: demo/apps/shop/shop.gd:90
+msgid "Turn the filter"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard.gd:87
+#: demo/apps/shop/shop.gd:90
+msgid "Remove the filter"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:66
+#: demo/apps/mobile/mobile.gd:58
+msgid "Today"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:66
+msgid "7 days"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:66
+msgid "30 days"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:66
+msgid "Custom"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:88
+msgid "Network operations"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:95
+msgid "Compare with the stretch before"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:103
+msgid "Region"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:104
+#: demo/apps/pipes/pipes.gd:83
+msgid "Town"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:105
+msgid "Cause"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:106
+msgid "Reported"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:107
+msgid "Customers"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:108
+msgid "Repair, hours"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:109
+msgid "Team"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:110
+msgid "Status"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:116
+msgid "%s: %s customers without service"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:125
+#: demo/apps/dashboard/dashboard_view.gd:130
+msgid "%s incidents"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:125
+#: demo/apps/dashboard/dashboard_view.gd:135
+msgid "No incidents in this stretch"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:126
+msgid "The more customers cut off, the heavier the shade"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:126
+msgid "Nobody was cut off in this stretch"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:127
+msgid "Days before the last"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:129
+msgid "Customers who lost supply"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:129
+msgid "%s customers"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:129
+msgid "Nobody lost supply"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:130
+msgid "No incidents"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:131
+msgid "Average repair"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:131
+#: demo/apps/dashboard/dashboard_view.gd:132
+msgid "%s hours"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:131
+msgid "Nothing was repaired"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:132
+msgid "Hours of field work"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:132
+msgid "No field work"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:133
+msgid "Where customers lost supply"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:134
+msgid "Incidents by region"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:135
+msgid "Incidents a day"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:136
+msgid "Repair times, in hours"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:136
+msgid "The middle repair"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:136
+msgid "The middle half of repairs"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:136
+msgid "Nothing was repaired in this stretch"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:148
+msgid "%s incidents held. %s"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:148
+msgid "Working out the figures"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:148
+msgid "The figures took %s ms"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:42
+msgid "Yesterday"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:42
+msgid "The 7 days before"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:42
+msgid "The 30 days before"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:42
+msgid "The day before"
+msgstr ""
+
+#: demo/apps/dashboard/dashboard_view.gd:42
+msgid "The %d days before"
+msgstr ""
+
+#: demo/apps/form/form.gd:80
+msgid "Step"
+msgstr ""
+
+#: demo/apps/form/form.gd:80
+msgid "Question"
+msgstr ""
+
+#: demo/apps/form/form.gd:96
+msgid "A draft you saved is kept: open the application to carry on where you left it."
+msgstr ""
+
+#: demo/apps/form/form.gd:96
+msgid "Your answers are checked as you go, and you can save a draft at any step."
+msgstr ""
+
+#: demo/apps/form/form.gd:98
+msgid "Business insurance application"
+msgstr ""
+
+#: demo/apps/form/form.gd:98
+msgid "Eight short steps: the company, what it does, its people, what it owns, its claims, its papers and the cover wanted, then a review."
+msgstr ""
+
+#: demo/apps/form/form.gd:104
+msgid "Start another application"
+msgstr ""
+
+#: demo/apps/form/form.gd:105
+msgid "The application is sent"
+msgstr ""
+
+#: demo/apps/form/form.gd:105
+msgid "The insurer will reply within two working days. This is what was sent."
+msgstr ""
+
+#: demo/apps/form/form.gd:111
+msgid "Changes not yet saved as a draft. Drafts are kept in %s"
+msgstr ""
+
+#: demo/apps/form/form.gd:111
+msgid "Every answer is in the draft kept in %s"
+msgstr ""
+
+#: demo/apps/form/form.gd:57
+msgid "Search the steps and questions"
+msgstr ""
+
+#: demo/apps/form/form.gd:57
+msgid "Open the application"
+msgstr ""
+
+#: demo/apps/form/form.gd:57
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/kanban/kanban_view.gd:75
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/workspace/workspace.gd:69
+msgid "Search"
+msgstr ""
+
+#: demo/apps/form/form.gd:57
+msgid "Go to the first found"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Company details"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Business activities"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Employees"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Assets"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Previous claims"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Supporting documents"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Coverage options"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:41
+msgid "Review and send"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:49
+msgid "Registered name of the business"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:50
+msgid "Trading name, if different"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:51
+msgid "How the business is set up"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:52
+msgid "Company registration number"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:52
+msgid "Eight letters and figures, as on the register"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:53
+msgid "Date the business started"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:54
+msgid "Contact email"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:55
+msgid "Contact phone number"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:56
+msgid "Sector"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:57
+msgid "Main activity"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:57
+msgid "Type to search the activities of the sector chosen"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:58
+msgid "Annual turnover"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:59
+msgid "Does the business sell online?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:60
+msgid "Does it work with hazardous materials?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:61
+msgid "Number of employees"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:62
+msgid "Of whom part-time"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:63
+msgid "Annual payroll"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:64
+msgid "Does anyone work above two metres?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:65
+msgid "Premises"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:66
+msgid "Rebuild value of the buildings"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:67
+msgid "Value of contents and equipment"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:68
+msgid "Value of stock"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:69
+msgid "Does the business own commercial vehicles?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:70
+msgid "How many vehicles"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:71
+msgid "Kind of vehicle, mostly"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:72
+msgid "Value of the vehicles together"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:73
+msgid "Does anyone under 25 drive them?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:74
+msgid "Any insurance claims in the last five years?"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:75
+msgid "How many claims"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:76
+msgid "Date of the latest claim"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:77
+msgid "Paid on those claims in all"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:78
+msgid "What happened, in a line"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:79
+msgid "Latest accounts"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:79
+msgid "A PDF of 10 MB at most"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:80
+msgid "Health and safety certificate"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:81
+msgid "A photo of the premises"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:82
+msgid "Cover to start on"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:83
+msgid "Public liability cover"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:84
+msgid "Employers' liability cover"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:85
+msgid "Excess paid on each claim"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:86
+msgid "Anything else the insurer should know"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:107
+msgid "A limited company's number has eight letters and figures"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:112
+msgid "The date must not be in the future"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:116
+msgid "Type an email address, like name@example.com"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:120
+msgid "Type a phone number in figures"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:124
+msgid "The amount must be more than nothing"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:129
+msgid "More part-time staff than employees"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:134
+msgid "With employees, a payroll is needed"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:140
+msgid "Only claims of the last five years are asked for"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:146
+msgid "Cover can start from today to ninety days on"
+msgstr ""
+
+#: demo/apps/form/insurance.gd:151
+msgid "Employers' liability is required by law with employees"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:115
+msgid "Show the cards of"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:116
+msgid "Nobody"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:118
+msgid "Assign the card to"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:132
+msgid "%d card has a change on its way to the server"
+msgid_plural "%d cards have changes on their way to the server"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/kanban/kanban.gd:132
+msgid "Every change is kept"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Move"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Move to the next lane"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Move to the lane before"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/workspace/workspace.gd:69
+#: demo/collection/collection.gd:39
+#: demo/gallery/stall.gd:123
+msgid "Open"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Rename"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Stop renaming"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Write about it"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Set the priority"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Raise the priority"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Lower the priority"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Set the estimate"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/pipes/pipes.gd:56
+msgid "Assign"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Find a person"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Pick out a label"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+#: demo/apps/shop/shop.gd:90
+msgid "Clear the filters"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Pick a person"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Choose who"
+msgstr ""
+
+#: demo/apps/kanban/kanban.gd:70
+msgid "Card pane"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:134
+msgid "It is in the last lane already"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:134
+msgid "It is in the first lane already"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:137
+msgid "It is urgent already"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:139
+msgid "It is low already"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:141
+msgid "No card is open"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:143
+msgid "A title needs words"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:145
+msgid "No title is being typed"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:189
+msgid "%s holds %d at most"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:209
+msgid "#%d to %s"
+msgstr ""
+
+#: demo/apps/kanban/kanban_board.gd:224
+msgid "#%d, its %s"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:59
+#: demo/apps/kanban/kanban_card.gd:21
+#: demo/apps/kanban/kanban_view.gd:49
+msgid "Low"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:59
+#: demo/apps/kanban/kanban_card.gd:21
+#: demo/apps/kanban/kanban_view.gd:49
+msgid "Medium"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:59
+#: demo/apps/kanban/kanban_card.gd:21
+#: demo/apps/kanban/kanban_view.gd:49
+msgid "High"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:59
+#: demo/apps/kanban/kanban_card.gd:21
+#: demo/apps/kanban/kanban_view.gd:49
+msgid "Urgent"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:68
+msgid "Overdue %d day"
+msgid_plural "Overdue %d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/kanban/kanban_card.gd:68
+msgid "Due today"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:68
+msgid "Due in %d day"
+msgid_plural "Due in %d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/kanban/kanban_card.gd:75
+msgid "%d point"
+msgid_plural "%d points"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/kanban/kanban_card.gd:82
+msgid "Saving"
+msgstr ""
+
+#: demo/apps/kanban/kanban_card.gd:82
+msgid "Not kept: %s"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+msgid "Backlog"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+msgid "Ready"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+msgid "In progress"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+msgid "Review"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+msgid "Testing"
+msgstr ""
+
+#: demo/apps/kanban/kanban_data.gd:19
+#: demo/apps/kanban/kanban_view.gd:74
+#: demo/guided/readout.gd:24
+msgid "Done"
+msgstr ""
+
+#: demo/apps/kanban/kanban_server.gd:111
+msgid "#%d is blocked by another card"
+msgstr ""
+
+#: demo/apps/kanban/kanban_server.gd:113
+msgid "The server was busy; try again"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:39
+msgid "No cards here"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:48
+msgid "#%d, %s"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:55
+msgid "Title"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:56
+msgid "Priority"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:57
+msgid "Estimate, in points"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:58
+msgid "Assigned to"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:59
+msgid "About it"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:61
+msgid "Click a card, or pick open from its menu, to see it here and change it."
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:62
+msgid "Card"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:76
+msgid "Person"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:85
+msgid "Showing %d of %d cards"
+msgstr ""
+
+#: demo/apps/kanban/kanban_view.gd:86
+msgid "Labels"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/gallery/gallery.gd:204
+#: demo/gallery/stall.gd:123
+#: demo/stalls/bento.gd:111
+#: demo/stalls/data_dense.gd:97
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:121
+#: demo/stalls/material.gd:147
+msgid "Back"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_route.gd:124
+#: demo/apps/mobile/mobile_route.gd:37
+#: demo/apps/mobile/mobile_view.gd:56
+#: demo/apps/mobile/mobile_view.gd:68
+#: demo/apps/mobile/mobile_view.gd:77
+msgid "Delivered"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_view.gd:68
+msgid "Report a problem"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+msgid "Undo"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+msgid "Delivery actions"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+msgid "Refresh"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_view.gd:117
+msgid "Sync"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_view.gd:124
+#: demo/gallery/more_pieces.gd:85
+#: demo/gallery/stall.gd:123
+msgid "Settings"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_view.gd:115
+msgid "Signal"
+msgstr ""
+
+#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile_view.gd:123
+#: demo/gallery/gallery.gd:80
+msgid "Reduce motion"
+msgstr ""
+
+#: demo/apps/mobile/mobile_depot.gd:95
+msgid "No connection"
+msgstr ""
+
+#: demo/apps/mobile/mobile_depot.gd:99
+msgid "The depot did not answer"
+msgstr ""
+
+#: demo/apps/mobile/mobile_depot.gd:108
+msgid "The sender cancelled stop %d"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:53
+#: demo/apps/mobile/mobile_view.gd:55
+msgid "Today's stops"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:103
+msgid "No stop is chosen"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:106
+msgid "Stop %d is delivered already"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:107
+msgid "Stop %d is reported already"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:108
+msgid "Stop %d is still to deliver"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:124
+msgid "Stop %d, %s"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:124
+#: demo/apps/mobile/mobile_route.gd:37
+#: demo/apps/mobile/mobile_view.gd:77
+msgid "To deliver"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:124
+#: demo/apps/mobile/mobile_route.gd:37
+#: demo/apps/mobile/mobile_view.gd:77
+msgid "A problem"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:39
+#: demo/apps/mobile/mobile_view.gd:77
+#: demo/apps/mobile/mobile_view.gd:107
+msgid "Nobody home"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:39
+#: demo/apps/mobile/mobile_view.gd:77
+#: demo/apps/mobile/mobile_view.gd:107
+msgid "No way in"
+msgstr ""
+
+#: demo/apps/mobile/mobile_route.gd:39
+#: demo/apps/mobile/mobile_view.gd:77
+#: demo/apps/mobile/mobile_view.gd:107
+msgid "Parcel damaged"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:76
+msgid "%d. %s"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:77
+msgid "%s: %s"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:82
+msgid "For %s, %s, due %s"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:82
+msgid "%d parcel"
+msgid_plural "%d parcels"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/mobile/mobile_view.gd:93
+msgid "Stop %d"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:104
+msgid "Mark delivered"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:108
+msgid "Back to still to deliver"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:115
+msgid "Simulated: there is no phone here to lose one"
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:116
+msgid "A change made without a signal is kept on the phone and marked Awaiting sync; it is sent the moment the signal is back, and one the depot refuses is put back, saying why."
+msgstr ""
+
+#: demo/apps/mobile/mobile_view.gd:123
+msgid "Rows, lists and screens stop gliding"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:73
+msgid "Water mains - %s pipes"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:81
+msgid "Asset"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:82
+msgid "Road"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:84
+#: demo/apps/shop/shop.gd:125
+msgid "Material"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:85
+msgid "Diameter, mm"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:86
+msgid "Laid"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:87
+msgid "Risk"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:88
+msgid "Inspection"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:89
+msgid "Programme"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:90
+msgid "Engineer"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:96
+msgid "A main is between 50 and 2,000 mm across"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:97
+msgid "%s is not one of the engineers"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:104
+msgid "Assign the pipes to"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:56
+msgid "Assign to a programme"
+msgstr ""
+
+#: demo/apps/pipes/pipes.gd:56
+msgid "Mark inspected"
+msgstr ""
+
+#: demo/apps/pipes/pipes_work.gd:41
+msgid "Pick some pipes first"
+msgstr ""
+
+#: demo/apps/pipes/pipes_work.gd:48
+msgid "%s pipes assigned to %s"
+msgstr ""
+
+#: demo/apps/pipes/pipes_work.gd:49
+msgid "%s pipes marked inspected"
+msgstr ""
+
+#: demo/apps/shop/basket.gd:58
+msgid "Sold out"
+msgstr ""
+
+#: demo/apps/shop/basket.gd:60
+msgid "The basket is empty"
+msgstr ""
+
+#: demo/apps/shop/basket.gd:68
+msgid "%s is in your basket"
+msgstr ""
+
+#: demo/apps/shop/basket.gd:74
+msgid "Your order of £%s is placed"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:80
+msgid "Most loved"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:81
+msgid "Price, low to high"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:82
+msgid "Price, high to low"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:83
+msgid "Newest"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:84
+msgid "Name"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:104
+#: demo/apps/shop/shop.gd:126
+msgid "%s to %s"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:112
+msgid "Order the pieces by"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:125
+msgid "Room"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:125
+msgid "Colour"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:125
+msgid "Availability"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:126
+msgid "Price"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Look closer"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "The one before"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "The one after"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/shop/shop_view.gd:52
+msgid "Basket"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/shop/shop_overlays.gd:71
+msgid "Filters"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Order"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Order by"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+#: demo/gallery/stall.gd:123
+msgid "Set the price"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Add to basket"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Change how many"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+#: demo/gallery/stall.gd:123
+msgid "Remove"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Check out"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+msgid "Show more"
+msgstr ""
+
+#: demo/apps/shop/shop.gd:90
+#: demo/apps/shop/shop_view.gd:84
+msgid "Try again"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:38
+msgid "In %s %s, for the %s; rated %s of 5"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:50
+msgid "Nothing in your basket yet"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:50
+msgid "Keep browsing"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:51
+msgid "Total"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:53
+msgid "Your basket"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:60
+msgid "%d at £%s"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:69
+msgid "Show the pieces"
+msgstr ""
+
+#: demo/apps/shop/shop_overlays.gd:69
+msgid "Show %d piece"
+msgid_plural "Show %d pieces"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/shop/shop_overlays.gd:69
+msgid "Nothing matches"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:52
+msgid "Basket, %d piece"
+msgid_plural "Basket, %d pieces"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/apps/shop/shop_view.gd:54
+msgid "Hollin & Wren"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:78
+msgid "The autumn edit"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:78
+msgid "Low sofas, warm woods and lamps for the long evenings, made to last and delivered to your room"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:79
+msgid "pieces match what you are looking for"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:80
+msgid "Free delivery"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:80
+msgid "To your room, on every order over £500"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:80
+msgid "Made to order"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:80
+msgid "In our workshop, in four weeks or less"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:84
+msgid "Show more pieces"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:84
+msgid "That is every piece"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:84
+msgid "These pieces could not be shown"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:84
+msgid "Nothing matches: take a filter away"
+msgstr ""
+
+#: demo/apps/shop/shop_view.gd:91
+msgid "Showing %d of %d pieces, %d pictures held"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:38
+msgid "Datasets in this project"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:39
+msgid "Queries"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:41
+#: demo/apps/workspace/workspace.gd:69
+msgid "Explorer"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:56
+msgid "No query is open. Open one from the explorer, or search for one with the palette."
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:59
+#: demo/apps/workspace/workspace.gd:108
+msgid "Query"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:74
+#: demo/apps/workspace/workspace.gd:69
+msgid "Results"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:80
+msgid "Run a query to see its rows here."
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:83
+msgid "%s of %s rows, in %s ms"
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:89
+msgid "Pick a dataset to see its columns."
+msgstr ""
+
+#: demo/apps/workspace/panes_view.gd:92
+#: demo/apps/workspace/workspace.gd:69
+msgid "Schema"
+msgstr ""
+
+#: demo/apps/workspace/warehouse.gd:88
+msgid "A query needs FROM and a dataset"
+msgstr ""
+
+#: demo/apps/workspace/warehouse.gd:92
+#: demo/apps/workspace/workbench.gd:105
+msgid "There is no dataset called %s"
+msgstr ""
+
+#: demo/apps/workspace/warehouse.gd:95
+msgid "%s has none of those columns"
+msgstr ""
+
+#: demo/apps/workspace/workbench.gd:101
+msgid "No query is open"
+msgstr ""
+
+#: demo/apps/workspace/workbench.gd:103
+msgid "Open a query to put the name in"
+msgstr ""
+
+#: demo/apps/workspace/workbench.gd:107
+msgid "There is no such query to copy"
+msgstr ""
+
+#: demo/apps/workspace/workbench.gd:145
+msgid "%s did not run: %s"
+msgstr ""
+
+#: demo/apps/workspace/workbench.gd:147
+msgid "%s finished: %d rows"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:108
+msgid "Dataset"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:154
+msgid "%d queries open. The layout, the queries open and the keys are kept in %s"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Search or run a command"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "New query"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Run"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Write the query"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Make a copy"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Show its columns"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Preview its rows"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Put its name in the query"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Show the results"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Close"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Close the query"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Next"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Previous"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Query alone"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Results alone"
+msgstr ""
+
+#: demo/apps/workspace/workspace.gd:69
+msgid "Run the first found"
+msgstr ""
+
+#: demo/clock/dial.gd:31
+msgid "HOUR"
+msgstr ""
+
+#: demo/clock/dial.gd:31
+msgid "MINUTE"
+msgstr ""
+
+#: demo/clock/dial.gd:31
+msgid "SECOND"
+msgstr ""
+
+#: demo/clock/dial.gd:31
+msgid "MILLISECOND"
+msgstr ""
+
+#: demo/collection/collection.gd:46
+#: demo/gallery/more_models.gd:91
+msgid "Nothing picked"
+msgstr ""
+
+#: demo/collection/collection.gd:46
+msgid "%s, %s"
+msgstr ""
+
+#: demo/collection/collection.gd:46
+#: demo/collection/collection.gd:56
+msgid "Flipped"
+msgstr ""
+
+#: demo/collection/collection.gd:46
+#: demo/collection/collection.gd:56
+msgid "Plain"
+msgstr ""
+
+#: demo/collection/collection.gd:39
+msgid "Add three things"
+msgstr ""
+
+#: demo/collection/collection.gd:39
+#: demo/gallery/stall.gd:123
+msgid "Sort by name"
+msgstr ""
+
+#: demo/collection/collection.gd:39
+msgid "Show only the flipped"
+msgstr ""
+
+#: demo/collection/collection.gd:39
+msgid "Flip"
+msgstr ""
+
+#: demo/collection/collection.gd:39
+msgid "Back to the list"
+msgstr ""
+
+#: demo/collection/things.gd:55
+msgid "Nothing to sort yet"
+msgstr ""
+
+#: demo/collection/things.gd:55
+msgid "Nothing to filter yet"
+msgstr ""
+
+#: demo/collection/things.gd:57
+#: demo/gallery/gallery_models.gd:42
+msgid "Every thing there is has been added"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:32
+msgid "Nothing sent yet"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:42
+msgid "Nothing written yet"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:49
+msgid "Sent: a note of %d line"
+msgid_plural "Sent: a note of %d lines"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/gallery/arrivals_models.gd:75
+msgid "Not counted yet"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:76
+msgid "The delivery"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:92
+msgid "The delivery is in"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:97
+msgid "Counted: sixty-one crates"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:100
+#: demo/gallery/arrivals_pieces.gd:61
+msgid "Forty crates of plums"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:122
+msgid "No sales viewed yet"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:130
+msgid "The plums are in, and every crate of them was sold before the market bell rang at noon"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:133
+msgid "Day %d's sales are counted"
+msgstr ""
+
+#: demo/gallery/arrivals_models.gd:135
+msgid "Viewed: the sales of day %d"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:60
+msgid "A note to the grower"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:61
+msgid "Twelve crates of figs"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:61
+msgid "Nine crates of pears"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:68
+msgid "Text area"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:68
+msgid "Enter breaks a line; only the button sends it, and never empty"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:68
+msgid "Loading"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:68
+msgid "Shapes stand in until it lands; counting waits"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:73
+msgid "Notifications"
+msgstr ""
+
+#: demo/gallery/arrivals_pieces.gd:73
+msgid "Each stands in the tray below, never over anything, sounds, and leaves"
+msgstr ""
+
+#: demo/gallery/drafts.gd:29
+msgid "Watch"
+msgstr ""
+
+#: demo/gallery/drafts.gd:29
+msgid "Keep"
+msgstr ""
+
+#: demo/gallery/drafts.gd:29
+msgid "Sell"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:55
+msgid "The shelf is full"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:57
+msgid "The shelf is empty"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:59
+msgid "It takes two crates to turn the shelf round"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:93
+msgid "Nothing saved or loaded yet"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:101
+msgid "Nothing has been saved yet"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:109
+msgid "The keys could not be saved: %s"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:112
+msgid "The keys are saved"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:118
+msgid "The saved keys are loaded"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:120
+msgid "What was saved is not a set of keys"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:160
+msgid "Only figs go in the fig basket"
+msgstr ""
+
+#: demo/gallery/extra_models.gd:162
+msgid "The baskets are empty"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:72
+#: demo/gallery/extra_pieces.gd:93
+msgid "Reduced motion"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:72
+msgid "On, nothing slides, grows or loops, and a fade is short"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:74
+msgid "Quick %d ms, normal %d ms, slow %d ms; a stagger of %d ms, a beat of %d ms"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:76
+msgid "%d run on the one clock now"
+msgid_plural "%d runs on the one clock now"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demo/gallery/extra_pieces.gd:79
+msgid "%d per cent full"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:80
+#: demo/gallery/marks_models.gd:53
+msgid "Ripe"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:80
+msgid "Its look blends to the other"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:84
+msgid "Keys on this screen now: %s, %s and %s"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:87
+msgid "The front of the stall"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:88
+msgid "The back room"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:91
+msgid "A pulse: look here"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:91
+msgid "A breathe: still waiting"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:93
+msgid "Switch it and watch everything on this screen follow"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:94
+msgid "The look's motion"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:94
+msgid "Every duration is the look's; everything runs on one clock"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:95
+msgid "An eased value"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:95
+msgid "Press fill: the number and the bar go there smoothly"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:96
+msgid "A change of style"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:96
+msgid "Press it: on and off blend by the look's restyle easing"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:99
+msgid "Enter, exit and move"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:99
+msgid "Put a crate on, take one off, turn the shelf round"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:100
+msgid "A push between places"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:100
+msgid "One place slides in as the other slides out"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:101
+msgid "Keyframes"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:101
+msgid "A pulse, a breathe, and the countdown's beat in its last seconds"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:114
+msgid "The language words are said in"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:116
+msgid "Volume"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:116
+msgid "How loud the stall's sounds are: drag it, or left and right"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:116
+#: demo/gallery/gallery.gd:80
+msgid "Mute"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:116
+msgid "On, nothing sounds at all"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:120
+msgid "Press it, then the key or button to bind"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:124
+msgid "Language"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:124
+msgid "Choose one: every word on every screen follows at once"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:124
+msgid "Each named in its own words"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:125
+#: demo/gallery/more_pieces.gd:74
+#: demo/gallery/stall.gd:123
+msgid "Sound"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:125
+msgid "The volume and the mute of the stall's own sounds"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:127
+msgid "Keys"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:127
+msgid "Rebind a key, save, restore the defaults, load: yours are back"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:141
+msgid "The basket"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:142
+msgid "The fig basket"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:143
+msgid "On the counter"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:144
+#: demo/gallery/gallery.gd:80
+msgid "Drag and drop"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:144
+msgid "Drag a crate onto a basket"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:144
+msgid "The fig basket takes figs alone, and says why"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:145
+msgid "On a crate, accept lifts it"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:145
+msgid "The arrows walk the baskets alone"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:145
+msgid "Accept drops it; cancel puts it back"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:145
+msgid "A refused drop takes nothing: the crate is still carried"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:146
+msgid "By pad or keys"
+msgstr ""
+
+#: demo/gallery/extra_pieces.gd:146
+msgid "The same crates, carried without a mouse"
+msgstr ""
+
+#: demo/gallery/gallery.gd:145
+#: demo/stalls/bento.gd:55
+#: demo/stalls/material.gd:60
+msgid "This is a MOMENT: it appears once when something worth marking has happened, and one button dismisses it."
+msgstr ""
+
+#: demo/gallery/gallery.gd:174
+#: demo/stalls/bento.gd:75
+#: demo/stalls/material.gd:114
+msgid "What this is"
+msgstr ""
+
+#: demo/gallery/gallery.gd:174
+msgid "A gallery of the interface kit, one component at a time,"
+msgstr ""
+
+#: demo/gallery/gallery.gd:174
+msgid "told as a market stall with crates of fruit."
+msgstr ""
+
+#: demo/gallery/gallery.gd:174
+msgid "Every screen is a tab: a flap on the panel it opens."
+msgstr ""
+
+#: demo/gallery/gallery.gd:174
+msgid "Every component sits in a box with its name and what to try."
+msgstr ""
+
+#: demo/gallery/gallery.gd:175
+msgid "The tabs"
+msgstr ""
+
+#: demo/gallery/gallery.gd:175
+msgid "One flap per screen, on the panel it reveals; the one you are on is joined to it."
+msgstr ""
+
+#: demo/gallery/gallery.gd:175
+msgid "BACK returns to the screen you came from,"
+msgstr ""
+
+#: demo/gallery/gallery.gd:175
+msgid "and the clock is a COUNTDOWN: time until the stall closes."
+msgstr ""
+
+#: demo/gallery/gallery.gd:176
+msgid "The instruction bar"
+msgstr ""
+
+#: demo/gallery/gallery.gd:176
+msgid "The INSTRUCTION BAR: its words say what to do next."
+msgstr ""
+
+#: demo/gallery/gallery.gd:176
+msgid "Its two buttons are the actions you can take now."
+msgstr ""
+
+#: demo/gallery/gallery.gd:176
+msgid "The glowing one is the one the guide means."
+msgstr ""
+
+#: demo/gallery/gallery.gd:177
+#: demo/stalls/material.gd:117
+#: demo/stalls/skeuomorphic.gd:84
+msgid "Try this"
+msgstr ""
+
+#: demo/gallery/gallery.gd:177
+msgid "Press start restocking: the bar asks for crates, 0 of 3, and a stop button appears."
+msgstr ""
+
+#: demo/gallery/gallery.gd:177
+msgid "The glow moves to pick a crate, with a bubble pointing at it. Press it three times."
+msgstr ""
+
+#: demo/gallery/gallery.gd:177
+msgid "A moment appears saying you are done; carry on dismisses it."
+msgstr ""
+
+#: demo/gallery/gallery.gd:178
+#: demo/stalls/material.gd:118
+msgid "Words you will see"
+msgstr ""
+
+#: demo/gallery/gallery.gd:178
+#: demo/stalls/material.gd:118
+#: demo/stalls/skeuomorphic.gd:85
+msgid "A crate is one item on the stall. c is the coin."
+msgstr ""
+
+#: demo/gallery/gallery.gd:178
+msgid "Takings is how much it has made. Recent is the last four days' takings."
+msgstr ""
+
+#: demo/gallery/gallery.gd:178
+#: demo/stalls/material.gd:118
+msgid "Marks is how many complaints it has had."
+msgstr ""
+
+#: demo/gallery/gallery.gd:187
+#: demo/stalls/bento.gd:83
+#: demo/stalls/glass.gd:87
+#: demo/stalls/material.gd:121
+msgid "The look"
+msgstr ""
+
+#: demo/gallery/gallery.gd:187
+msgid "The same gallery in each design language; press one"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:92
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:96
+#: demo/stalls/material.gd:129
+msgid "Quantity"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:92
+#: demo/stalls/glass.gd:96
+#: demo/stalls/material.gd:129
+msgid "The pear crate's takings"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:93
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:97
+#: demo/stalls/material.gd:130
+msgid "Bar"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:93
+#: demo/stalls/material.gd:130
+#: demo/stalls/neo_brutalist.gd:99
+msgid "The same, as a fill; full is 100,000"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:95
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:98
+#: demo/stalls/material.gd:131
+msgid "Label"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:95
+#: demo/stalls/glass.gd:98
+#: demo/stalls/material.gd:131
+msgid "The crate's name, read live"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:96
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:101
+#: demo/stalls/material.gd:132
+msgid "Mark"
+msgstr ""
+
+#: demo/gallery/gallery.gd:194
+#: demo/stalls/bento.gd:96
+#: demo/stalls/material.gd:132
+#: demo/stalls/neo_brutalist.gd:105
+msgid "Complaints, a diamond each; pear has none"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:94
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:102
+#: demo/stalls/material.gd:133
+msgid "Trace"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:94
+#: demo/stalls/material.gd:133
+#: demo/stalls/skeuomorphic.gd:103
+msgid "The last four days' takings"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:97
+#: demo/stalls/flat.gd:72
+#: demo/stalls/flat.gd:22
+#: demo/stalls/glass.gd:103
+#: demo/stalls/material.gd:134
+msgid "Relative"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:97
+#: demo/stalls/glass.gd:103
+#: demo/stalls/material.gd:134
+#: demo/stalls/neo_brutalist.gd:108
+msgid "Closeness to another crate; press to compare"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:98
+#: demo/stalls/material.gd:136
+msgid "Countdown"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+msgid "The clock BACK stands with"
+msgstr ""
+
+#: demo/gallery/gallery.gd:195
+#: demo/stalls/bento.gd:98
+#: demo/stalls/material.gd:136
+msgid "Time until the stall closes"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/bento.gd:109
+#: demo/stalls/data_dense.gd:95
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:119
+#: demo/stalls/material.gd:147
+msgid "Menu link"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/glass.gd:119
+msgid "A button to a screen"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/bento.gd:110
+#: demo/stalls/data_dense.gd:96
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:120
+#: demo/stalls/material.gd:147
+msgid "Inline link"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/bento.gd:110
+#: demo/stalls/glass.gd:120
+msgid "A name; press to open it"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/glass.gd:121
+msgid "The screen you came from"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/bento.gd:112
+#: demo/stalls/data_dense.gd:98
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:122
+#: demo/stalls/material.gd:147
+msgid "Play"
+msgstr ""
+
+#: demo/gallery/gallery.gd:204
+#: demo/stalls/bento.gd:112
+#: demo/stalls/glass.gd:122
+msgid "Opens your own crate, the fig"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:115
+#: demo/stalls/flat.gd:80
+#: demo/stalls/material.gd:150
+msgid "Card, list"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:115
+#: demo/stalls/material.gd:150
+#: demo/stalls/neo_brutalist.gd:132
+msgid "A crate as a row; press to open"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:116
+#: demo/stalls/flat.gd:80
+#: demo/stalls/hud.gd:116
+#: demo/stalls/material.gd:151
+msgid "Card, tile"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:116
+#: demo/stalls/material.gd:151
+msgid "The same crate as a tile"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:117
+#: demo/stalls/flat.gd:80
+#: demo/stalls/hud.gd:117
+#: demo/stalls/material.gd:152
+msgid "Card, dense"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:117
+#: demo/stalls/material.gd:152
+msgid "Live picture, takings, a button"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:118
+#: demo/stalls/flat.gd:80
+#: demo/stalls/material.gd:153
+msgid "Card, empty"
+msgstr ""
+
+#: demo/gallery/gallery.gd:205
+#: demo/stalls/bento.gd:118
+#: demo/stalls/material.gd:153
+msgid "An empty slot and the ways to fill it"
+msgstr ""
+
+#: demo/gallery/gallery.gd:206
+#: demo/stalls/bento.gd:120
+#: demo/stalls/data_dense.gd:99
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:126
+#: demo/stalls/material.gd:157
+msgid "Amount field"
+msgstr ""
+
+#: demo/gallery/gallery.gd:206
+#: demo/stalls/bento.gd:120
+#: demo/stalls/glass.gd:126
+#: demo/stalls/material.gd:157
+#: demo/stalls/neo_brutalist.gd:138
+#: demo/stalls/skeuomorphic.gd:134
+msgid "Type a number, Enter sets the price"
+msgstr ""
+
+#: demo/gallery/gallery.gd:206
+#: demo/stalls/bento.gd:121
+#: demo/stalls/data_dense.gd:100
+#: demo/stalls/flat.gd:80
+#: demo/stalls/glass.gd:127
+#: demo/stalls/hud.gd:123
+#: demo/stalls/material.gd:158
+msgid "Disposition"
+msgstr ""
+
+#: demo/gallery/gallery.gd:206
+#: demo/stalls/bento.gd:121
+#: demo/stalls/glass.gd:127
+#: demo/stalls/material.gd:158
+#: demo/stalls/neo_brutalist.gd:139
+#: demo/stalls/skeuomorphic.gd:135
+#: demo/stalls/swiss.gd:114
+msgid "One of three; the chosen opens its second half"
+msgstr ""
+
+#: demo/gallery/gallery.gd:220
+#: demo/stalls/bento.gd:135
+#: demo/stalls/flat.gd:86
+#: demo/stalls/glass.gd:141
+#: demo/stalls/material.gd:171
+msgid "Collection, rows"
+msgstr ""
+
+#: demo/gallery/gallery.gd:220
+#: demo/stalls/bento.gd:135
+#: demo/stalls/glass.gd:141
+#: demo/stalls/material.gd:171
+#: demo/stalls/neo_brutalist.gd:160
+#: demo/stalls/swiss.gd:126
+msgid "Add, sort, filter; press a row to open it"
+msgstr ""
+
+#: demo/gallery/gallery.gd:221
+#: demo/stalls/bento.gd:138
+#: demo/stalls/flat.gd:86
+#: demo/stalls/glass.gd:142
+#: demo/stalls/material.gd:168
+msgid "Collection, tiles"
+msgstr ""
+
+#: demo/gallery/gallery.gd:221
+#: demo/stalls/bento.gd:138
+#: demo/stalls/data_dense.gd:114
+#: demo/stalls/glass.gd:142
+#: demo/stalls/material.gd:168
+#: demo/stalls/neumorphic.gd:137
+#: demo/stalls/swiss.gd:125
+msgid "The same crates as tiles"
+msgstr ""
+
+#: demo/gallery/gallery.gd:221
+#: demo/stalls/bento.gd:139
+#: demo/stalls/flat.gd:86
+#: demo/stalls/glass.gd:143
+#: demo/stalls/material.gd:169
+msgid "Board"
+msgstr ""
+
+#: demo/gallery/gallery.gd:221
+#: demo/stalls/bento.gd:139
+#: demo/stalls/glass.gd:143
+#: demo/stalls/material.gd:169
+msgid "Ranked by takings; scrolled to keep your fig in view"
+msgstr ""
+
+#: demo/gallery/gallery.gd:227
+#: demo/stalls/bento.gd:162
+#: demo/stalls/glass.gd:157
+#: demo/stalls/material.gd:184
+msgid "Matrix"
+msgstr ""
+
+#: demo/gallery/gallery.gd:227
+msgid "The gap in takings between each pair, in thousands; one triangle since a gap has no direction"
+msgstr ""
+
+#: demo/gallery/gallery.gd:227
+#: demo/stalls/bento.gd:162
+#: demo/stalls/glass.gd:156
+#: demo/stalls/hud.gd:152
+#: demo/stalls/material.gd:184
+#: demo/stalls/neo_brutalist.gd:177
+#: demo/stalls/neumorphic.gd:150
+#: demo/stalls/skeuomorphic.gd:166
+#: demo/stalls/swiss.gd:142
+msgid "Gap, thousands"
+msgstr ""
+
+#: demo/gallery/gallery.gd:232
+#: demo/stalls/bento.gd:148
+#: demo/stalls/glass.gd:151
+#: demo/stalls/material.gd:179
+msgid "Relationship graph"
+msgstr ""
+
+#: demo/gallery/gallery.gd:232
+#: demo/stalls/data_dense.gd:130
+#: demo/stalls/material.gd:179
+#: demo/stalls/neo_brutalist.gd:171
+#: demo/stalls/swiss.gd:136
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name"
+msgstr ""
+
+#: demo/gallery/gallery.gd:239
+#: demo/stalls/bento.gd:171
+#: demo/stalls/material.gd:193
+msgid "A note kept with this crate"
+msgstr ""
+
+#: demo/gallery/gallery.gd:239
+#: demo/stalls/bento.gd:171
+#: demo/stalls/glass.gd:167
+#: demo/stalls/material.gd:193
+#: demo/stalls/swiss.gd:152
+msgid "Type a note and Enter, tick flags, go to suppliers, come back: still here"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Motion"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Language, sound, keys"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "To the front of the stall"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "To the back room"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Choose a language"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "This language"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Set the volume"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+#: demo/gallery/stall.gd:123
+msgid "Bind"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Restore the defaults"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Save the keys"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Load the keys"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Put a crate on"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Take one off"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Turn the shelf round"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Ripen"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Fill"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Put in the basket"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Put in the fig basket"
+msgstr ""
+
+#: demo/gallery/gallery.gd:80
+msgid "Empty the baskets"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Numbers and choices"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Choose a size"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Choose a fruit"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Set the crates"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Fill the crate"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "This size"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "This fruit"
+msgstr ""
+
+#: demo/gallery/gallery.gd:81
+msgid "Find a fruit"
+msgstr ""
+
+#: demo/gallery/gallery.gd:82
+msgid "Words, links and chips"
+msgstr ""
+
+#: demo/gallery/gallery.gd:82
+msgid "Turn the label on or off"
+msgstr ""
+
+#: demo/gallery/gallery.gd:82
+msgid "Take the label off"
+msgstr ""
+
+#: demo/gallery/gallery.gd:82
+msgid "Put the labels back"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Writing, loading, notices"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Write"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Send the note"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Count the stock"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "The delivery arrives"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Ask for it again"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Notify"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "Notify with an offer"
+msgstr ""
+
+#: demo/gallery/gallery.gd:83
+msgid "View the sales"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:86
+msgid "Nothing is being asked"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:93
+#: demo/gallery/gallery_models.gd:97
+msgid "Pick three crates to restock"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:97
+msgid "One picked, pick two more"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:97
+msgid "Two picked, pick one more"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:100
+msgid "Restocked: three crates picked"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:128
+msgid "Not in the market phase"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:185
+msgid "As close as it goes"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:187
+msgid "As far as it goes"
+msgstr ""
+
+#: demo/gallery/gallery_models.gd:189
+msgid "Nobody further is known"
+msgstr ""
+
+#: demo/gallery/looks/looks.gd:82
+msgid "Already in that look"
+msgstr ""
+
+#: demo/gallery/looks/sight.gd:37
+msgid "Already dressed for that sight"
+msgstr ""
+
+#: demo/gallery/marks_models.gd:38
+msgid "Every label is on the crate"
+msgstr ""
+
+#: demo/gallery/marks_models.gd:53
+msgid "Bruised"
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:52
+msgid "This week the "
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:52
+msgid " crate sold best of all, taking "
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:52
+msgid " coins before the market bell rang at noon, while every other crate on the stall, the apples and the dates and the plums and the limes, sold slowly all through a long and rainy afternoon; and the "
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:52
+msgid " crate, the stall's own, is always the last to be unpacked in the morning."
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:57
+msgid "Fresh today"
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:59
+msgid "Paragraph with links"
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:59
+msgid "Two crates named in running words; press one to open it; the pad walks from one to the next"
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:60
+msgid "Chips"
+msgstr ""
+
+#: demo/gallery/marks_pieces.gd:60
+msgid "Press a chip to turn it on or off - off is in brackets - and x to take it off; fresh today has no x"
+msgstr ""
+
+#: demo/gallery/more_models.gd:30
+#: demo/gallery/more_models.gd:26
+msgid "Slow"
+msgstr ""
+
+#: demo/gallery/more_models.gd:30
+#: demo/gallery/more_models.gd:26
+msgid "Steady"
+msgstr ""
+
+#: demo/gallery/more_models.gd:30
+#: demo/gallery/more_models.gd:26
+msgid "Brisk"
+msgstr ""
+
+#: demo/gallery/more_models.gd:31
+msgid "A day of takings is kept"
+msgstr ""
+
+#: demo/gallery/more_models.gd:56
+msgid "There is no day kept to clear"
+msgstr ""
+
+#: demo/gallery/more_models.gd:67
+msgid "A stall needs a name"
+msgstr ""
+
+#: demo/gallery/more_models.gd:109
+msgid "No complaints"
+msgstr ""
+
+#: demo/gallery/more_models.gd:109
+msgid "One complaint"
+msgstr ""
+
+#: demo/gallery/more_models.gd:109
+msgid "Two complaints"
+msgstr ""
+
+#: demo/gallery/more_models.gd:123
+msgid "Picked: crate %s"
+msgstr ""
+
+#: demo/gallery/more_models.gd:144
+msgid "First ties"
+msgstr ""
+
+#: demo/gallery/more_models.gd:144
+msgid "Last tie"
+msgstr ""
+
+#: demo/gallery/more_models.gd:150
+msgid "Every tie is decided"
+msgstr ""
+
+#: demo/gallery/more_models.gd:183
+msgid "Day"
+msgstr ""
+
+#: demo/gallery/more_models.gd:183
+#: demo/stalls/hud.gd:102
+msgid "Takings, c"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:66
+msgid "How fast the day runs"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:67
+msgid "The day's takings will be thrown away. This cannot be undone."
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:70
+msgid "Throw away the day called %s? This cannot be undone."
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:73
+#: demo/stalls/bento.gd:51
+#: demo/stalls/material.gd:66
+#: demo/stalls/skeuomorphic.gd:81
+#: demo/stalls/swiss.gd:54
+msgid "The stall"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:74
+msgid "The bell when a crate sells"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:75
+msgid "Pace"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:75
+msgid "Opens a list to choose from, never a dropdown"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:76
+msgid "Call key"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:76
+msgid "Press it, then press the key or button to bind"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:78
+msgid "The day"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:79
+msgid "The stall's name"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:79
+msgid "Type a name and press Enter; an empty name is refused"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:80
+#: demo/gallery/stall.gd:123
+msgid "Clear the day"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:80
+msgid "Asks first: it cannot be undone"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:83
+msgid "Days kept"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:85
+msgid "Rows in groups: a toggle, a choice, a binding, a named field, a confirm"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:95
+#: demo/stalls/data_dense.gd:51
+#: demo/stalls/data_dense.gd:20
+#: demo/stalls/hud.gd:102
+msgid "Crate"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:95
+#: demo/gallery/stall.gd:123
+#: demo/stalls/data_dense.gd:52
+#: demo/stalls/data_dense.gd:20
+#: demo/stalls/neumorphic.gd:102
+#: demo/stalls/skeuomorphic.gd:108
+#: demo/stalls/swiss.gd:86
+msgid "Takings"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:95
+#: demo/stalls/hud.gd:102
+#: demo/stalls/neumorphic.gd:108
+msgid "Complaints"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:100
+msgid "Sections"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:100
+msgid "The same crates, grouped by complaints"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:100
+msgid "Type-ahead picker"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:100
+msgid "Type to narrow, arrows to move, press to pick"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:105
+msgid "Table"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:105
+msgid "Press a heading to sort; + marks takings over 5,000"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:116
+msgid "Bracket"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:116
+msgid "Ties across rounds; a name opens that crate; the winner is marked in words"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:121
+msgid "Line chart"
+msgstr ""
+
+#: demo/gallery/more_pieces.gd:121
+msgid "Two series told apart by dash and marker; add a day and it extends"
+msgstr ""
+
+#: demo/gallery/pieces.gd:94
+msgid "Carry on dismisses this moment"
+msgstr ""
+
+#: demo/gallery/pieces.gd:95
+msgid "Restocked: three crates picked."
+msgstr ""
+
+#: demo/gallery/pieces.gd:104
+msgid "Seeing: %s"
+msgstr ""
+
+#: demo/gallery/pieces.gd:108
+msgid "Wearing: %s"
+msgstr ""
+
+#: demo/gallery/pieces.gd:117
+#: demo/stalls/data_dense.gd:55
+#: demo/stalls/data_dense.gd:20
+msgid "Closeness"
+msgstr ""
+
+#: demo/gallery/pieces.gd:131
+msgid "A %s"
+msgstr ""
+
+#: demo/gallery/pieces.gd:134
+msgid "Sold %s so far this week"
+msgstr ""
+
+#: demo/gallery/pieces.gd:135
+msgid "Live view"
+msgstr ""
+
+#: demo/gallery/pieces.gd:143
+msgid "Which stall: the corner one"
+msgstr ""
+
+#: demo/gallery/pieces.gd:162
+#: demo/gallery/stall.gd:123
+#: demo/stalls/bento.gd:79
+msgid "Crate vs crate"
+msgstr ""
+
+#: demo/gallery/pieces.gd:176
+msgid "No supplier picked yet"
+msgstr ""
+
+#: demo/gallery/pieces.gd:176
+msgid "Picked supplier: %s"
+msgstr ""
+
+#: demo/gallery/pieces.gd:188
+msgid "Note so far: %s"
+msgstr ""
+
+#: demo/gallery/stall.gd:201
+msgid "No crate"
+msgstr ""
+
+#: demo/gallery/stall.gd:201
+msgid "Crate: %s"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Start here"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+#: demo/stalls/bento.gd:76
+msgid "One crate, six ways"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Cards and links"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+#: demo/stalls/bento.gd:77
+msgid "Lists of crates"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+#: demo/stalls/bento.gd:78
+msgid "Suppliers"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Add a crate"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Compare"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Find a property"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Property"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Comparison"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Find a value"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Pick the value"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Value"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Toggle"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Start restocking"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Pick a crate"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Stop restocking"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Carry on"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Put on the stall"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Put up for sale"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Give away"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Pan"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Zoom"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Zoom in"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Zoom out"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Who else they deal with"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+#: demo/stalls/data_dense.gd:144
+msgid "Note"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Tick"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Look"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Sight"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Ledger"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Knockout"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Choose a pace"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "This pace"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Name the stall"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Yes, clear it"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Sort"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Find a crate"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "This crate"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Decide the next tie"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Add a day"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Throw away"
+msgstr ""
+
+#: demo/gallery/stall.gd:123
+msgid "Yes, throw it away"
+msgstr ""
+
+#: demo/gallery/values_models.gd:43
+msgid "Small"
+msgstr ""
+
+#: demo/gallery/values_models.gd:43
+msgid "Middling"
+msgstr ""
+
+#: demo/gallery/values_models.gd:43
+msgid "Large"
+msgstr ""
+
+#: demo/gallery/values_models.gd:75
+msgid "The stall never stacks thirteen crates"
+msgstr ""
+
+#: demo/gallery/values_models.gd:77
+msgid "Filled past eight tenths, a crate splits"
+msgstr ""
+
+#: demo/gallery/values_models.gd:79
+msgid "No large crates today"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:60
+msgid "Which size?"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:61
+msgid "Which fruit?"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:64
+msgid "The order"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:64
+msgid "Its price"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:70
+msgid "%d crates of %s, %s, each filled to %d per cent"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:71
+msgid "%d crates at %d coins: %d coins"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:75
+msgid "Slider"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:75
+msgid "Drag it, or left and right; past eight tenths is refused"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:76
+msgid "Number stepper"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:76
+msgid "− and +, or type and Enter; thirteen is refused"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:77
+msgid "Combo, short list"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:77
+msgid "The sizes open over everything; large is refused"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:78
+msgid "Combo, long list"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:78
+msgid "Type to narrow the fruit, then pick one"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:81
+msgid "Radio group"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:81
+msgid "The same size, chosen in place; large is refused"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:82
+msgid "Segmented control"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:82
+msgid "Switches the view between the order and its price"
+msgstr ""
+
+#: demo/grid/grid.gd:59
+msgid "Main thread: frame %d"
+msgstr ""
+
+#: demo/grid/grid.gd:72
+msgid "Adding: the layer is holding a core for 5s"
+msgstr ""
+
+#: demo/grid/grid.gd:72
+msgid "Table landed"
+msgstr ""
+
+#: demo/grid/grid.gd:83
+msgid "Arrival %d"
+msgstr ""
+
+#: demo/grid/grid.gd:48
+msgid "Up"
+msgstr ""
+
+#: demo/grid/grid.gd:48
+msgid "Down"
+msgstr ""
+
+#: demo/grid/grid.gd:48
+msgid "Add one"
+msgstr ""
+
+#: demo/grid/table_model.gd:100
+msgid "Already at the top"
+msgstr ""
+
+#: demo/grid/table_model.gd:102
+msgid "Already adding one"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Save the day"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Wave at everyone"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Open the ledger"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Count a coin"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Jot a note"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Show the coins"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Show the notes"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Zoom in on a coin"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Go back"
+msgstr ""
+
+#: demo/guided/declared.gd:32
+msgid "Mute these prompts"
+msgstr ""
+
+#: demo/guided/guided.gd:53
+msgid "Nothing yet"
+msgstr ""
+
+#: demo/guided/guided.gd:62
+msgid "%s, done"
+msgstr ""
+
+#: demo/guided/readout.gd:19
+msgid "Taken: %s"
+msgstr ""
+
+#: demo/guided/readout.gd:21
+msgid "Prompt: %s - %s (%s)"
+msgstr ""
+
+#: demo/guided/readout.gd:22
+msgid "Last deed: %s"
+msgstr ""
+
+#: demo/guided/readout.gd:24
+msgid "Last command: none"
+msgstr ""
+
+#: demo/guided/readout.gd:24
+msgid "Last command: %s -> %s"
+msgstr ""
+
+#: demo/stalls/bento.gd:50
+msgid "Do this next"
+msgstr ""
+
+#: demo/stalls/bento.gd:75
+msgid "A stall of crates"
+msgstr ""
+
+#: demo/stalls/bento.gd:75
+msgid "A tray of compartments: every region of this stall is one cell."
+msgstr ""
+
+#: demo/stalls/bento.gd:75
+msgid "A cell is as important as it is wide - that is the whole hierarchy."
+msgstr ""
+
+#: demo/stalls/bento.gd:75
+msgid "The pills on the top edge are the flaps of this cell; the one you are on is joined to it."
+msgstr ""
+
+#: demo/stalls/bento.gd:76
+msgid "Readings"
+msgstr ""
+
+#: demo/stalls/bento.gd:76
+msgid "A crate's takings as a number, as a fill, as four days of trace."
+msgstr ""
+
+#: demo/stalls/bento.gd:76
+msgid "Its name, its complaints, and how close it is to another crate."
+msgstr ""
+
+#: demo/stalls/bento.gd:76
+msgid "The coin is c; takings is what the crate has made."
+msgstr ""
+
+#: demo/stalls/bento.gd:77
+msgid "Crates"
+msgstr ""
+
+#: demo/stalls/bento.gd:77
+msgid "Every crate as rows, with add, sort and a filter-set over them."
+msgstr ""
+
+#: demo/stalls/bento.gd:77
+msgid "The same crates as tiles, and ranked on a board."
+msgstr ""
+
+#: demo/stalls/bento.gd:77
+msgid "Press a crate anywhere and its own cell opens."
+msgstr ""
+
+#: demo/stalls/bento.gd:78
+msgid "Who deals with whom"
+msgstr ""
+
+#: demo/stalls/bento.gd:78
+msgid "Drag to pan, wheel to zoom, press a name to pick it."
+msgstr ""
+
+#: demo/stalls/bento.gd:79
+msgid "The gaps"
+msgstr ""
+
+#: demo/stalls/bento.gd:79
+msgid "Each pair's gap in takings, one triangle."
+msgstr ""
+
+#: demo/stalls/bento.gd:80
+msgid "A note"
+msgstr ""
+
+#: demo/stalls/bento.gd:80
+msgid "Kept with a crate"
+msgstr ""
+
+#: demo/stalls/bento.gd:80
+msgid "Open a crate, type a note, tick a flag: it is still there on your return."
+msgstr ""
+
+#: demo/stalls/bento.gd:81
+msgid "The cell at the top left"
+msgstr ""
+
+#: demo/stalls/bento.gd:81
+msgid "How the act runs"
+msgstr ""
+
+#: demo/stalls/bento.gd:81
+msgid "Its words say what to do next; the two buttons under them are the moves."
+msgstr ""
+
+#: demo/stalls/bento.gd:81
+msgid "The glowing one is the one meant. Press start restocking, then pick a crate three times."
+msgstr ""
+
+#: demo/stalls/bento.gd:81
+msgid "A moment appears when the three are done; carry on dismisses it."
+msgstr ""
+
+#: demo/stalls/bento.gd:83
+#: demo/stalls/material.gd:121
+msgid "The same stall in each design language; press one"
+msgstr ""
+
+#: demo/stalls/bento.gd:98
+msgid "The clock in the ways cell"
+msgstr ""
+
+#: demo/stalls/bento.gd:109
+msgid "A button to a tray"
+msgstr ""
+
+#: demo/stalls/bento.gd:111
+msgid "The tray you came from"
+msgstr ""
+
+#: demo/stalls/bento.gd:148
+msgid "Who deals with whom; thicker is stronger"
+msgstr ""
+
+#: demo/stalls/bento.gd:149
+msgid "Picked"
+msgstr ""
+
+#: demo/stalls/bento.gd:150
+msgid "What to try"
+msgstr ""
+
+#: demo/stalls/bento.gd:150
+msgid "Drag to pan, wheel to zoom,"
+msgstr ""
+
+#: demo/stalls/bento.gd:150
+msgid "press a name."
+msgstr ""
+
+#: demo/stalls/bento.gd:162
+#: demo/stalls/material.gd:184
+#: demo/stalls/skeuomorphic.gd:166
+#: demo/stalls/swiss.gd:142
+msgid "The gap in takings between each pair, in thousands"
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "One triangle"
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "A gap has no direction,"
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "so the other half would"
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "say the same twice."
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "Press a name to open"
+msgstr ""
+
+#: demo/stalls/bento.gd:163
+msgid "that crate."
+msgstr ""
+
+#: demo/stalls/bento.gd:173
+msgid "Ways out"
+msgstr ""
+
+#: demo/stalls/bento.gd:173
+msgid "Back, or a detour to the suppliers"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:39
+msgid "A moment: it appears once when something worth marking has happened, and one word dismisses it."
+msgstr ""
+
+#: demo/stalls/data_dense.gd:51
+msgid "One item on the stall; c is the coin"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:52
+msgid "What a crate has made, all told"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:53
+#: demo/stalls/data_dense.gd:20
+#: demo/stalls/hud.gd:102
+msgid "Last four days"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:53
+msgid "The same, day by day, as a trace"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:54
+#: demo/stalls/data_dense.gd:20
+msgid "Marks"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:54
+msgid "Complaints registered against a crate"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:55
+msgid "One crate measured against another"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:56
+msgid "The line above"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:56
+msgid "Every screen as a word on the panel it opens; the clock is time until the stall closes"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:57
+msgid "The line below"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:57
+msgid "What to do next, and the words you may press now"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:58
+msgid "To try"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:58
+msgid "Press start restocking, then pick a crate three times"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:60
+msgid "Term"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:60
+msgid "What it means"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:73
+msgid "Every cell reads live; a bar is logarithmic against 100,000, closeness is a press as well as a figure"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:94
+msgid "Control"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:94
+msgid "The thing itself"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:103
+#: demo/stalls/swiss.gd:109
+msgid "As a row"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:103
+#: demo/stalls/swiss.gd:110
+msgid "As a tile"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:103
+#: demo/stalls/swiss.gd:111
+msgid "Dense"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:103
+msgid "Empty"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:112
+msgid "Every crate: add, sort, filter, press to open"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:112
+msgid "Ranked by takings"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:122
+msgid "The gap in takings between each pair of crates"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:122
+msgid "Gap, c thousands"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:141
+msgid "Type a note and Enter, tick a flag, go to suppliers, come back: still here"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:146
+msgid "Flags:"
+msgstr ""
+
+#: demo/stalls/data_dense.gd:20
+msgid "Takings, as a bar"
+msgstr ""
+
+#: demo/stalls/flat.gd:59
+msgid "A market stall with crates of fruit, laid out flat: every region an equal block."
+msgstr ""
+
+#: demo/stalls/flat.gd:59
+msgid "Flaps on the panel of screens, the instruction bar across the bottom, a grid of equal cells between."
+msgstr ""
+
+#: demo/stalls/flat.gd:59
+msgid "Press start restocking at the bottom, then pick a crate three times."
+msgstr ""
+
+#: demo/stalls/flat.gd:93
+msgid "Gap in takings, thousands"
+msgstr ""
+
+#: demo/stalls/flat.gd:98
+msgid "Suppliers: who deals with whom"
+msgstr ""
+
+#: demo/stalls/flat.gd:104
+msgid "Ways"
+msgstr ""
+
+#: demo/stalls/glass.gd:57
+msgid "A MOMENT: the pane held closest to the eye, the thickest frost of all. One button dismisses it."
+msgstr ""
+
+#: demo/stalls/glass.gd:76
+msgid "A stall of glass"
+msgstr ""
+
+#: demo/stalls/glass.gd:76
+msgid "Everything you see is a pane"
+msgstr ""
+
+#: demo/stalls/glass.gd:76
+msgid "Crates of fruit, one interface kit, ten design languages."
+msgstr ""
+
+#: demo/stalls/glass.gd:76
+msgid "Here every piece floats on its own frosted pane."
+msgstr ""
+
+#: demo/stalls/glass.gd:76
+msgid "A pane laps the pane under it, so the frost has something to blur."
+msgstr ""
+
+#: demo/stalls/glass.gd:77
+msgid "The flaps"
+msgstr ""
+
+#: demo/stalls/glass.gd:77
+msgid "Along the top of the widest pane"
+msgstr ""
+
+#: demo/stalls/glass.gd:77
+msgid "One flap per screen, resting on the panel it reveals; the one you are on is taller and joined to it."
+msgstr ""
+
+#: demo/stalls/glass.gd:77
+msgid "Press one to go there."
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "The pills at the foot"
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "Floating over everything"
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "The wide one holds the INSTRUCTION BAR, whose words say what to do next, and the two buttons you can press."
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "The small one holds BACK and the COUNTDOWN - time until the stall closes."
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "Press start restocking, then pick a crate three times: a moment says you are done."
+msgstr ""
+
+#: demo/stalls/glass.gd:78
+msgid "A crate is one item on the stall, c is the coin, takings is what it has made."
+msgstr ""
+
+#: demo/stalls/glass.gd:87
+msgid "Press one; the whole stall is re-dressed"
+msgstr ""
+
+#: demo/stalls/glass.gd:97
+msgid "The same as a fill; full is 100,000"
+msgstr ""
+
+#: demo/stalls/glass.gd:101
+#: demo/stalls/skeuomorphic.gd:109
+#: demo/stalls/swiss.gd:89
+msgid "Complaints, a diamond each"
+msgstr ""
+
+#: demo/stalls/glass.gd:102
+msgid "The last four days of takings"
+msgstr ""
+
+#: demo/stalls/glass.gd:108
+msgid "The countdown is the clock in the small pill at the foot"
+msgstr ""
+
+#: demo/stalls/glass.gd:131
+msgid "Cards"
+msgstr ""
+
+#: demo/stalls/glass.gd:131
+msgid "List, tile, dense, empty - four panes on a pane"
+msgstr ""
+
+#: demo/stalls/glass.gd:151
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name, or press the zoom buttons"
+msgstr ""
+
+#: demo/stalls/glass.gd:157
+#: demo/stalls/neumorphic.gd:150
+msgid "The gap in takings between each pair, in thousands; one triangle, since a gap has no direction"
+msgstr ""
+
+#: demo/stalls/glass.gd:169
+msgid "The crates, still there"
+msgstr ""
+
+#: demo/stalls/glass.gd:169
+msgid "The note hovers over them"
+msgstr ""
+
+#: demo/stalls/hud.gd:57
+msgid "A MOMENT: it appears once when something worth marking has happened, and one button dismisses it."
+msgstr ""
+
+#: demo/stalls/hud.gd:68
+msgid "Stall closes in"
+msgstr ""
+
+#: demo/stalls/hud.gd:80
+msgid "Way back"
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "PANEL LAYOUT - the frame is pinned, the middle is the view."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "FLAPS: the top edge of the centre panel; the one you are on is lit and"
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "merges into the panel under it."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "STALL CLOSES IN: the countdown - time until the stall closes."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "WAY BACK: back where you came from. Both sit outside the flaps."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "BOTTOM STRIP: the instruction, and the two actions that go with it."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "TRY: press start restocking. The strip asks for crates, 0 of 3, and a stop"
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "appears. The glow moves to pick a crate, a bubble pointing at it: press"
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "it three times, and a moment says you are done."
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "WORDS: a crate is one item on the stall, c is the coin, takings is what it"
+msgstr ""
+
+#: demo/stalls/hud.gd:91
+msgid "has made, recent is the last four days, marks are complaints."
+msgstr ""
+
+#: demo/stalls/hud.gd:94
+msgid "THE STALL"
+msgstr ""
+
+#: demo/stalls/hud.gd:95
+msgid "Briefing"
+msgstr ""
+
+#: demo/stalls/hud.gd:102
+msgid "Takings, of 100,000"
+msgstr ""
+
+#: demo/stalls/hud.gd:102
+msgid "Closeness - press to compare"
+msgstr ""
+
+#: demo/stalls/hud.gd:116
+msgid "Card, list - press to open"
+msgstr ""
+
+#: demo/stalls/hud.gd:117
+msgid "Card, empty slot"
+msgstr ""
+
+#: demo/stalls/hud.gd:121
+msgid "Links"
+msgstr ""
+
+#: demo/stalls/hud.gd:122
+msgid "Price, c - type and Enter"
+msgstr ""
+
+#: demo/stalls/hud.gd:137
+msgid "Crates, tiled"
+msgstr ""
+
+#: demo/stalls/hud.gd:137
+msgid "Board - ranked, your fig kept in view"
+msgstr ""
+
+#: demo/stalls/hud.gd:139
+msgid "Crates, listed - add, sort, filter"
+msgstr ""
+
+#: demo/stalls/hud.gd:147
+msgid "Suppliers - drag, wheel, press a name"
+msgstr ""
+
+#: demo/stalls/hud.gd:152
+msgid "Gap in takings, thousands - one triangle"
+msgstr ""
+
+#: demo/stalls/hud.gd:162
+msgid "Note kept with this crate"
+msgstr ""
+
+#: demo/stalls/material.gd:114
+msgid "The interface kit as a market stall of crates of fruit."
+msgstr ""
+
+#: demo/stalls/material.gd:114
+msgid "Every card holds one component and what to try with it."
+msgstr ""
+
+#: demo/stalls/material.gd:114
+msgid "The tabs under the title move between the places."
+msgstr ""
+
+#: demo/stalls/material.gd:115
+msgid "The app bar"
+msgstr ""
+
+#: demo/stalls/material.gd:115
+msgid "The title, the closing-time countdown and back, on one line."
+msgstr ""
+
+#: demo/stalls/material.gd:115
+msgid "Under them the tabs, sitting on the panel they reveal."
+msgstr ""
+
+#: demo/stalls/material.gd:115
+msgid "The one you are on is underlined, not boxed."
+msgstr ""
+
+#: demo/stalls/material.gd:116
+msgid "The strip along the foot"
+msgstr ""
+
+#: demo/stalls/material.gd:116
+msgid "The instruction bar, in the second person: what to do next."
+msgstr ""
+
+#: demo/stalls/material.gd:116
+msgid "Idle it says the guide's words; mid-act it counts the steps."
+msgstr ""
+
+#: demo/stalls/material.gd:116
+msgid "The two buttons bottom right are the actions you can take."
+msgstr ""
+
+#: demo/stalls/material.gd:117
+msgid "Press start restocking: the strip asks for crates, 0 of 3."
+msgstr ""
+
+#: demo/stalls/material.gd:117
+msgid "The glow moves to pick a crate, a bubble pointing at it."
+msgstr ""
+
+#: demo/stalls/material.gd:117
+#: demo/stalls/skeuomorphic.gd:84
+msgid "Press it three times; a moment says you are done."
+msgstr ""
+
+#: demo/stalls/material.gd:118
+msgid "Takings is what it has made; recent is the last four days."
+msgstr ""
+
+#: demo/stalls/material.gd:136
+msgid "In the app bar, at the title's right"
+msgstr ""
+
+#: demo/stalls/material.gd:156
+msgid "The four ways across"
+msgstr ""
+
+#: demo/stalls/material.gd:156
+msgid "Each opens a place; back returns the one you came from"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:58
+msgid "A MOMENT: it lands once, when something worth marking has happened, and one button knocks it away."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:74
+msgid "WHAT THIS IS"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:74
+msgid "A market stall of crates of fruit, told one component at a time."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:74
+msgid "Every screen is one of the six flaps in the strip above."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:74
+msgid "Nothing here is centred, aligned or padded to be polite."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:75
+msgid "THE STRIP"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:75
+msgid "Six flaps, butting; the one you stand on is cream and taller, welded into the panel."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:75
+msgid "They are one black-ruled band, and that is the arrangement, not a fault."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:76
+msgid "THE BANNER"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:76
+msgid "Its words say what to do next."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:76
+msgid "The glowing block is the one meant."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:77
+msgid "WORDS"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:77
+msgid "A crate is one item."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:77
+msgid "The coin is c. Takings is what it made."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:77
+msgid "Recent is four days. Marks are complaints."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:78
+msgid "TRY THIS"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:78
+msgid "Press START RESTOCKING: the banner asks for crates, 0 of 3."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:78
+msgid "The glow jumps to PICK A CRATE with a bubble on it. Press it three times."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:78
+msgid "A moment lands. CARRY ON knocks it away."
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:88
+msgid "THE LOOK"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:88
+msgid "One stall, ten languages - press one"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:98
+msgid "QUANTITY"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:98
+msgid "The takings of the pear crate"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:99
+msgid "BAR"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:100
+msgid "LABEL"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:100
+msgid "The name of the crate, read live"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:104
+msgid "TRACE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:104
+msgid "Four days of takings"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:105
+msgid "MARK"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:108
+msgid "RELATIVE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:109
+msgid "COUNTDOWN"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:109
+msgid "Until the stall shuts"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:123
+msgid "MENU LINK"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:124
+msgid "INLINE LINK"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:125
+msgid "BACK"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:126
+msgid "PLAY"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:126
+msgid "Opens the fig, your own"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:132
+msgid "CARD, LIST"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:133
+msgid "CARD, TILE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:133
+msgid "The same crate"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:134
+msgid "CARD, DENSE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:134
+msgid "Picture, takings, a button"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:135
+msgid "CARD, EMPTY"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:135
+msgid "An empty slot"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:138
+msgid "AMOUNT FIELD"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:139
+msgid "DISPOSITION"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:157
+msgid "TILES"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:157
+msgid "The same crates"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:158
+msgid "BOARD"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:158
+msgid "Ranked; scrolled to keep the fig in view"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:160
+msgid "ROWS"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:171
+msgid "SUPPLIERS"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:177
+msgid "CRATE VS CRATE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:177
+msgid "The gap in takings, in thousands; one triangle, since a gap has no direction"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:189
+msgid "THE NOTE"
+msgstr ""
+
+#: demo/stalls/neo_brutalist.gd:189
+msgid "Type and Enter, tick the stamps, go to suppliers, come back: still here"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:60
+msgid "A MOMENT: it rises once when something worth marking has happened, and one button puts it down again."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:69
+msgid "Closing"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:78
+msgid "A stall, softly"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:79
+msgid "Crates of fruit on one counter, and the kit that draws them."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:80
+msgid "Everything you see is the same colour as the surface behind it."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:81
+msgid "A thing you may press is pushed out towards you; the place you"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:82
+msgid "are standing, and anything you type into, is pressed in."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:83
+msgid "The chips along the top are the six places. Back and the clock"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:84
+msgid "sit with them; the clock counts down to the stall closing."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:86
+msgid "Words on the stall"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:87
+msgid "A crate is one item on the counter. c is the coin."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:88
+msgid "Takings is what a crate has made; recent is the last four days."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:89
+msgid "Marks are complaints. Press start restocking in the tray below,"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:90
+msgid "then pick a crate three times - the glow and its bubble lead."
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:103
+msgid "Against 100,000"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:104
+msgid "The name, live"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:107
+msgid "Four days"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:109
+#: demo/stalls/swiss.gd:91
+msgid "Closeness; press to compare"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:120
+msgid "Ways through: a menu, a name, back, and your own crate"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:123
+msgid "The same crate as a row, a tile, a dense card, and an empty slot"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:126
+msgid "Type a price and Enter; or choose one of three ways to let the crate go"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:136
+msgid "Every crate, with add, sort and a filter; press one to open it"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:137
+#: demo/stalls/swiss.gd:125
+msgid "Ranked by takings, your fig kept in view"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:145
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name, or the two soft buttons to zoom"
+msgstr ""
+
+#: demo/stalls/neumorphic.gd:161
+msgid "Type a note and Enter, tick what applies, walk to the suppliers and come back: it is still here"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:69
+msgid "A MOMENT: it appears once when something worth marking has happened, and one button clears it away."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:81
+msgid "A gallery of the kit, one part at a time,"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:81
+msgid "kept as a market stall of fruit crates."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:81
+msgid "The cards along the top edge are the dividers;"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:81
+msgid "press one to pull that part of the stall forward."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:82
+msgid "Along the top"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:82
+msgid "A divider per part, stood on the counter."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:82
+msgid "BACK returns to the one you came from."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:82
+msgid "The clock is a COUNTDOWN to closing time."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:83
+msgid "The chalkboard"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:83
+msgid "The strip below says what to do next."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:83
+msgid "The two brass plates are what you can do now."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:83
+msgid "The glowing one is the one meant."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:84
+msgid "Press start restocking: the board asks for 0 of 3."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:84
+msgid "The glow moves to pick a crate, a bubble on it."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:85
+msgid "The words"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:85
+msgid "Takings is what it has made; recent, four days."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:85
+msgid "Marks are complaints against it."
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:94
+msgid "The tags"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:101
+msgid "The pear crate"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:102
+msgid "Its name, read live"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:104
+msgid "Takings as a fill; full is 100,000"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:107
+msgid "PRICE TICKET"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:110
+msgid "Closeness to another crate; press it"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:111
+msgid "The clock on the ticket with BACK counts down to closing"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:127
+msgid "To the lists"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:128
+msgid "A name; press to open"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:129
+msgid "Where you came from"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:130
+msgid "Opens your own fig crate"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:144
+msgid "Stock, as written in"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:144
+msgid "Add, sort, filter; press a line to open it"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:146
+msgid "Standings, by takings"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:148
+msgid "The same crates, loose in the corner"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:159
+msgid "Suppliers, pinned up"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:159
+msgid "Drag the board, wheel it, press a name; the two zoom plates are pinned at its top right"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:166
+msgid "The reckoning sheet"
+msgstr ""
+
+#: demo/stalls/skeuomorphic.gd:179
+msgid "Write a line and Enter, stamp the boxes, walk to the pinboard and come back: still here"
+msgstr ""
+
+#: demo/stalls/swiss.gd:63
+msgid "Three crates picked. This is a moment: it appears once, and one word dismisses it."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "Crates of fruit, one component at a time."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "The words along the top are the places; press one to go there."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "The instruction is the line that says what to do next."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "The two words paired with it are what you can do now; the glowing one is meant."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "Press start restocking, then pick a crate three times."
+msgstr ""
+
+#: demo/stalls/swiss.gd:73
+msgid "A crate is one item on the stall. c is the coin; takings is what it has made; marks are complaints."
+msgstr ""
+
+#: demo/stalls/swiss.gd:76
+msgid "The same stall in each design language"
+msgstr ""
+
+#: demo/stalls/swiss.gd:77
+msgid "A stall of crates."
+msgstr ""
+
+#: demo/stalls/swiss.gd:87
+msgid "The same, against 100,000"
+msgstr ""
+
+#: demo/stalls/swiss.gd:88
+msgid "The name, read live"
+msgstr ""
+
+#: demo/stalls/swiss.gd:90
+msgid "The last four days"
+msgstr ""
+
+#: demo/stalls/swiss.gd:93
+msgid "One crate, six ways."
+msgstr ""
+
+#: demo/stalls/swiss.gd:93
+msgid "The clock at the end of the strip is the seventh: time until the stall closes"
+msgstr ""
+
+#: demo/stalls/swiss.gd:104
+msgid "To a place"
+msgstr ""
+
+#: demo/stalls/swiss.gd:104
+msgid "A name, opened"
+msgstr ""
+
+#: demo/stalls/swiss.gd:104
+msgid "Whence you came"
+msgstr ""
+
+#: demo/stalls/swiss.gd:104
+msgid "Your own crate"
+msgstr ""
+
+#: demo/stalls/swiss.gd:112
+msgid "Empty, and the ways to fill it"
+msgstr ""
+
+#: demo/stalls/swiss.gd:114
+msgid "Type a number, Enter sets it"
+msgstr ""
+
+#: demo/stalls/swiss.gd:118
+msgid "Cards and links."
+msgstr ""
+
+#: demo/stalls/swiss.gd:130
+msgid "Lists of crates."
+msgstr ""
+
+#: demo/stalls/swiss.gd:137
+msgid "Suppliers."
+msgstr ""
+
+#: demo/stalls/swiss.gd:143
+msgid "Crate against crate."
+msgstr ""
+
+#: demo/ten_thousand/slow_source.gd:65
+msgid "Already the most rows"
+msgstr ""
+
+#: demo/ten_thousand/slow_source.gd:67
+msgid "Already the fewest rows"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:84
+msgid "Row %d   %s"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:91
+msgid "%d rows   top row %d   %d on the way   %d nodes alive"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "Row up"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "Row down"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "Page up"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "Page down"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "×10 rows"
+msgstr ""
+
+#: demo/ten_thousand/ten_thousand.gd:57
+msgid "/10 rows"
+msgstr ""

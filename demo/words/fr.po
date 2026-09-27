@@ -1,0 +1,2119 @@
+# gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
+#
+# UNREVIEWED PLACEHOLDER. These French words were written without a
+# translator and stand in until one reviews them: they are here so the
+# gallery's language switch has a whole language to show, and so a layout is
+# seen to hold French. Nothing here is a decided wording.
+#
+# The demos' words in French: every phrase the demos write, keyed by the
+# English it is written in where it is used (language.gd). The floor's own
+# words are the floor's catalogue (words/fr.po) and are not repeated here.
+# A look's name, a sight's and the coin's mark are data - shown as they are
+# in every language - and so have no entry.
+msgid ""
+msgstr ""
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "%d run on the one clock now"
+msgid_plural "%d runs on the one clock now"
+msgstr[0] "%d animation sur l'horloge unique"
+msgstr[1] "%d animations sur l'horloge unique"
+
+msgid "%d per cent full"
+msgstr "plein à %d pour cent"
+
+msgid "%d rows   top row %d   %d on the way   %d nodes alive"
+msgstr "%d lignes   ligne du haut %d   %d en route   %d nœuds vivants"
+
+msgid "%s, %s"
+msgstr "%s, %s"
+
+msgid "%s, done"
+msgstr "%s, fait"
+
+msgid "A MOMENT: it appears once when something worth marking has happened, and one button clears it away."
+msgstr "UN MOMENT : il paraît une fois quand quelque chose de notable est arrivé, et un bouton l'efface."
+
+msgid "A MOMENT: it appears once when something worth marking has happened, and one button dismisses it."
+msgstr "UN MOMENT : il paraît une fois quand quelque chose de notable est arrivé, et un bouton le congédie."
+
+msgid "A MOMENT: it lands once, when something worth marking has happened, and one button knocks it away."
+msgstr "UN MOMENT : il tombe une fois, quand quelque chose de notable est arrivé, et un bouton l'écarte."
+
+msgid "A MOMENT: it rises once when something worth marking has happened, and one button puts it down again."
+msgstr "UN MOMENT : il s'élève une fois quand quelque chose de notable est arrivé, et un bouton le repose."
+
+msgid "A MOMENT: the pane held closest to the eye, the thickest frost of all. One button dismisses it."
+msgstr "UN MOMENT : la vitre tenue au plus près de l'œil, le givre le plus épais. Un bouton le congédie."
+
+msgid "A cell is as important as it is wide - that is the whole hierarchy."
+msgstr "Une case est aussi importante qu'elle est large - voilà toute la hiérarchie."
+
+msgid "A crate is one item on the counter. c is the coin."
+msgstr "Une caisse est un article sur le comptoir. c est la pièce."
+
+msgid "A crate is one item on the stall, c is the coin, takings is what it has made."
+msgstr "Une caisse est un article de l'étal, c est la pièce, la recette est ce qu'elle a rapporté."
+
+msgid "A crate is one item on the stall. c is the coin."
+msgstr "Une caisse est un article de l'étal. c est la pièce."
+
+msgid "A crate is one item on the stall. c is the coin; takings is what it has made; marks are complaints."
+msgstr "Une caisse est un article de l'étal. c est la pièce ; la recette est ce qu'elle a rapporté ; les marques sont des plaintes."
+
+msgid "A crate is one item."
+msgstr "Une caisse est un article."
+
+msgid "A crate's takings as a number, as a fill, as four days of trace."
+msgstr "La recette d'une caisse en nombre, en remplissage, en tracé de quatre jours."
+
+msgid "A divider per part, stood on the counter."
+msgstr "Un intercalaire par partie, posé sur le comptoir."
+
+msgid "A gallery of the interface kit, one component at a time,"
+msgstr "Une galerie de la boîte à interface, un composant à la fois,"
+
+msgid "A gallery of the kit, one part at a time,"
+msgstr "Une galerie de la boîte, une pièce à la fois,"
+
+msgid "A gap has no direction,"
+msgstr "Un écart n'a pas de sens,"
+
+msgid "A market stall of crates of fruit, told one component at a time."
+msgstr "Un étal de marché aux caisses de fruits, raconté un composant à la fois."
+
+msgid "A market stall with crates of fruit, laid out flat: every region an equal block."
+msgstr "Un étal de marché aux caisses de fruits, à plat : chaque région un bloc égal."
+
+msgid "A moment appears saying you are done; carry on dismisses it."
+msgstr "Un moment paraît pour dire que c'est fait ; continuer le congédie."
+
+msgid "A moment appears when the three are done; carry on dismisses it."
+msgstr "Un moment paraît quand les trois sont faits ; continuer le congédie."
+
+msgid "A moment lands. CARRY ON knocks it away."
+msgstr "Un moment tombe. CONTINUER l'écarte."
+
+msgid "A moment: it appears once when something worth marking has happened, and one word dismisses it."
+msgstr "Un moment : il paraît une fois quand quelque chose de notable est arrivé, et un mot le congédie."
+
+msgid "A pane laps the pane under it, so the frost has something to blur."
+msgstr "Une vitre chevauche celle d'en dessous, pour que le givre ait de quoi flouter."
+
+msgid "A stall of crates."
+msgstr "Un étal de caisses."
+
+msgid "A stall, softly"
+msgstr "Un étal, en douceur"
+
+msgid "A thing you may press is pushed out towards you; the place you"
+msgstr "Ce que l'on peut presser avance vers vous ; l'endroit où vous"
+
+msgid "A tray of compartments: every region of this stall is one cell."
+msgstr "Un plateau à compartiments : chaque région de cet étal est une case."
+
+msgid "AMOUNT FIELD"
+msgstr "CHAMP DE MONTANT"
+
+msgid "Along the top"
+msgstr "Tout en haut"
+
+msgid "BACK"
+msgstr "RETOUR"
+
+msgid "BACK returns to the one you came from."
+msgstr "RETOUR ramène à celui d'où vous venez."
+
+msgid "BACK returns to the screen you came from,"
+msgstr "RETOUR ramène à l'écran d'où vous venez,"
+
+msgid "BAR"
+msgstr "BARRE"
+
+msgid "BOARD"
+msgstr "CLASSEMENT"
+
+msgid "CARD, DENSE"
+msgstr "CARTE, DENSE"
+
+msgid "CARD, EMPTY"
+msgstr "CARTE, VIDE"
+
+msgid "CARD, LIST"
+msgstr "CARTE, LISTE"
+
+msgid "CARD, TILE"
+msgstr "CARTE, TUILE"
+
+msgid "COUNTDOWN"
+msgstr "COMPTE À REBOURS"
+
+msgid "CRATE VS CRATE"
+msgstr "CAISSE CONTRE CAISSE"
+
+msgid "Cards and links."
+msgstr "Cartes et liens."
+
+msgid "Crate against crate."
+msgstr "Caisse contre caisse."
+
+msgid "Crates of fruit on one counter, and the kit that draws them."
+msgstr "Des caisses de fruits sur un comptoir, et la boîte qui les dessine."
+
+msgid "Crates of fruit, one component at a time."
+msgstr "Des caisses de fruits, un composant à la fois."
+
+msgid "Crates of fruit, one interface kit, ten design languages."
+msgstr "Des caisses de fruits, une boîte à interface, dix langages graphiques."
+
+msgid "DISPOSITION"
+msgstr "DESTINATION"
+
+msgid "Drag to pan, wheel to zoom,"
+msgstr "Glissez pour déplacer, la molette pour zoomer,"
+
+msgid "Drag to pan, wheel to zoom, press a name to pick it."
+msgstr "Glissez pour déplacer, la molette pour zoomer, pressez un nom pour le choisir."
+
+msgid "Each pair's gap in takings, one triangle."
+msgstr "L'écart de recette de chaque paire, un seul triangle."
+
+msgid "Every card holds one component and what to try with it."
+msgstr "Chaque carte tient un composant et ce qu'on peut en essayer."
+
+msgid "Every component sits in a box with its name and what to try."
+msgstr "Chaque composant est dans une boîte avec son nom et ce qu'on peut essayer."
+
+msgid "Every crate as rows, with add, sort and a filter-set over them."
+msgstr "Chaque caisse en lignes, avec ajouter, trier et des filtres par-dessus."
+
+msgid "Every screen is a tab: a flap on the panel it opens."
+msgstr "Chaque écran est un onglet : un rabat sur le panneau qu'il ouvre."
+
+msgid "Every screen is one of the six flaps in the strip above."
+msgstr "Chaque écran est l'un des six rabats de la bande au-dessus."
+
+msgid "Everything you see is the same colour as the surface behind it."
+msgstr "Tout ce que vous voyez a la couleur de la surface derrière."
+
+msgid "Flaps on the panel of screens, the instruction bar across the bottom, a grid of equal cells between."
+msgstr "Des rabats sur le panneau des écrans, la barre de consignes en bas, une grille de cases égales entre les deux."
+
+msgid "Here every piece floats on its own frosted pane."
+msgstr "Ici chaque pièce flotte sur sa propre vitre givrée."
+
+msgid "INLINE LINK"
+msgstr "LIEN DANS LE TEXTE"
+
+msgid "Idle it says the guide's words; mid-act it counts the steps."
+msgstr "Au repos elle dit les mots du guide ; en pleine action elle compte les étapes."
+
+msgid "Its name, its complaints, and how close it is to another crate."
+msgstr "Son nom, ses plaintes, et sa proximité avec une autre caisse."
+
+msgid "Its two buttons are the actions you can take now."
+msgstr "Ses deux boutons sont les actions possibles maintenant."
+
+msgid "Its words say what to do next."
+msgstr "Ses mots disent quoi faire ensuite."
+
+msgid "Its words say what to do next; the two buttons under them are the moves."
+msgstr "Ses mots disent quoi faire ensuite ; les deux boutons dessous sont les coups."
+
+msgid "LABEL"
+msgstr "ÉTIQUETTE"
+
+msgid "Lists of crates."
+msgstr "Listes de caisses."
+
+msgid "MARK"
+msgstr "MARQUE"
+
+msgid "MENU LINK"
+msgstr "LIEN DE MENU"
+
+msgid "Marks are complaints against it."
+msgstr "Les marques sont les plaintes contre elle."
+
+msgid "Marks are complaints. Press start restocking in the tray below,"
+msgstr "Les marques sont des plaintes. Pressez réapprovisionner dans le plateau du dessous,"
+
+msgid "Marks is how many complaints it has had."
+msgstr "Les marques comptent les plaintes qu'elle a reçues."
+
+msgid "Nothing here is centred, aligned or padded to be polite."
+msgstr "Rien ici n'est centré, aligné ou rembourré par politesse."
+
+msgid "One crate, six ways."
+msgstr "Une caisse, six façons."
+
+msgid "One flap per screen, on the panel it reveals; the one you are on is joined to it."
+msgstr "Un rabat par écran, sur le panneau qu'il révèle ; celui où vous êtes y est joint."
+
+msgid "One flap per screen, resting on the panel it reveals; the one you are on is taller and joined to it."
+msgstr "Un rabat par écran, posé sur le panneau qu'il révèle ; celui où vous êtes est plus haut et y est joint."
+
+msgid "Open a crate, type a note, tick a flag: it is still there on your return."
+msgstr "Ouvrez une caisse, tapez une note, cochez un repère : tout est encore là à votre retour."
+
+msgid "PANEL LAYOUT - the frame is pinned, the middle is the view."
+msgstr "DISPOSITION EN PANNEAUX - le cadre est fixe, le milieu est la vue."
+
+msgid "PLAY"
+msgstr "LECTURE"
+
+msgid "PRICE TICKET"
+msgstr "ÉTIQUETTE DE PRIX"
+
+msgid "Press START RESTOCKING: the banner asks for crates, 0 of 3."
+msgstr "Pressez RÉAPPROVISIONNER : la banderole demande des caisses, 0 sur 3."
+
+msgid "Press a crate anywhere and its own cell opens."
+msgstr "Pressez une caisse n'importe où et sa propre case s'ouvre."
+
+msgid "Press a name to open"
+msgstr "Pressez un nom pour ouvrir"
+
+msgid "Press it three times; a moment says you are done."
+msgstr "Pressez-le trois fois ; un moment dit que c'est fait."
+
+msgid "Press one to go there."
+msgstr "Pressez-en un pour y aller."
+
+msgid "Press start restocking at the bottom, then pick a crate three times."
+msgstr "Pressez réapprovisionner en bas, puis choisissez une caisse trois fois."
+
+msgid "Press start restocking, then pick a crate three times."
+msgstr "Pressez réapprovisionner, puis choisissez une caisse trois fois."
+
+msgid "Press start restocking, then pick a crate three times: a moment says you are done."
+msgstr "Pressez réapprovisionner, puis choisissez une caisse trois fois : un moment dit que c'est fait."
+
+msgid "Press start restocking: the bar asks for crates, 0 of 3, and a stop button appears."
+msgstr "Pressez réapprovisionner : la barre demande des caisses, 0 sur 3, et un bouton d'arrêt paraît."
+
+msgid "Press start restocking: the board asks for 0 of 3."
+msgstr "Pressez réapprovisionner : le tableau demande 0 sur 3."
+
+msgid "Press start restocking: the strip asks for crates, 0 of 3."
+msgstr "Pressez réapprovisionner : la bande demande des caisses, 0 sur 3."
+
+msgid "QUANTITY"
+msgstr "QUANTITÉ"
+
+msgid "RELATIVE"
+msgstr "RELATIF"
+
+msgid "ROWS"
+msgstr "LIGNES"
+
+msgid "Recent is four days. Marks are complaints."
+msgstr "Récent, c'est quatre jours. Les marques sont des plaintes."
+
+msgid "Restocked: three crates picked."
+msgstr "Réapprovisionné : trois caisses choisies."
+
+msgid "SUPPLIERS"
+msgstr "FOURNISSEURS"
+
+msgid "Six flaps, butting; the one you stand on is cream and taller, welded into the panel."
+msgstr "Six rabats bord à bord ; celui où vous êtes est crème et plus haut, soudé au panneau."
+
+msgid "Suppliers."
+msgstr "Fournisseurs."
+
+msgid "THE BANNER"
+msgstr "LA BANDEROLE"
+
+msgid "THE LOOK"
+msgstr "LE STYLE"
+
+msgid "THE NOTE"
+msgstr "LA NOTE"
+
+msgid "THE STALL"
+msgstr "L'ÉTAL"
+
+msgid "THE STRIP"
+msgstr "LA BANDE"
+
+msgid "TILES"
+msgstr "TUILES"
+
+msgid "TRACE"
+msgstr "TRACÉ"
+
+msgid "TRY THIS"
+msgstr "ESSAYEZ CECI"
+
+msgid "TRY: press start restocking. The strip asks for crates, 0 of 3, and a stop"
+msgstr "ESSAYEZ : pressez réapprovisionner. La bande demande des caisses, 0 sur 3, et un arrêt"
+
+msgid "Takings is how much it has made. Recent is the last four days' takings."
+msgstr "La recette est ce qu'elle a rapporté. Récent, c'est la recette des quatre derniers jours."
+
+msgid "Takings is what a crate has made; recent is the last four days."
+msgstr "La recette est ce qu'une caisse a rapporté ; récent, ce sont les quatre derniers jours."
+
+msgid "Takings is what it has made; recent is the last four days."
+msgstr "La recette est ce qu'elle a rapporté ; récent, ce sont les quatre derniers jours."
+
+msgid "Takings is what it has made; recent, four days."
+msgstr "La recette est ce qu'elle a rapporté ; récent, quatre jours."
+
+msgid "The INSTRUCTION BAR: its words say what to do next."
+msgstr "La BARRE DE CONSIGNES : ses mots disent quoi faire ensuite."
+
+msgid "The app bar"
+msgstr "La barre de l'appli"
+
+msgid "The cards along the top edge are the dividers;"
+msgstr "Les cartes le long du bord du haut sont les intercalaires ;"
+
+msgid "The chalkboard"
+msgstr "L'ardoise"
+
+msgid "The clock is a COUNTDOWN to closing time."
+msgstr "L'horloge est un COMPTE À REBOURS jusqu'à la fermeture."
+
+msgid "The day's takings will be thrown away. This cannot be undone."
+msgstr "La recette du jour sera jetée. C'est irréversible."
+
+msgid "The glow jumps to PICK A CRATE with a bubble on it. Press it three times."
+msgstr "La lueur saute sur CHOISIR UNE CAISSE avec une bulle dessus. Pressez-le trois fois."
+
+msgid "The glow moves to pick a crate, a bubble on it."
+msgstr "La lueur passe sur choisir une caisse, une bulle dessus."
+
+msgid "The glow moves to pick a crate, a bubble pointing at it."
+msgstr "La lueur passe sur choisir une caisse, une bulle qui le désigne."
+
+msgid "The glow moves to pick a crate, with a bubble pointing at it. Press it three times."
+msgstr "La lueur passe sur choisir une caisse, avec une bulle qui le désigne. Pressez-le trois fois."
+
+msgid "The glowing block is the one meant."
+msgstr "Le bloc qui luit est celui qu'on vise."
+
+msgid "The glowing one is the one meant."
+msgstr "Celui qui luit est celui qu'on vise."
+
+msgid "The glowing one is the one meant. Press start restocking, then pick a crate three times."
+msgstr "Celui qui luit est celui qu'on vise. Pressez réapprovisionner, puis choisissez une caisse trois fois."
+
+msgid "The glowing one is the one the guide means."
+msgstr "Celui qui luit est celui que vise le guide."
+
+msgid "The instruction bar"
+msgstr "La barre de consignes"
+
+msgid "The instruction bar, in the second person: what to do next."
+msgstr "La barre de consignes, à la deuxième personne : quoi faire ensuite."
+
+msgid "The interface kit as a market stall of crates of fruit."
+msgstr "La boîte à interface en étal de marché aux caisses de fruits."
+
+msgid "The one you are on is underlined, not boxed."
+msgstr "Celui où vous êtes est souligné, pas encadré."
+
+msgid "The pills on the top edge are the flaps of this cell; the one you are on is joined to it."
+msgstr "Les pastilles du bord du haut sont les rabats de cette case ; celle où vous êtes y est jointe."
+
+msgid "The same crates as tiles, and ranked on a board."
+msgstr "Les mêmes caisses en tuiles, et classées sur un tableau."
+
+msgid "The small one holds BACK and the COUNTDOWN - time until the stall closes."
+msgstr "Le petit tient RETOUR et le COMPTE À REBOURS - le temps avant la fermeture de l'étal."
+
+msgid "The stall"
+msgstr "L'étal"
+
+msgid "The strip along the foot"
+msgstr "La bande du pied"
+
+msgid "The strip below says what to do next."
+msgstr "La bande du dessous dit quoi faire ensuite."
+
+msgid "The tabs"
+msgstr "Les onglets"
+
+msgid "The tabs under the title move between the places."
+msgstr "Les onglets sous le titre passent d'un lieu à l'autre."
+
+msgid "The title, the closing-time countdown and back, on one line."
+msgstr "Le titre, le compte à rebours de fermeture et retour, sur une ligne."
+
+msgid "The two brass plates are what you can do now."
+msgstr "Les deux plaques de laiton sont ce que vous pouvez faire maintenant."
+
+msgid "The two buttons bottom right are the actions you can take."
+msgstr "Les deux boutons en bas à droite sont les actions possibles."
+
+msgid "The wide one holds the INSTRUCTION BAR, whose words say what to do next, and the two buttons you can press."
+msgstr "Le large tient la BARRE DE CONSIGNES, dont les mots disent quoi faire, et les deux boutons à presser."
+
+msgid "The words"
+msgstr "Les mots"
+
+msgid "The words along the top are the places; press one to go there."
+msgstr "Les mots en haut sont les lieux ; pressez-en un pour y aller."
+
+msgid "They are one black-ruled band, and that is the arrangement, not a fault."
+msgstr "Ils forment une bande à filet noir, et c'est la disposition, pas un défaut."
+
+msgid "This is a MOMENT: it appears once when something worth marking has happened, and one button dismisses it."
+msgstr "Ceci est un MOMENT : il paraît une fois quand quelque chose de notable est arrivé, et un bouton le congédie."
+
+msgid "Three crates picked. This is a moment: it appears once, and one word dismisses it."
+msgstr "Trois caisses choisies. Ceci est un moment : il paraît une fois, et un mot le congédie."
+
+msgid "Throw away the day called %s? This cannot be undone."
+msgstr "Jeter la journée nommée %s ? C'est irréversible."
+
+msgid "Try this"
+msgstr "Essayez ceci"
+
+msgid "Under them the tabs, sitting on the panel they reveal."
+msgstr "Dessous, les onglets, posés sur le panneau qu'ils révèlent."
+
+msgid "WHAT THIS IS"
+msgstr "CE QUE C'EST"
+
+msgid "WORDS"
+msgstr "MOTS"
+
+msgid "WORDS: a crate is one item on the stall, c is the coin, takings is what it"
+msgstr "MOTS : une caisse est un article de l'étal, c est la pièce, la recette est ce qu'elle"
+
+msgid "What this is"
+msgstr "Ce que c'est"
+
+msgid "Words on the stall"
+msgstr "Les mots de l'étal"
+
+msgid "Words you will see"
+msgstr "Les mots que vous verrez"
+
+msgid "A %s"
+msgstr "Un %s"
+
+msgid "A breathe: still waiting"
+msgstr "Un souffle : attend encore"
+
+msgid "A button to a screen"
+msgstr "Un bouton vers un écran"
+
+msgid "A button to a tray"
+msgstr "Un bouton vers un plateau"
+
+msgid "A change of style"
+msgstr "Un changement de style"
+
+msgid "A crate as a row; press to open"
+msgstr "Une caisse en ligne ; pressez pour ouvrir"
+
+msgid "A day of takings is kept"
+msgstr "Une journée de recette est gardée"
+
+msgid "A name, opened"
+msgstr "Un nom, ouvert"
+
+msgid "A name; press to open"
+msgstr "Un nom ; pressez pour ouvrir"
+
+msgid "A name; press to open it"
+msgstr "Un nom ; pressez pour l'ouvrir"
+
+msgid "A note"
+msgstr "Une note"
+
+msgid "A note kept with this crate"
+msgstr "Une note gardée avec cette caisse"
+
+msgid "A pulse, a breathe, and the countdown's beat in its last seconds"
+msgstr "Une pulsation, un souffle, et le battement du compte à rebours dans ses dernières secondes"
+
+msgid "A pulse: look here"
+msgstr "Une pulsation : regardez ici"
+
+msgid "A push between places"
+msgstr "Une poussée entre deux lieux"
+
+msgid "A refused drop takes nothing: the crate is still carried"
+msgstr "Un dépôt refusé ne prend rien : la caisse est encore portée"
+
+msgid "A stall needs a name"
+msgstr "Un étal a besoin d'un nom"
+
+msgid "A stall of crates"
+msgstr "Un étal de caisses"
+
+msgid "A stall of glass"
+msgstr "Un étal de verre"
+
+msgid "Accept drops it; cancel puts it back"
+msgstr "Valider la dépose ; annuler la remet en place"
+
+msgid "Add a crate"
+msgstr "Ajouter une caisse"
+
+msgid "Add a day"
+msgstr "Ajouter un jour"
+
+msgid "Add three things"
+msgstr "Ajouter trois choses"
+
+msgid "Add, sort, filter; press a line to open it"
+msgstr "Ajouter, trier, filtrer ; pressez une ligne pour l'ouvrir"
+
+msgid "Add, sort, filter; press a row to open it"
+msgstr "Ajouter, trier, filtrer ; pressez une ligne pour l'ouvrir"
+
+msgid "Adding: the layer is holding a core for 5s"
+msgstr "Ajout : la couche occupe un cœur pendant 5 s"
+
+msgid "Against 100,000"
+msgstr "Sur 100 000"
+
+msgid "Along the top of the widest pane"
+msgstr "Tout en haut de la vitre la plus large"
+
+msgid "Already adding one"
+msgstr "Déjà en train d'en ajouter un"
+
+msgid "Already at the top"
+msgstr "Déjà tout en haut"
+
+msgid "Already dressed for that sight"
+msgstr "Déjà habillé pour cette vue"
+
+msgid "Already in that look"
+msgstr "Déjà dans ce style"
+
+msgid "Already the fewest rows"
+msgstr "Déjà le moins de lignes"
+
+msgid "Already the most rows"
+msgstr "Déjà le plus de lignes"
+
+msgid "Amount field"
+msgstr "Champ de montant"
+
+msgid "An eased value"
+msgstr "Une valeur adoucie"
+
+msgid "An empty slot"
+msgstr "Un emplacement vide"
+
+msgid "An empty slot and the ways to fill it"
+msgstr "Un emplacement vide et les moyens de le remplir"
+
+msgid "and the clock is a COUNTDOWN: time until the stall closes."
+msgstr "et l'horloge est un COMPTE À REBOURS : le temps avant la fermeture de l'étal."
+
+msgid "appears. The glow moves to pick a crate, a bubble pointing at it: press"
+msgstr "paraît. La lueur passe sur choisir une caisse, une bulle qui le désigne : pressez-le"
+
+msgid "are standing, and anything you type into, is pressed in."
+msgstr "vous tenez, et tout ce où l'on tape, est enfoncé."
+
+msgid "Arrival %d"
+msgstr "Arrivée %d"
+
+msgid "As a row"
+msgstr "En ligne"
+
+msgid "As a tile"
+msgstr "En tuile"
+
+msgid "As close as it goes"
+msgstr "Aussi près que possible"
+
+msgid "As far as it goes"
+msgstr "Aussi loin que possible"
+
+msgid "Asks first: it cannot be undone"
+msgstr "Demande d'abord : c'est irréversible"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "Back to the list"
+msgstr "Retour à la liste"
+
+msgid "Back, or a detour to the suppliers"
+msgstr "Retour, ou un détour par les fournisseurs"
+
+msgid "Bar"
+msgstr "Barre"
+
+msgid "Bind"
+msgstr "Lier"
+
+msgid "Board"
+msgstr "Classement"
+
+msgid "Board - ranked, your fig kept in view"
+msgstr "Classement - rangé, votre figue gardée en vue"
+
+msgid "Bracket"
+msgstr "Tableau"
+
+msgid "Briefing"
+msgstr "Consignes"
+
+msgid "By pad or keys"
+msgstr "À la manette ou au clavier"
+
+msgid "The coin is c. Takings is what it made."
+msgstr "La pièce est c. La recette est ce qu'elle a rapporté."
+
+msgid "The coin is c; takings is what the crate has made."
+msgstr "La pièce est c ; la recette est ce que la caisse a rapporté."
+
+msgid "Call key"
+msgstr "Touche d'appel"
+
+msgid "Card, dense"
+msgstr "Carte, dense"
+
+msgid "Card, empty"
+msgstr "Carte, vide"
+
+msgid "Card, empty slot"
+msgstr "Carte, emplacement vide"
+
+msgid "Card, list"
+msgstr "Carte, liste"
+
+msgid "Card, list - press to open"
+msgstr "Carte, liste - pressez pour ouvrir"
+
+msgid "Card, tile"
+msgstr "Carte, tuile"
+
+msgid "Cards"
+msgstr "Cartes"
+
+msgid "Cards and links"
+msgstr "Cartes et liens"
+
+msgid "Carry on"
+msgstr "Continuer"
+
+msgid "Carry on dismisses this moment"
+msgstr "Continuer congédie ce moment"
+
+msgid "Choose a language"
+msgstr "Choisir une langue"
+
+msgid "Choose a pace"
+msgstr "Choisir une allure"
+
+msgid "Choose one: every word on every screen follows at once"
+msgstr "Choisissez-en une : chaque mot de chaque écran suit aussitôt"
+
+msgid "Clear the day"
+msgstr "Effacer la journée"
+
+msgid "Closeness"
+msgstr "Proximité"
+
+msgid "Closeness - press to compare"
+msgstr "Proximité - pressez pour comparer"
+
+msgid "Closeness to another crate; press it"
+msgstr "Proximité avec une autre caisse ; pressez-la"
+
+msgid "Closeness to another crate; press to compare"
+msgstr "Proximité avec une autre caisse ; pressez pour comparer"
+
+msgid "Closeness; press to compare"
+msgstr "Proximité ; pressez pour comparer"
+
+msgid "Closing"
+msgstr "Fermeture"
+
+msgid "Collection, rows"
+msgstr "Collection, lignes"
+
+msgid "Collection, tiles"
+msgstr "Collection, tuiles"
+
+msgid "Compare"
+msgstr "Comparer"
+
+msgid "Comparison"
+msgstr "Comparaison"
+
+msgid "Complaints"
+msgstr "Plaintes"
+
+msgid "Complaints registered against a crate"
+msgstr "Plaintes enregistrées contre une caisse"
+
+msgid "Complaints, a diamond each"
+msgstr "Plaintes, un losange chacune"
+
+msgid "Complaints, a diamond each; pear has none"
+msgstr "Plaintes, un losange chacune ; la poire n'en a aucune"
+
+msgid "Control"
+msgstr "Commande"
+
+msgid "Count a coin"
+msgstr "Compter une pièce"
+
+msgid "Countdown"
+msgstr "Compte à rebours"
+
+msgid "Crate"
+msgstr "Caisse"
+
+msgid "Crate vs crate"
+msgstr "Caisse contre caisse"
+
+msgid "Crate: %s"
+msgstr "Caisse : %s"
+
+msgid "Crates"
+msgstr "Caisses"
+
+msgid "Crates, listed - add, sort, filter"
+msgstr "Caisses, en liste - ajouter, trier, filtrer"
+
+msgid "Crates, tiled"
+msgstr "Caisses, en tuiles"
+
+msgid "Day"
+msgstr "Jour"
+
+msgid "Days kept"
+msgstr "Journées gardées"
+
+msgid "Decide the next tie"
+msgstr "Trancher le prochain duel"
+
+msgid "Dense"
+msgstr "Dense"
+
+msgid "Disposition"
+msgstr "Destination"
+
+msgid "Do this next"
+msgstr "Faites ceci ensuite"
+
+msgid "Done"
+msgstr "Fait"
+
+msgid "Drag a crate onto a basket"
+msgstr "Glissez une caisse sur un panier"
+
+msgid "Drag and drop"
+msgstr "Glisser-déposer"
+
+msgid "Drag the board, wheel it, press a name; the two zoom plates are pinned at its top right"
+msgstr "Glissez le tableau, la molette, pressez un nom ; les deux plaques de zoom sont fixées en haut à droite"
+
+msgid "Each named in its own words"
+msgstr "Chacune nommée dans ses propres mots"
+
+msgid "Each opens a place; back returns the one you came from"
+msgstr "Chacun ouvre un lieu ; retour ramène celui d'où vous venez"
+
+msgid "Empty"
+msgstr "Vide"
+
+msgid "Empty the baskets"
+msgstr "Vider les paniers"
+
+msgid "Empty, and the ways to fill it"
+msgstr "Vide, et les moyens de le remplir"
+
+msgid "Enter, exit and move"
+msgstr "Entrer, sortir et bouger"
+
+msgid "Every cell reads live; a bar is logarithmic against 100,000, closeness is a press as well as a figure"
+msgstr "Chaque case se lit en direct ; une barre est logarithmique sur 100 000, la proximité est une pression autant qu'un chiffre"
+
+msgid "Every crate, with add, sort and a filter; press one to open it"
+msgstr "Chaque caisse, avec ajouter, trier et un filtre ; pressez-en une pour l'ouvrir"
+
+msgid "Every crate: add, sort, filter, press to open"
+msgstr "Chaque caisse : ajouter, trier, filtrer, presser pour ouvrir"
+
+msgid "Every duration is the look's; everything runs on one clock"
+msgstr "Chaque durée est celle du style ; tout tourne sur une seule horloge"
+
+msgid "Every screen as a word on the panel it opens; the clock is time until the stall closes"
+msgstr "Chaque écran en mot sur le panneau qu'il ouvre ; l'horloge est le temps avant la fermeture de l'étal"
+
+msgid "Every thing there is has been added"
+msgstr "Tout ce qui existe a été ajouté"
+
+msgid "Every tie is decided"
+msgstr "Chaque duel est tranché"
+
+msgid "Everything you see is a pane"
+msgstr "Tout ce que vous voyez est une vitre"
+
+msgid "Fill"
+msgstr "Remplir"
+
+msgid "Find a crate"
+msgstr "Trouver une caisse"
+
+msgid "Find a property"
+msgstr "Trouver une propriété"
+
+msgid "Find a value"
+msgstr "Trouver une valeur"
+
+msgid "First ties"
+msgstr "Premiers duels"
+
+msgid "Flags:"
+msgstr "Repères :"
+
+msgid "Flip"
+msgstr "Retourner"
+
+msgid "Flipped"
+msgstr "Retournée"
+
+msgid "Floating over everything"
+msgstr "Flottant par-dessus tout"
+
+msgid "Four days"
+msgstr "Quatre jours"
+
+msgid "Four days of takings"
+msgstr "Quatre jours de recette"
+
+msgid "Gap in takings, thousands"
+msgstr "Écart de recette, en milliers"
+
+msgid "Gap in takings, thousands - one triangle"
+msgstr "Écart de recette, en milliers - un seul triangle"
+
+msgid "Gap, c thousands"
+msgstr "Écart, milliers de c"
+
+msgid "Gap, thousands"
+msgstr "Écart, milliers"
+
+msgid "Give away"
+msgstr "Donner"
+
+msgid "Go back"
+msgstr "Revenir"
+
+msgid "has made, recent is the last four days, marks are complaints."
+msgstr "a rapporté, récent ce sont les quatre derniers jours, les marques sont des plaintes."
+
+msgid "How fast the day runs"
+msgstr "À quelle vitesse passe la journée"
+
+msgid "How the act runs"
+msgstr "Le déroulé de l'action"
+
+msgid "In the app bar, at the title's right"
+msgstr "Dans la barre de l'appli, à droite du titre"
+
+msgid "Inline link"
+msgstr "Lien dans le texte"
+
+msgid "It takes two crates to turn the shelf round"
+msgstr "Il faut deux caisses pour retourner l'étagère"
+
+msgid "it three times, and a moment says you are done."
+msgstr "trois fois, et un moment dit que c'est fait."
+
+msgid "Its look blends to the other"
+msgstr "Son aspect se fond dans l'autre"
+
+msgid "Its name, read live"
+msgstr "Son nom, lu en direct"
+
+msgid "Jot a note"
+msgstr "Noter"
+
+msgid "kept as a market stall of fruit crates."
+msgstr "tenu comme un étal de marché aux caisses de fruits."
+
+msgid "Kept with a crate"
+msgstr "Gardée avec une caisse"
+
+msgid "Keyframes"
+msgstr "Images clés"
+
+msgid "Keys"
+msgstr "Touches"
+
+msgid "Keys on this screen now: %s, %s and %s"
+msgstr "Touches de cet écran pour l'instant : %s, %s et %s"
+
+msgid "Knockout"
+msgstr "Élimination"
+
+msgid "Label"
+msgstr "Étiquette"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Language, sound, keys"
+msgstr "Langue, son, touches"
+
+msgid "Last command: %s -> %s"
+msgstr "Dernière commande : %s -> %s"
+
+msgid "Last command: none"
+msgstr "Dernière commande : aucune"
+
+msgid "Last deed: %s"
+msgstr "Dernier geste : %s"
+
+msgid "Last four days"
+msgstr "Quatre derniers jours"
+
+msgid "Last tie"
+msgstr "Dernier duel"
+
+msgid "Ledger"
+msgstr "Registre"
+
+msgid "Line chart"
+msgstr "Courbe"
+
+msgid "Links"
+msgstr "Liens"
+
+msgid "List, tile, dense, empty - four panes on a pane"
+msgstr "Liste, tuile, dense, vide - quatre vitres sur une vitre"
+
+msgid "Lists of crates"
+msgstr "Listes de caisses"
+
+msgid "Live picture, takings, a button"
+msgstr "Image en direct, recette, un bouton"
+
+msgid "Live view"
+msgstr "Vue en direct"
+
+msgid "Load the keys"
+msgstr "Charger les touches"
+
+msgid "Look"
+msgstr "Style"
+
+msgid "Main thread: frame %d"
+msgstr "Fil principal : image %d"
+
+msgid "Mark"
+msgstr "Marque"
+
+msgid "Marks"
+msgstr "Marques"
+
+msgid "Matrix"
+msgstr "Matrice"
+
+msgid "Menu link"
+msgstr "Lien de menu"
+
+msgid "merges into the panel under it."
+msgstr "se fond dans le panneau dessous."
+
+msgid "Motion"
+msgstr "Mouvement"
+
+msgid "Mute"
+msgstr "Muet"
+
+msgid "Mute these prompts"
+msgstr "Taire ces invites"
+
+msgid "Name the stall"
+msgstr "Nommer l'étal"
+
+msgid "No complaints"
+msgstr "Aucune plainte"
+
+msgid "No crate"
+msgstr "Aucune caisse"
+
+msgid "No supplier picked yet"
+msgstr "Aucun fournisseur choisi pour l'instant"
+
+msgid "Nobody further is known"
+msgstr "Personne d'autre n'est connu"
+
+msgid "Not in the market phase"
+msgstr "Pas pendant le marché"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Note kept with this crate"
+msgstr "Note gardée avec cette caisse"
+
+msgid "Note so far: %s"
+msgstr "Note jusqu'ici : %s"
+
+msgid "Nothing has been saved yet"
+msgstr "Rien n'a encore été enregistré"
+
+msgid "Nothing is being asked"
+msgstr "Rien n'est demandé"
+
+msgid "Nothing picked"
+msgstr "Rien de choisi"
+
+msgid "Nothing saved or loaded yet"
+msgstr "Rien d'enregistré ni de chargé encore"
+
+msgid "Nothing to filter yet"
+msgstr "Rien à filtrer encore"
+
+msgid "Nothing to sort yet"
+msgstr "Rien à trier encore"
+
+msgid "Nothing yet"
+msgstr "Rien encore"
+
+msgid "On a crate, accept lifts it"
+msgstr "Sur une caisse, valider la soulève"
+
+msgid "On the counter"
+msgstr "Sur le comptoir"
+
+msgid "On, nothing slides, grows or loops, and a fade is short"
+msgstr "Activé, rien ne glisse, ne grandit ni ne boucle, et un fondu est bref"
+
+msgid "On, nothing sounds at all"
+msgstr "Activé, plus aucun son"
+
+msgid "One complaint"
+msgstr "Une plainte"
+
+msgid "One crate measured against another"
+msgstr "Une caisse mesurée à une autre"
+
+msgid "One crate, six ways"
+msgstr "Une caisse, six façons"
+
+msgid "One item on the stall; c is the coin"
+msgstr "Un article de l'étal ; c est la pièce"
+
+msgid "One of three; the chosen opens its second half"
+msgstr "Un sur trois ; le choisi ouvre sa seconde moitié"
+
+msgid "One picked, pick two more"
+msgstr "Une choisie, encore deux"
+
+msgid "One place slides in as the other slides out"
+msgstr "Un lieu glisse dedans pendant que l'autre glisse dehors"
+
+msgid "One stall, ten languages - press one"
+msgstr "Un étal, dix langages - pressez-en un"
+
+msgid "One triangle"
+msgstr "Un seul triangle"
+
+msgid "Only figs go in the fig basket"
+msgstr "Seules les figues vont dans le panier à figues"
+
+msgid "Open"
+msgstr "Ouvrir"
+
+msgid "Open the ledger"
+msgstr "Ouvrir le registre"
+
+msgid "Opens a list to choose from, never a dropdown"
+msgstr "Ouvre une liste où choisir, jamais un menu déroulant"
+
+msgid "Opens the fig, your own"
+msgstr "Ouvre la figue, la vôtre"
+
+msgid "Opens your own crate, the fig"
+msgstr "Ouvre votre propre caisse, la figue"
+
+msgid "Opens your own fig crate"
+msgstr "Ouvre votre caisse de figues"
+
+msgid "Pace"
+msgstr "Allure"
+
+msgid "Pan"
+msgstr "Déplacer"
+
+msgid "Pick"
+msgstr "Choisir"
+
+msgid "Pick a crate"
+msgstr "Choisir une caisse"
+
+msgid "Pick the value"
+msgstr "Choisir la valeur"
+
+msgid "Pick three crates to restock"
+msgstr "Choisissez trois caisses à réapprovisionner"
+
+msgid "Picked"
+msgstr "Choisi"
+
+msgid "Picked supplier: %s"
+msgstr "Fournisseur choisi : %s"
+
+msgid "Picked: crate %s"
+msgstr "Choisie : caisse %s"
+
+msgid "Picture, takings, a button"
+msgstr "Image, recette, un bouton"
+
+msgid "Plain"
+msgstr "Simple"
+
+msgid "Play"
+msgstr "Lecture"
+
+msgid "Press a heading to sort; + marks takings over 5,000"
+msgstr "Pressez un en-tête pour trier ; + marque une recette de plus de 5 000"
+
+msgid "press a name."
+msgstr "pressez un nom."
+
+msgid "Press fill: the number and the bar go there smoothly"
+msgstr "Pressez remplir : le nombre et la barre y vont en douceur"
+
+msgid "Press it, then press the key or button to bind"
+msgstr "Pressez-le, puis pressez la touche ou le bouton à lier"
+
+msgid "Press it, then the key or button to bind"
+msgstr "Pressez-le, puis la touche ou le bouton à lier"
+
+msgid "Press it: on and off blend by the look's restyle easing"
+msgstr "Pressez-le : activé et désactivé se fondent selon l'adoucissement de restyle du style"
+
+msgid "press one to pull that part of the stall forward."
+msgstr "pressez-en un pour avancer cette partie de l'étal."
+
+msgid "Press one; the whole stall is re-dressed"
+msgstr "Pressez-en un ; tout l'étal est rhabillé"
+
+msgid "Press start restocking, then pick a crate three times"
+msgstr "Pressez réapprovisionner, puis choisissez une caisse trois fois"
+
+msgid "Price, c - type and Enter"
+msgstr "Prix, c - tapez puis Entrée"
+
+msgid "Prompt: %s - %s (%s)"
+msgstr "Invite : %s - %s (%s)"
+
+msgid "Property"
+msgstr "Propriété"
+
+msgid "Put a crate on"
+msgstr "Poser une caisse"
+
+msgid "Put a crate on, take one off, turn the shelf round"
+msgstr "Posez une caisse, retirez-en une, retournez l'étagère"
+
+msgid "Put in the basket"
+msgstr "Mettre dans le panier"
+
+msgid "Put in the fig basket"
+msgstr "Mettre dans le panier à figues"
+
+msgid "Put on the stall"
+msgstr "Mettre à l'étal"
+
+msgid "Put up for sale"
+msgstr "Mettre en vente"
+
+msgid "Quantity"
+msgstr "Quantité"
+
+msgid "Quick %d ms, normal %d ms, slow %d ms; a stagger of %d ms, a beat of %d ms"
+msgstr "Rapide %d ms, normal %d ms, lent %d ms ; un décalage de %d ms, un battement de %d ms"
+
+msgid "Ranked by takings"
+msgstr "Classées par recette"
+
+msgid "Ranked by takings, your fig kept in view"
+msgstr "Classées par recette, votre figue gardée en vue"
+
+msgid "Ranked by takings; scrolled to keep your fig in view"
+msgstr "Classées par recette ; défilé pour garder votre figue en vue"
+
+msgid "Ranked; scrolled to keep the fig in view"
+msgstr "Classées ; défilé pour garder la figue en vue"
+
+msgid "Readings"
+msgstr "Relevés"
+
+msgid "Rebind a key, save, restore the defaults, load: yours are back"
+msgstr "Reliez une touche, enregistrez, rétablissez les défauts, chargez : les vôtres reviennent"
+
+msgid "Reduce motion"
+msgstr "Réduire le mouvement"
+
+msgid "Reduced motion"
+msgstr "Mouvement réduit"
+
+msgid "Relationship graph"
+msgstr "Graphe des relations"
+
+msgid "Relative"
+msgstr "Relatif"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Restocked: three crates picked"
+msgstr "Réapprovisionné : trois caisses choisies"
+
+msgid "Restore the defaults"
+msgstr "Rétablir les défauts"
+
+msgid "Ripe"
+msgstr "Mûre"
+
+msgid "Ripen"
+msgstr "Mûrir"
+
+msgid "Row %d   %s"
+msgstr "Ligne %d   %s"
+
+msgid "Rows in groups: a toggle, a choice, a binding, a named field, a confirm"
+msgstr "Lignes en groupes : un interrupteur, un choix, une liaison, un champ nommé, une confirmation"
+
+msgid "Save the day"
+msgstr "Enregistrer la journée"
+
+msgid "Save the keys"
+msgstr "Enregistrer les touches"
+
+msgid "say the same twice."
+msgstr "disent deux fois la même chose."
+
+msgid "Sections"
+msgstr "Sections"
+
+msgid "Seeing: %s"
+msgstr "Vue : %s"
+
+msgid "Set the price"
+msgstr "Fixer le prix"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Show only the flipped"
+msgstr "Ne montrer que les retournées"
+
+msgid "Show the coins"
+msgstr "Montrer les pièces"
+
+msgid "Show the notes"
+msgstr "Montrer les notes"
+
+msgid "Sight"
+msgstr "Vue"
+
+msgid "so the other half would"
+msgstr "si bien que l'autre moitié"
+
+msgid "Sold %s so far this week"
+msgstr "%s vendus cette semaine jusqu'ici"
+
+msgid "Sort"
+msgstr "Trier"
+
+msgid "Sort by name"
+msgstr "Trier par nom"
+
+msgid "Sound"
+msgstr "Son"
+
+msgid "Stall closes in"
+msgstr "L'étal ferme dans"
+
+msgid "Standings, by takings"
+msgstr "Classement, par recette"
+
+msgid "Start here"
+msgstr "Commencer ici"
+
+msgid "Start restocking"
+msgstr "Réapprovisionner"
+
+msgid "Stock, as written in"
+msgstr "Stock, tel qu'inscrit"
+
+msgid "Stop restocking"
+msgstr "Arrêter le réapprovisionnement"
+
+msgid "Suppliers"
+msgstr "Fournisseurs"
+
+msgid "Suppliers - drag, wheel, press a name"
+msgstr "Fournisseurs - glissez, molette, pressez un nom"
+
+msgid "Suppliers, pinned up"
+msgstr "Fournisseurs, épinglés"
+
+msgid "Suppliers: who deals with whom"
+msgstr "Fournisseurs : qui traite avec qui"
+
+msgid "Switch it and watch everything on this screen follow"
+msgstr "Basculez-le et voyez tout cet écran suivre"
+
+msgid "Table"
+msgstr "Tableau"
+
+msgid "Table landed"
+msgstr "Tableau arrivé"
+
+msgid "Take one off"
+msgstr "En retirer une"
+
+msgid "Taken: %s"
+msgstr "Pris : %s"
+
+msgid "Takings"
+msgstr "Recette"
+
+msgid "Takings as a fill; full is 100,000"
+msgstr "La recette en remplissage ; plein, c'est 100 000"
+
+msgid "Takings, as a bar"
+msgstr "Recette, en barre"
+
+msgid "Takings, c"
+msgstr "Recette, c"
+
+msgid "Takings, of 100,000"
+msgstr "Recette, sur 100 000"
+
+msgid "Term"
+msgstr "Terme"
+
+msgid "that crate."
+msgstr "cette caisse."
+
+msgid "The arrows walk the baskets alone"
+msgstr "Les flèches ne parcourent que les paniers"
+
+msgid "The back room"
+msgstr "L'arrière-boutique"
+
+msgid "The basket"
+msgstr "Le panier"
+
+msgid "The baskets are empty"
+msgstr "Les paniers sont vides"
+
+msgid "The bell when a crate sells"
+msgstr "La clochette quand une caisse se vend"
+
+msgid "The cell at the top left"
+msgstr "La case en haut à gauche"
+
+msgid "The clock BACK stands with"
+msgstr "L'horloge qui accompagne RETOUR"
+
+msgid "The clock at the end of the strip is the seventh: time until the stall closes"
+msgstr "L'horloge au bout de la bande est la septième : le temps avant la fermeture de l'étal"
+
+msgid "The clock in the ways cell"
+msgstr "L'horloge dans la case des chemins"
+
+msgid "The countdown is the clock in the small pill at the foot"
+msgstr "Le compte à rebours est l'horloge dans la petite pastille du pied"
+
+msgid "The crate's name, read live"
+msgstr "Le nom de la caisse, lu en direct"
+
+msgid "The crates, still there"
+msgstr "Les caisses, toujours là"
+
+msgid "The day"
+msgstr "La journée"
+
+msgid "The fig basket"
+msgstr "Le panier à figues"
+
+msgid "The fig basket takes figs alone, and says why"
+msgstr "Le panier à figues ne prend que des figues, et dit pourquoi"
+
+msgid "The flaps"
+msgstr "Les rabats"
+
+msgid "The four ways across"
+msgstr "Les quatre chemins"
+
+msgid "The front of the stall"
+msgstr "Le devant de l'étal"
+
+msgid "The gap in takings between each pair of crates"
+msgstr "L'écart de recette entre chaque paire de caisses"
+
+msgid "The gap in takings between each pair, in thousands"
+msgstr "L'écart de recette entre chaque paire, en milliers"
+
+msgid "The gap in takings between each pair, in thousands; one triangle since a gap has no direction"
+msgstr "L'écart de recette entre chaque paire, en milliers ; un seul triangle puisqu'un écart n'a pas de sens"
+
+msgid "The gap in takings between each pair, in thousands; one triangle, since a gap has no direction"
+msgstr "L'écart de recette entre chaque paire, en milliers ; un seul triangle, puisqu'un écart n'a pas de sens"
+
+msgid "The gap in takings, in thousands; one triangle, since a gap has no direction"
+msgstr "L'écart de recette, en milliers ; un seul triangle, puisqu'un écart n'a pas de sens"
+
+msgid "The gaps"
+msgstr "Les écarts"
+
+msgid "The keys are saved"
+msgstr "Les touches sont enregistrées"
+
+msgid "The keys could not be saved: %s"
+msgstr "Les touches n'ont pas pu être enregistrées : %s"
+
+msgid "The language words are said in"
+msgstr "La langue dans laquelle les mots sont dits"
+
+msgid "The last four days"
+msgstr "Les quatre derniers jours"
+
+msgid "The last four days of takings"
+msgstr "Les quatre derniers jours de recette"
+
+msgid "The last four days' takings"
+msgstr "La recette des quatre derniers jours"
+
+msgid "The line above"
+msgstr "La ligne du dessus"
+
+msgid "The line below"
+msgstr "La ligne du dessous"
+
+msgid "The look"
+msgstr "Le style"
+
+msgid "The look's motion"
+msgstr "Le mouvement du style"
+
+msgid "The name of the crate, read live"
+msgstr "Le nom de la caisse, lu en direct"
+
+msgid "The name, live"
+msgstr "Le nom, en direct"
+
+msgid "The name, read live"
+msgstr "Le nom, lu en direct"
+
+msgid "The note hovers over them"
+msgstr "La note plane au-dessus"
+
+msgid "The pear crate"
+msgstr "La caisse de poires"
+
+msgid "The pear crate's takings"
+msgstr "La recette de la caisse de poires"
+
+msgid "The pills at the foot"
+msgstr "Les pastilles du pied"
+
+msgid "The reckoning sheet"
+msgstr "La feuille de compte"
+
+msgid "The same as a fill; full is 100,000"
+msgstr "La même en remplissage ; plein, c'est 100 000"
+
+msgid "The same crate"
+msgstr "La même caisse"
+
+msgid "The same crate as a row, a tile, a dense card, and an empty slot"
+msgstr "La même caisse en ligne, en tuile, en carte dense, et un emplacement vide"
+
+msgid "The same crate as a tile"
+msgstr "La même caisse en tuile"
+
+msgid "The same crates"
+msgstr "Les mêmes caisses"
+
+msgid "The same crates as tiles"
+msgstr "Les mêmes caisses en tuiles"
+
+msgid "The same crates, carried without a mouse"
+msgstr "Les mêmes caisses, portées sans souris"
+
+msgid "The same crates, grouped by complaints"
+msgstr "Les mêmes caisses, groupées par plaintes"
+
+msgid "The same crates, loose in the corner"
+msgstr "Les mêmes caisses, en vrac dans le coin"
+
+msgid "The same gallery in each design language; press one"
+msgstr "La même galerie dans chaque langage graphique ; pressez-en un"
+
+msgid "The same stall in each design language"
+msgstr "Le même étal dans chaque langage graphique"
+
+msgid "The same stall in each design language; press one"
+msgstr "Le même étal dans chaque langage graphique ; pressez-en un"
+
+msgid "The same, against 100,000"
+msgstr "La même, sur 100 000"
+
+msgid "The same, as a fill; full is 100,000"
+msgstr "La même, en remplissage ; plein, c'est 100 000"
+
+msgid "The same, day by day, as a trace"
+msgstr "La même, jour après jour, en tracé"
+
+msgid "The saved keys are loaded"
+msgstr "Les touches enregistrées sont chargées"
+
+msgid "The screen you came from"
+msgstr "L'écran d'où vous venez"
+
+msgid "The shelf is empty"
+msgstr "L'étagère est vide"
+
+msgid "The shelf is full"
+msgstr "L'étagère est pleine"
+
+msgid "The stall's name"
+msgstr "Le nom de l'étal"
+
+msgid "The tags"
+msgstr "Les étiquettes"
+
+msgid "The takings of the pear crate"
+msgstr "La recette de la caisse de poires"
+
+msgid "The thing itself"
+msgstr "La chose elle-même"
+
+msgid "The tray you came from"
+msgstr "Le plateau d'où vous venez"
+
+msgid "The volume and the mute of the stall's own sounds"
+msgstr "Le volume et la sourdine des sons de l'étal"
+
+msgid "then pick a crate three times - the glow and its bubble lead."
+msgstr "puis choisissez une caisse trois fois - la lueur et sa bulle guident."
+
+msgid "There is no day kept to clear"
+msgstr "Aucune journée gardée à effacer"
+
+msgid "This crate"
+msgstr "Cette caisse"
+
+msgid "This language"
+msgstr "Cette langue"
+
+msgid "This pace"
+msgstr "Cette allure"
+
+msgid "Throw away"
+msgstr "Jeter"
+
+msgid "Tick"
+msgstr "Cocher"
+
+msgid "Ties across rounds; a name opens that crate; the winner is marked in words"
+msgstr "Des duels sur plusieurs tours ; un nom ouvre cette caisse ; le gagnant est marqué en mots"
+
+msgid "Time until the stall closes"
+msgstr "Le temps avant la fermeture de l'étal"
+
+msgid "To a place"
+msgstr "Vers un lieu"
+
+msgid "To the back room"
+msgstr "Vers l'arrière-boutique"
+
+msgid "To the front of the stall"
+msgstr "Vers le devant de l'étal"
+
+msgid "To the lists"
+msgstr "Vers les listes"
+
+msgid "To try"
+msgstr "À essayer"
+
+msgid "Toggle"
+msgstr "Basculer"
+
+msgid "told as a market stall with crates of fruit."
+msgstr "racontée comme un étal de marché aux caisses de fruits."
+
+msgid "Trace"
+msgstr "Tracé"
+
+msgid "Turn the shelf round"
+msgstr "Retourner l'étagère"
+
+msgid "Two complaints"
+msgstr "Deux plaintes"
+
+msgid "Two picked, pick one more"
+msgstr "Deux choisies, encore une"
+
+msgid "Two series told apart by dash and marker; add a day and it extends"
+msgstr "Deux séries distinguées par tiret et repère ; ajoutez un jour et elle s'allonge"
+
+msgid "Type a name and press Enter; an empty name is refused"
+msgstr "Tapez un nom puis Entrée ; un nom vide est refusé"
+
+msgid "Type a note and Enter, tick a flag, go to suppliers, come back: still here"
+msgstr "Tapez une note puis Entrée, cochez un repère, allez aux fournisseurs, revenez : toujours là"
+
+msgid "Type a note and Enter, tick flags, go to suppliers, come back: still here"
+msgstr "Tapez une note puis Entrée, cochez des repères, allez aux fournisseurs, revenez : toujours là"
+
+msgid "Type a note and Enter, tick what applies, walk to the suppliers and come back: it is still here"
+msgstr "Tapez une note puis Entrée, cochez ce qui convient, allez aux fournisseurs et revenez : elle est toujours là"
+
+msgid "Type a number, Enter sets it"
+msgstr "Tapez un nombre, Entrée le fixe"
+
+msgid "Type a number, Enter sets the price"
+msgstr "Tapez un nombre, Entrée fixe le prix"
+
+msgid "Type a price and Enter; or choose one of three ways to let the crate go"
+msgstr "Tapez un prix puis Entrée ; ou choisissez l'une des trois façons de céder la caisse"
+
+msgid "Type and Enter, tick the stamps, go to suppliers, come back: still here"
+msgstr "Tapez puis Entrée, cochez les tampons, allez aux fournisseurs, revenez : toujours là"
+
+msgid "Type to narrow, arrows to move, press to pick"
+msgstr "Tapez pour restreindre, les flèches pour bouger, pressez pour choisir"
+
+msgid "Type-ahead picker"
+msgstr "Sélecteur à saisie"
+
+msgid "Until the stall shuts"
+msgstr "Avant que l'étal ne ferme"
+
+msgid "Value"
+msgstr "Valeur"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "Wave at everyone"
+msgstr "Saluer tout le monde"
+
+msgid "Way back"
+msgstr "Chemin du retour"
+
+msgid "Ways"
+msgstr "Chemins"
+
+msgid "Ways out"
+msgstr "Sorties"
+
+msgid "Ways through: a menu, a name, back, and your own crate"
+msgstr "Passages : un menu, un nom, retour, et votre propre caisse"
+
+msgid "Wearing: %s"
+msgstr "Style porté : %s"
+
+msgid "What a crate has made, all told"
+msgstr "Ce qu'une caisse a rapporté, en tout"
+
+msgid "What it means"
+msgstr "Ce que cela veut dire"
+
+msgid "What to do next, and the words you may press now"
+msgstr "Quoi faire ensuite, et les mots que vous pouvez presser"
+
+msgid "What to try"
+msgstr "Quoi essayer"
+
+msgid "What was saved is not a set of keys"
+msgstr "Ce qui a été enregistré n'est pas un jeu de touches"
+
+msgid "Whence you came"
+msgstr "D'où vous êtes venu"
+
+msgid "Where you came from"
+msgstr "D'où vous venez"
+
+msgid "Which stall: the corner one"
+msgstr "Quel étal : celui du coin"
+
+msgid "Who deals with whom"
+msgstr "Qui traite avec qui"
+
+msgid "Who deals with whom; thicker is stronger"
+msgstr "Qui traite avec qui ; plus épais, plus fort"
+
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name"
+msgstr "Qui traite avec qui ; plus épais, plus fort. Glissez, molette, pressez un nom"
+
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name, or press the zoom buttons"
+msgstr "Qui traite avec qui ; plus épais, plus fort. Glissez, molette, pressez un nom, ou les boutons de zoom"
+
+msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name, or the two soft buttons to zoom"
+msgstr "Qui traite avec qui ; plus épais, plus fort. Glissez, molette, pressez un nom, ou les deux boutons doux pour zoomer"
+
+msgid "Who else they deal with"
+msgstr "Avec qui d'autre ils traitent"
+
+msgid "Write a line and Enter, stamp the boxes, walk to the pinboard and come back: still here"
+msgstr "Écrivez une ligne puis Entrée, tamponnez les cases, allez au tableau d'affichage et revenez : toujours là"
+
+msgid "Yes, clear it"
+msgstr "Oui, l'effacer"
+
+msgid "Yes, throw it away"
+msgstr "Oui, la jeter"
+
+msgid "Your own crate"
+msgstr "Votre propre caisse"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "Zoom in"
+msgstr "Zoomer"
+
+msgid "Zoom in on a coin"
+msgstr "Zoomer sur une pièce"
+
+msgid "Zoom out"
+msgstr "Dézoomer"
+
+# words the demos say through a name they hold rather than as written: a pace, a flag, a level, a heading, a dial
+msgid "Slow"
+msgstr "Lente"
+
+msgid "Steady"
+msgstr "Régulière"
+
+msgid "Brisk"
+msgstr "Vive"
+
+msgid "Watch"
+msgstr "Surveiller"
+
+msgid "Keep"
+msgstr "Garder"
+
+msgid "Sell"
+msgstr "Vendre"
+
+msgid "HOUR"
+msgstr "HEURE"
+
+msgid "MINUTE"
+msgstr "MINUTE"
+
+msgid "SECOND"
+msgstr "SECONDE"
+
+msgid "MILLISECOND"
+msgstr "MILLISECONDE"
+
+# the stalls' words as they were rewritten without position words, and the long list's own
+msgid "FLAPS: the top edge of the centre panel; the one you are on is lit and"
+msgstr "RABATS : le bord du haut du panneau central ; celui où vous êtes est éclairé et"
+
+msgid "STALL CLOSES IN: the countdown - time until the stall closes."
+msgstr "L'ÉTAL FERME DANS : le compte à rebours - le temps avant la fermeture de l'étal."
+
+msgid "WAY BACK: back where you came from. Both sit outside the flaps."
+msgstr "RETOUR : là d'où vous venez. Les deux sont hors des rabats."
+
+msgid "BOTTOM STRIP: the instruction, and the two actions that go with it."
+msgstr "BANDE DU BAS : la consigne, et les deux actions qui vont avec."
+
+msgid "The chips along the top are the six places. Back and the clock"
+msgstr "Les puces en haut sont les six lieux. Retour et l'horloge"
+
+msgid "sit with them; the clock counts down to the stall closing."
+msgstr "les accompagnent ; l'horloge compte à rebours jusqu'à la fermeture de l'étal."
+
+msgid "The clock on the ticket with BACK counts down to closing"
+msgstr "L'horloge sur le ticket avec RETOUR compte à rebours jusqu'à la fermeture"
+
+msgid "The instruction is the line that says what to do next."
+msgstr "La consigne est la ligne qui dit quoi faire ensuite."
+
+msgid "The two words paired with it are what you can do now; the glowing one is meant."
+msgstr "Les deux mots qui l'accompagnent sont ce que vous pouvez faire ; celui qui luit est visé."
+
+msgid "Up"
+msgstr "Haut"
+
+msgid "Down"
+msgstr "Bas"
+
+msgid "Add one"
+msgstr "En ajouter un"
+
+msgid "Row up"
+msgstr "Ligne précédente"
+
+msgid "Row down"
+msgstr "Ligne suivante"
+
+msgid "Page up"
+msgstr "Page précédente"
+
+msgid "Page down"
+msgstr "Page suivante"
+
+msgid "×10 rows"
+msgstr "×10 lignes"
+
+msgid "/10 rows"
+msgstr "/10 lignes"
+
+msgid "Numbers and choices"
+msgstr "Nombres et choix"
+
+msgid "Choose a size"
+msgstr "Choisir une taille"
+
+msgid "Choose a fruit"
+msgstr "Choisir un fruit"
+
+msgid "Set the crates"
+msgstr "Fixer les caisses"
+
+msgid "Fill the crate"
+msgstr "Remplir la caisse"
+
+msgid "This size"
+msgstr "Cette taille"
+
+msgid "This fruit"
+msgstr "Ce fruit"
+
+msgid "Find a fruit"
+msgstr "Chercher un fruit"
+
+msgid "Small"
+msgstr "Petite"
+
+msgid "Middling"
+msgstr "Moyenne"
+
+msgid "Large"
+msgstr "Grande"
+
+msgid "The stall never stacks thirteen crates"
+msgstr "L'étal n'empile jamais treize caisses"
+
+msgid "Filled past eight tenths, a crate splits"
+msgstr "Remplie au-delà de huit dixièmes, une caisse éclate"
+
+msgid "No large crates today"
+msgstr "Pas de grandes caisses aujourd'hui"
+
+msgid "Which size?"
+msgstr "Quelle taille ?"
+
+msgid "Which fruit?"
+msgstr "Quel fruit ?"
+
+msgid "The order"
+msgstr "La commande"
+
+msgid "Its price"
+msgstr "Son prix"
+
+msgid "%d crates of %s, %s, each filled to %d per cent"
+msgstr "%d caisses de %s, %s, chacune remplie à %d pour cent"
+
+msgid "%d crates at %d coins: %d coins"
+msgstr "%d caisses à %d pièces : %d pièces"
+
+msgid "Slider"
+msgstr "Curseur"
+
+msgid "Drag it, or left and right; past eight tenths is refused"
+msgstr "Glissez-le, ou gauche et droite ; au-delà de huit dixièmes, c'est refusé"
+
+msgid "Number stepper"
+msgstr "Compteur"
+
+msgid "− and +, or type and Enter; thirteen is refused"
+msgstr "− et +, ou tapez et Entrée ; treize est refusé"
+
+msgid "Combo, short list"
+msgstr "Sélecteur, liste courte"
+
+msgid "The sizes open over everything; large is refused"
+msgstr "Les tailles s'ouvrent par-dessus tout ; grande est refusée"
+
+msgid "Combo, long list"
+msgstr "Sélecteur, liste longue"
+
+msgid "Type to narrow the fruit, then pick one"
+msgstr "Tapez pour réduire les fruits, puis choisissez-en un"
+
+msgid "Radio group"
+msgstr "Boutons radio"
+
+msgid "The same size, chosen in place; large is refused"
+msgstr "La même taille, choisie sur place ; grande est refusée"
+
+msgid "Segmented control"
+msgstr "Contrôle segmenté"
+
+msgid "Switches the view between the order and its price"
+msgstr "Bascule la vue entre la commande et son prix"
+
+msgid "Words, links and chips"
+msgstr "Mots, liens et étiquettes"
+
+msgid "Turn the label on or off"
+msgstr "Activer ou désactiver l'étiquette"
+
+msgid "Take the label off"
+msgstr "Retirer l'étiquette"
+
+msgid "Put the labels back"
+msgstr "Remettre les étiquettes"
+
+msgid "Every label is on the crate"
+msgstr "Toutes les étiquettes sont sur la caisse"
+
+msgid "Bruised"
+msgstr "Abîmée"
+
+msgid "Fresh today"
+msgstr "Fraîche du jour"
+
+msgid "This week the "
+msgstr "Cette semaine, la caisse de "
+
+msgid " crate sold best of all, taking "
+msgstr " s'est vendue mieux que toutes, rapportant "
+
+msgid " coins before the market bell rang at noon, while every other crate on the stall, the apples and the dates and the plums and the limes, sold slowly all through a long and rainy afternoon; and the "
+msgstr " pièces avant que la cloche du marché ne sonne midi, tandis que toutes les autres caisses de l'étal, les pommes, les dattes, les prunes et les citrons verts, se vendaient lentement tout au long d'un après-midi long et pluvieux ; et la caisse de "
+
+msgid " crate, the stall's own, is always the last to be unpacked in the morning."
+msgstr ", celle de l'étal, est toujours la dernière déballée le matin."
+
+msgid "Paragraph with links"
+msgstr "Paragraphe avec liens"
+
+msgid "Two crates named in running words; press one to open it; the pad walks from one to the next"
+msgstr "Deux caisses nommées dans le texte ; pressez-en une pour l'ouvrir ; la manette va de l'une à l'autre"
+
+msgid "Chips"
+msgstr "Étiquettes"
+
+msgid "Press a chip to turn it on or off - off is in brackets - and x to take it off; fresh today has no x"
+msgstr "Pressez une étiquette pour l'activer ou la désactiver - désactivée, elle est entre parenthèses - et x pour la retirer ; fraîche du jour n'a pas de x"
+
+msgid "Writing, loading, notices"
+msgstr "Écrire, charger, avis"
+
+msgid "Write"
+msgstr "Écrire"
+
+msgid "Send the note"
+msgstr "Envoyer le mot"
+
+msgid "Count the stock"
+msgstr "Compter le stock"
+
+msgid "The delivery arrives"
+msgstr "La livraison arrive"
+
+msgid "Ask for it again"
+msgstr "Le redemander"
+
+msgid "Notify"
+msgstr "Avertir"
+
+msgid "Notify with an offer"
+msgstr "Avertir avec une proposition"
+
+msgid "View the sales"
+msgstr "Voir les ventes"
+
+msgid "Dismiss"
+msgstr "Écarter"
+
+msgid "Nothing sent yet"
+msgstr "Rien d'envoyé pour l'instant"
+
+msgid "Nothing written yet"
+msgstr "Rien d'écrit pour l'instant"
+
+msgid "Sent: a note of %d line"
+msgid_plural "Sent: a note of %d lines"
+msgstr[0] "Envoyé : un mot de %d ligne"
+msgstr[1] "Envoyé : un mot de %d lignes"
+
+msgid "Not counted yet"
+msgstr "Pas encore compté"
+
+msgid "The delivery is in"
+msgstr "La livraison est arrivée"
+
+msgid "Already on its way"
+msgstr "Déjà en route"
+
+msgid "Counted: sixty-one crates"
+msgstr "Compté : soixante et une caisses"
+
+msgid "No sales viewed yet"
+msgstr "Aucune vente consultée pour l'instant"
+
+msgid "The plums are in, and every crate of them was sold before the market bell rang at noon"
+msgstr "Les prunes sont arrivées, et chaque caisse s'est vendue avant que la cloche du marché ne sonne midi"
+
+msgid "Day %d's sales are counted"
+msgstr "Les ventes du jour %d sont comptées"
+
+msgid "Viewed: the sales of day %d"
+msgstr "Consulté : les ventes du jour %d"
+
+msgid "A note to the grower"
+msgstr "Un mot au producteur"
+
+msgid "Forty crates of plums"
+msgstr "Quarante caisses de prunes"
+
+msgid "Twelve crates of figs"
+msgstr "Douze caisses de figues"
+
+msgid "Nine crates of pears"
+msgstr "Neuf caisses de poires"
+
+msgid "Text area"
+msgstr "Zone de texte"
+
+msgid "Shapes stand in until it lands; counting waits"
+msgstr "Des formes le remplacent jusqu'à son arrivée ; le compte attend"
+
+msgid "Notifications"
+msgstr "Avis"
+
+msgid "Set the volume"
+msgstr "Régler le volume"
+
+msgid "How loud the stall's sounds are: drag it, or left and right"
+msgstr "Le volume des sons de l'étal : glissez, ou gauche et droite"
+
+msgid "Enter breaks a line; only the button sends it, and never empty"
+msgstr "Entrée coupe la ligne ; seul le bouton l'envoie, et jamais vide"
+
+msgid "Each stands in the tray below, never over anything, sounds, and leaves"
+msgstr "Chacun se tient dans le plateau ci-dessous, jamais par-dessus quoi que ce soit, sonne, et s'en va"

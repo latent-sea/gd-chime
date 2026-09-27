@@ -1,0 +1,550 @@
+# UNREVIEWED PLACEHOLDER. No translator has reviewed these words: they
+# stand in so a change of language can be seen working, and stay a
+# placeholder until a translator has reviewed every one. The header says so
+# too: flagged fuzzy, gettext's mark of a catalogue not yet approved, and
+# its Last-Translator and Language-Team naming none. The words themselves are
+# not flagged: the engine skips a fuzzy entry and would show its English,
+# while it reads a fuzzy header, plural rule and all.
+#
+# gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
+#
+# The floor's words in French, translating the template gd-chime.pot: every
+# word the floor's recipes and models show, keyed by the English it is
+# written in where it is used, and how French writes its script, numbers,
+# money and dates (language.gd, formats.gd). An entry under a context is
+# looked up under that context alone. French says 0 as it says 1: the plural
+# rule below is the one its counts are chosen by, and a count's words for
+# none are an entry of their own.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gd-chime\n"
+"Last-Translator: none - an unreviewed placeholder\n"
+"Language-Team: none - awaiting a translator's review\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# how French is written: its script, and how it writes a number, money and a date
+msgctxt "the script its words are written in"
+msgid "Latn"
+msgstr "Latn"
+
+msgctxt "numbers: the mark between thousands"
+msgid ","
+msgstr " "
+
+msgctxt "numbers: the mark before a fraction"
+msgid "."
+msgstr ","
+
+msgctxt "money: where the amount and its mark stand"
+msgid "{mark}{amount}"
+msgstr "{amount} {mark}"
+
+msgctxt "dates: the order of the day, the month and the year"
+msgid "{day} {month} {year}"
+msgstr "{day} {month} {year}"
+
+msgctxt "dates: the first day of a month"
+msgid "1"
+msgstr "1er"
+
+msgctxt "dates: a month"
+msgid "January"
+msgstr "janvier"
+
+msgctxt "dates: a month"
+msgid "February"
+msgstr "février"
+
+msgctxt "dates: a month"
+msgid "March"
+msgstr "mars"
+
+msgctxt "dates: a month"
+msgid "April"
+msgstr "avril"
+
+msgctxt "dates: a month"
+msgid "May"
+msgstr "mai"
+
+msgctxt "dates: a month"
+msgid "June"
+msgstr "juin"
+
+msgctxt "dates: a month"
+msgid "July"
+msgstr "juillet"
+
+msgctxt "dates: a month"
+msgid "August"
+msgstr "août"
+
+msgctxt "dates: a month"
+msgid "September"
+msgstr "septembre"
+
+msgctxt "dates: a month"
+msgid "October"
+msgstr "octobre"
+
+msgctxt "dates: a month"
+msgid "November"
+msgstr "novembre"
+
+msgctxt "dates: a month"
+msgid "December"
+msgstr "décembre"
+
+# bracket.gd: the winner's mark, and a slot nobody has reached
+msgid "Won"
+msgstr "Vainqueur"
+
+msgid "To be decided"
+msgstr "À déterminer"
+
+# card.gd: detail shown and hidden, and a free position someone has claimed
+msgid "More"
+msgstr "Plus"
+
+msgid "Less"
+msgstr "Moins"
+
+msgid "Expecting %s"
+msgstr "En attente de %s"
+
+# sections.gd
+msgid "This group is empty"
+msgstr "Ce groupe est vide"
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d élément"
+msgstr[1] "%d éléments"
+
+msgid "No items"
+msgstr "Aucun élément"
+
+# setting.gd: a toggle's two words, and a binding waiting for its input
+msgid "On"
+msgstr "Activé"
+
+msgid "Off"
+msgstr "Désactivé"
+
+msgid "Press a key or button..."
+msgstr "Appuyez sur une touche ou un bouton..."
+
+# filter_set.gd: the comparisons a filter is built with
+msgid "is over"
+msgstr "est supérieur à"
+
+msgid "is under"
+msgstr "est inférieur à"
+
+msgid "is exactly"
+msgstr "est exactement"
+
+msgid "is"
+msgstr "est"
+
+msgid "is not"
+msgstr "n'est pas"
+
+msgid "includes"
+msgstr "contient"
+
+msgid "does not include"
+msgstr "ne contient pas"
+
+msgid "is true"
+msgstr "est vrai"
+
+msgid "is false"
+msgstr "est faux"
+
+# disposition.gd
+msgid "The choice is not finished"
+msgstr "Le choix n'est pas terminé"
+
+# type_ahead.gd and filter_set.gd: how many match
+msgid "%d match"
+msgid_plural "%d matches"
+msgstr[0] "%d résultat"
+msgstr[1] "%d résultats"
+
+msgid "No matches"
+msgstr "Aucun résultat"
+
+# countdown.gd: the words once the time has run out
+msgid "Now"
+msgstr "Maintenant"
+
+# cell_readout.gd: what a value is the strength of, and how strong, in hundredths
+msgid "%s %d%%"
+msgstr "%s %d %%"
+
+# line_chart.gd: the marks a series is drawn with, named in the legend
+msgid "Circle"
+msgstr "Cercle"
+
+msgid "Square"
+msgstr "Carré"
+
+msgid "Diamond"
+msgstr "Losange"
+
+msgid "Triangle"
+msgstr "Triangle"
+
+# instruction_bar.gd: how far through an act the reader is
+msgid "%d of %d"
+msgstr "%d sur %d"
+
+# language.gd: a change into a language there are no words for
+msgid "There are no words in %s"
+msgstr "Il n'y a pas de mots en %s"
+
+# input_map.gd: a pad button no pad we know of has, and a binding refused
+msgid "Button %d"
+msgstr "Bouton %d"
+
+msgid "%s is no action to bind"
+msgstr "%s n'est pas une action à associer"
+
+msgid "That is neither a key nor a pad button"
+msgstr "Ce n'est ni une touche ni un bouton de manette"
+
+# chart.gd and driver.gd: why a move is refused
+msgid "There is nothing to go back to"
+msgstr "Il n'y a rien à quoi revenir"
+
+msgid "%s is no state"
+msgstr "%s n'est pas un état"
+
+msgid "%s is not on top"
+msgstr "%s n'est pas au premier plan"
+
+msgid "Already at %s"
+msgstr "Déjà sur %s"
+
+msgid "%s is not up"
+msgstr "%s n'est pas affiché"
+
+msgid "There is nothing behind to forget"
+msgstr "Il n'y a rien derrière à oublier"
+
+msgid "%s is no place to go to"
+msgstr "%s n'est pas un endroit où aller"
+
+# the names of the keys and pad buttons a French keyboard or pad writes otherwise; every other is written as the engine writes it
+msgctxt "the name of a key or button"
+msgid "Escape"
+msgstr "Échap"
+
+msgctxt "the name of a key or button"
+msgid "Enter"
+msgstr "Entrée"
+
+msgctxt "the name of a key or button"
+msgid "Space"
+msgstr "Espace"
+
+msgctxt "the name of a key or button"
+msgid "Backspace"
+msgstr "Retour arrière"
+
+msgctxt "the name of a key or button"
+msgid "Delete"
+msgstr "Suppr"
+
+msgctxt "the name of a key or button"
+msgid "Insert"
+msgstr "Inser"
+
+msgctxt "the name of a key or button"
+msgid "Shift"
+msgstr "Maj"
+
+msgctxt "the name of a key or button"
+msgid "CapsLock"
+msgstr "Verr. maj."
+
+msgctxt "the name of a key or button"
+msgid "Home"
+msgstr "Début"
+
+msgctxt "the name of a key or button"
+msgid "End"
+msgstr "Fin"
+
+msgctxt "the name of a key or button"
+msgid "PageUp"
+msgstr "Page préc."
+
+msgctxt "the name of a key or button"
+msgid "PageDown"
+msgstr "Page suiv."
+
+msgctxt "the name of a key or button"
+msgid "Up"
+msgstr "Haut"
+
+msgctxt "the name of a key or button"
+msgid "Down"
+msgstr "Bas"
+
+msgctxt "the name of a key or button"
+msgid "Left"
+msgstr "Gauche"
+
+msgctxt "the name of a key or button"
+msgid "Right"
+msgstr "Droite"
+
+msgid "%s was dispatched from inside heard(); defer it until the ring is over"
+msgstr "%s a été envoyé depuis heard() ; attendez que la sonnerie soit finie"
+
+msgid "Nothing handles %s in %s"
+msgstr "Rien ne traite %s dans %s"
+
+msgid "No move was stopped to go on with"
+msgstr "Aucun déplacement arrêté à poursuivre"
+
+msgid "Already at the top"
+msgstr "Déjà en haut"
+
+msgid "Already at the end"
+msgstr "Déjà à la fin"
+
+msgid "The prompts have no source called %s"
+msgstr "Les invites n'ont aucune source nommée %s"
+
+# landing.gd and loading.gd: data not landed yet
+msgid "Still loading"
+msgstr "Chargement en cours"
+
+msgid "Loading"
+msgstr "Chargement"
+
+# notifications.gd: a notification dismissed twice
+msgid "Already gone"
+msgstr "Déjà partie"
+
+# filter_set.gd: a date's comparisons
+msgid "is before"
+msgstr "est avant"
+
+msgid "is after"
+msgstr "est après"
+
+# row_edits.gd and row_filters.gd: a typed line refused, and the last change taken back
+msgid "%s is not a number"
+msgstr "%s n'est pas un nombre"
+
+msgid "%s is not a date written year-month-day"
+msgstr "%s n'est pas une date écrite année-mois-jour"
+
+msgid "A word is needed here"
+msgstr "Il faut un mot ici"
+
+msgid "Nothing has changed to take back"
+msgstr "Rien n'a changé qui puisse être repris"
+
+msgid "The change to %s"
+msgstr "La modification de %s"
+
+# row_selection.gd: the cursor and the picks
+msgid "Nothing is picked"
+msgstr "Rien n'est choisi"
+
+msgid "No rows are shown"
+msgstr "Aucune ligne n'est affichée"
+
+msgid "Already at the first row"
+msgstr "Déjà à la première ligne"
+
+msgid "Already at the last row"
+msgstr "Déjà à la dernière ligne"
+
+# table_columns.gd: a column resized or hidden
+msgid "The last column shown stays"
+msgstr "La dernière colonne affichée reste"
+
+msgid "The last column has no edge to move"
+msgstr "La dernière colonne n'a pas de bord à déplacer"
+
+msgid "As narrow as a column goes"
+msgstr "Aussi étroite qu'une colonne peut l'être"
+
+# editing_cell.gd: a cell opened or given up
+msgid "Nothing is being changed"
+msgstr "Rien n'est en cours de modification"
+
+msgid "%s is not changed here"
+msgstr "%s ne se modifie pas ici"
+
+# long_table.gd: how many rows a group holds
+msgid "%d row"
+msgid_plural "%d rows"
+msgstr[0] "%d ligne"
+msgstr[1] "%d lignes"
+
+# data_grid.gd: the grid's bars, its pop-ups and the line of how the view stands
+msgid "No groups"
+msgstr "Sans groupes"
+
+msgid "Group the rows by"
+msgstr "Grouper les lignes par"
+
+msgid "%s picked   %s of %s rows shown   %s"
+msgstr "%s choisies   %s lignes affichées sur %s   %s"
+
+msgid "Working out the view"
+msgstr "Calcul de la vue en cours"
+
+msgid "The view took %s ms"
+msgstr "La vue a pris %s ms"
+
+msgid "Filter the rows"
+msgstr "Filtrer les lignes"
+
+msgid "The columns shown"
+msgstr "Les colonnes affichées"
+
+# describe_places.gd: every pop-up's way out, declared by the builder
+msgid "Close"
+msgstr "Fermer"
+
+# data_grid.gd: the words of every action a grid draws or answers
+msgid "Add a filter"
+msgstr "Ajouter un filtre"
+
+msgid "Columns"
+msgstr "Colonnes"
+
+msgid "Group by"
+msgstr "Grouper par"
+
+msgid "Sort"
+msgstr "Trier"
+
+msgid "Group"
+msgstr "Grouper"
+
+msgid "Shut or open the group"
+msgstr "Fermer ou ouvrir le groupe"
+
+msgid "Move"
+msgstr "Déplacer"
+
+msgid "Pick a run"
+msgstr "Choisir une suite"
+
+msgid "Move across"
+msgstr "Aller de colonne en colonne"
+
+msgid "Pick"
+msgstr "Choisir"
+
+msgid "Pick this row"
+msgstr "Choisir cette ligne"
+
+msgid "Pick every row shown"
+msgstr "Choisir toutes les lignes affichées"
+
+msgid "Clear the picks"
+msgstr "Effacer les choix"
+
+msgid "Change the value"
+msgstr "Changer la valeur"
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "Change this cell"
+msgstr "Changer cette cellule"
+
+msgid "Stop changing"
+msgstr "Arrêter la modification"
+
+msgid "Resize this column"
+msgstr "Redimensionner cette colonne"
+
+msgid "Resize the column"
+msgstr "Redimensionner la colonne"
+
+msgid "Show or hide the column"
+msgstr "Afficher ou masquer la colonne"
+
+msgid "Find a column"
+msgstr "Trouver une colonne"
+
+msgid "Column"
+msgstr "Colonne"
+
+msgid "Comparison"
+msgstr "Comparaison"
+
+msgid "Find a value"
+msgstr "Trouver une valeur"
+
+msgid "This value"
+msgstr "Cette valeur"
+
+msgid "Value"
+msgstr "Valeur"
+
+msgid "Turn the filter"
+msgstr "Activer ou désactiver le filtre"
+
+msgid "Remove the filter"
+msgstr "Retirer le filtre"
+
+# command_search.gd and open_menu.gd: the palette and a context menu
+msgid "That is no longer there to pick"
+msgstr "Ce n'est plus là pour être choisi"
+
+msgid "Nothing matches"
+msgstr "Rien ne correspond"
+
+msgid "Command"
+msgstr "Commande"
+
+msgid "Nothing here has a menu"
+msgstr "Rien ici n'a de menu"
+
+# documents.gd: a document opened, closed or turned to
+msgid "There is no %s to open"
+msgstr "Il n'y a pas de %s à ouvrir"
+
+msgid "%s is not open"
+msgstr "%s n'est pas ouvert"
+
+msgid "Nothing is open"
+msgstr "Rien n'est ouvert"
+
+msgid "No other document is open"
+msgstr "Aucun autre document n'est ouvert"
+
+# panels.gd: a split resized
+msgid "There is no split called %s"
+msgstr "Il n'y a pas de séparation appelée %s"
+
+# data_grid.gd: a filter's value typed, its query going once the typing settles
+msgid "Type the value"
+msgstr "Saisir la valeur"
+
+# view_behind.gd and data_grid.gd: a view out of date with its rows, and bringing it up to date
+msgid "Bring the view up to date"
+msgstr "Mettre la vue à jour"
+
+msgid "The view is up to date"
+msgstr "La vue est à jour"
+
+msgid "Out of date: rows shown have changed since"
+msgstr "Pas à jour : des lignes affichées ont changé depuis"
