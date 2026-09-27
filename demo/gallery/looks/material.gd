@@ -82,7 +82,7 @@ func _states(rest: Color, hover: Color, ink: Color, height: float, pad: float) -
 func _pressables() -> void:
 	# the base: a filled tonal button, resting a little above the ground, two steps of air inside it
 	var button := _states(PALETTE[&"lit"], Color("#efe9f4"), PALETTE[&"ink"], 4.0, STEP * 2.0)
-	Look.pressable(self, Themes.PRESSABLE, button[0], button[1], Look.ring(SEED, {width = 2.0, radius = STEP, inset = -2.0}), &"Control")
+	Look.pressable(self, Themes.PRESSABLE, button[0], {inks = button[1], focus = Look.ring(SEED, {width = 2.0, radius = STEP, inset = -2.0}), base = &"Control"})
 	# a tab: a flap with no fill at all, and under the one you are on the indicator - a three-pixel rule along its foot in the seed, the whole of material's answer to a tab
 	var blank := Look.flat(Color.TRANSPARENT, {pad = STEP * 1.5})
 	var layer := Look.flat(Color(0.40, 0.31, 0.64, 0.10), {pad = STEP * 1.5})
@@ -92,32 +92,32 @@ func _pressables() -> void:
 		&"inert": blank,
 		&"glowing": Look.layered(self, [Look.flat(CONTAINER)], STEP * 1.5),
 		&"current": Look.layered(self, [Look.nothing(), Paint.rule(&"accent", 3.0, SIDE_BOTTOM)], STEP * 1.5),
-	}, {&"normal": PALETTE[&"ink_soft"], &"hover": SEED, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP, &"current": SEED}, Look.ring(SEED, {width = 2.0, radius = 4.0}))
+	}, {inks = {&"normal": PALETTE[&"ink_soft"], &"hover": SEED, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP, &"current": SEED}, focus = Look.ring(SEED, {width = 2.0, radius = 4.0})})
 	# a chip: an outline and nothing behind it, the way an assist chip is drawn
 	Look.pressable(self, &"Chip", {
 		&"normal": Look.flat(Color.TRANSPARENT, {radius = STEP, border = 1.0, border_colour = OUTLINE, pad = STEP * 1.5}),
 		&"hover": Look.flat(Color(0.40, 0.31, 0.64, 0.10), {radius = STEP, border = 1.0, border_colour = SEED, pad = STEP * 1.5}),
 		&"inert": Look.flat(Color.TRANSPARENT, {radius = STEP, border = 1.0, border_colour = Color(0.11, 0.11, 0.13, 0.20), pad = STEP * 1.5}),
 		&"glowing": _sheet(CONTAINER, STEP, 6.0, STEP * 1.5),
-	}, {&"normal": PALETTE[&"ink"], &"hover": SEED_DEEP, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP}, Look.ring(SEED, {width = 2.0, radius = STEP}))
+	}, {inks = {&"normal": PALETTE[&"ink"], &"hover": SEED_DEEP, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP}, focus = Look.ring(SEED, {width = 2.0, radius = STEP})})
 	# an inline link: words in the seed, a state layer on hover, no sheet
 	Look.pressable(self, &"NavInline", {
 		&"normal": Look.nothing(),
 		&"hover": Look.flat(Color(0.40, 0.31, 0.64, 0.10), {radius = 4.0, pad = STEP}),
 		&"inert": Look.nothing(),
 		&"glowing": Look.flat(CONTAINER, {radius = 4.0, pad = STEP}),
-	}, {&"normal": SEED, &"hover": SEED_DEEP, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP}, Look.ring(SEED, {width = 2.0, radius = 4.0}))
+	}, {inks = {&"normal": SEED, &"hover": SEED_DEEP, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": SEED_DEEP}, focus = Look.ring(SEED, {width = 2.0, radius = 4.0})})
 	# the one filled action: the seed itself under white words, lifted highest of the pressables
 	Look.pressable(self, &"NavPlay", {
 		&"normal": _sheet(SEED, STEP, 6.0, STEP * 2.0),
 		&"hover": _sheet(Color("#7965b5"), STEP, 10.0, STEP * 2.0),
 		&"inert": _refused(STEP, STEP * 2.0),
 		&"glowing": _sheet(SEED_DEEP, STEP, 14.0, STEP * 2.0),
-	}, {&"normal": WHITE, &"hover": WHITE, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": WHITE}, Look.ring(SEED_DEEP, {width = 2.0, radius = STEP, inset = -2.0}))
+	}, {inks = {&"normal": WHITE, &"hover": WHITE, &"inert": Color(0.11, 0.11, 0.13, 0.38), &"glowing": WHITE}, focus = Look.ring(SEED_DEEP, {width = 2.0, radius = STEP, inset = -2.0})})
 	# the cards that are pressed: white sheets on the ground, less air the denser they are
 	for card: Array in [[&"CardList", STEP * 2.0], [&"CardTile", STEP * 2.0], [&"CardDense", STEP]]:
 		var stack := _states(PALETTE[&"raised"], Color("#f6f0fa"), PALETTE[&"ink"], 2.0, card[1])
-		Look.pressable(self, card[0], stack[0], stack[1], Look.ring(SEED, {width = 2.0, radius = STEP}))
+		Look.pressable(self, card[0], stack[0], {inks = stack[1], focus = Look.ring(SEED, {width = 2.0, radius = STEP})})
 
 
 func _surfaces() -> void:
@@ -136,7 +136,7 @@ func _surfaces() -> void:
 	# a bubble: the seed's container tone, lifted a little
 	Look.ground(self, &"Bubble", _sheet(CONTAINER, STEP, 3.0, STEP * 2.0))
 	# nothing there yet: an outline in dashes rather than a sheet, because an absent sheet casts no shadow
-	Look.ground(self, &"CardEmpty", Look.layered(self, [Look.flat(Color.TRANSPARENT, {radius = STEP}), Paint.dashed(&"outline", 2.0, 10.0, 8.0, 0.0, STEP)], STEP * 2.0))
+	Look.ground(self, &"CardEmpty", Look.layered(self, [Look.flat(Color.TRANSPARENT, {radius = STEP}), Paint.dashed(&"outline", 2.0, {dash = 10.0, gap = 8.0, inset = 0.0, radius = STEP})], STEP * 2.0))
 	# the text field: a fill rounded at the top alone with a line along its foot, thickening in the seed while it has the focus
 	var field := Look.flat(PALETTE[&"lit"], {radius = 4.0})
 	field.corner_radius_bottom_left = 0
@@ -150,8 +150,8 @@ func _surfaces() -> void:
 
 func _type() -> void:
 	var sans := Look.font(FAMILY)
-	var medium := Look.font(FAMILY, 500)
-	var bold := Look.font(FAMILY, 700)
+	var medium := Look.font(FAMILY, {weight = 500})
+	var bold := Look.font(FAMILY, {weight = 700})
 	set_default_font(sans)
 	default_font_size = 22
 	# every kind reads in the darkest ink unless it is saying something quieter, and so does any words with no kind at all
@@ -159,14 +159,14 @@ func _type() -> void:
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, PALETTE[&"ink"])
 	# the clock in the strip: small, and in the seed because it is counting without being asked
-	Look.words(self, &"Countdown", 20, medium, SEED)
-	Look.words(self, Themes.TITLE, 22, bold, SEED_DEEP)
-	Look.words(self, Themes.WORDS, 34, medium, PALETTE[&"ink"])
-	Look.words(self, Themes.FACE, 26, medium, PALETTE[&"ink"])
-	Look.words(self, Themes.REASON, 18, sans, PALETTE[&"ink_soft"])
-	Look.words(self, READOUT, 20, sans, PALETTE[&"ink_soft"])
-	Look.words(self, LINE, 22, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.NUMBER, 80, Look.font(FAMILY, 300), SEED)
+	Look.words(self, &"Countdown", 20, {font = medium, colour = SEED})
+	Look.words(self, Themes.TITLE, 22, {font = bold, colour = SEED_DEEP})
+	Look.words(self, Themes.WORDS, 34, {font = medium, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.FACE, 26, {font = medium, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.REASON, 18, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, READOUT, 20, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, LINE, 22, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.NUMBER, 80, {font = Look.font(FAMILY, {weight = 300}), colour = SEED})
 
 
 func _spacing() -> void:
@@ -175,10 +175,10 @@ func _spacing() -> void:
 		set_constant(&"gap", wide, int(STEP * 2.0))
 	for close: StringName in [TIGHT, &"Controls", &"Chips", &"MatrixLine", &"FilterSet", &"Disposition", &"AmountField"]:
 		set_constant(&"gap", close, int(STEP))
-	Look.line(self, &"InstructionBar", Themes.ROW, int(STEP * 3.0), Look.BETWEEN, Look.CENTER)
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = int(STEP * 3.0), justify = Look.BETWEEN, align = Look.CENTER})
 	# the indicator row: flaps abutting, sitting on the panel's top edge, and the two of them one thing
-	Look.line(self, &"TabStrip", Themes.ROW, 0, Look.START, Look.END)
-	Look.line(self, &"TabSet", Themes.COLUMN, 0, Look.START, Look.STRETCH)
+	Look.line(self, &"TabStrip", Themes.ROW, {gap = 0, justify = Look.START, align = Look.END})
+	Look.line(self, &"TabSet", Themes.COLUMN, {gap = 0, justify = Look.START, align = Look.STRETCH})
 	set_constant(&"gap", Themes.GRID, int(STEP * 2.0))
 	set_constant(&"row_gap", Themes.GRID, int(STEP * 2.0))
 	# every drawn line in the seed, and the graph's links in the softer ink
@@ -199,18 +199,18 @@ func _phone() -> void:
 	var destination := _states(Color.TRANSPARENT, Color(0.40, 0.31, 0.64, 0.10), PALETTE[&"ink_soft"], 0.0, STEP * 1.5)
 	destination[0][&"current"] = Look.flat(CONTAINER, {radius = STEP * 2.0, pad = STEP * 1.5})
 	destination[1][&"current"] = SEED_DEEP
-	Look.pressable(self, &"NavItem", destination[0], destination[1], Look.ring(SEED, {width = 2.0, radius = STEP * 2.0}))
-	Look.line(self, &"NavBar", Themes.ROW, int(STEP), Look.START, Look.CENTER)
-	Look.line(self, &"NavRail", Themes.COLUMN, int(STEP), Look.START, Look.STRETCH)
-	Look.line(self, &"NavFrame", Themes.ROW, 0, Look.START, Look.STRETCH)
+	Look.pressable(self, &"NavItem", destination[0], {inks = destination[1], focus = Look.ring(SEED, {width = 2.0, radius = STEP * 2.0})})
+	Look.line(self, &"NavBar", Themes.ROW, {gap = int(STEP), justify = Look.START, align = Look.CENTER})
+	Look.line(self, &"NavRail", Themes.COLUMN, {gap = int(STEP), justify = Look.START, align = Look.STRETCH})
+	Look.line(self, &"NavFrame", Themes.ROW, {gap = 0, justify = Look.START, align = Look.STRETCH})
 	var row := _states(PALETTE[&"raised"], Color("#f6f0fa"), PALETTE[&"ink"], 2.0, STEP * 2.0)
-	Look.pressable(self, &"SwipeRow", row[0], row[1], Look.ring(SEED, {width = 2.0, radius = STEP}))
+	Look.pressable(self, &"SwipeRow", row[0], {inks = row[1], focus = Look.ring(SEED, {width = 2.0, radius = STEP})})
 	# either way a row is swiped, the ground it uncovers; armed, the container tone ringed in the seed
 	for side: String in ["right", "left"]:
 		set_stylebox(StringName("reveal_" + side), &"SwipeRow", Look.flat(PALETTE[&"lit"], {radius = STEP, pad = STEP * 2.0}))
 		set_stylebox(StringName("armed_" + side), &"SwipeRow", Look.flat(CONTAINER, {radius = STEP, border = 3.0, border_colour = SEED, pad = STEP * 2.0}))
-	Look.line(self, &"SwipeReveal", Themes.ROW, int(STEP), Look.START, Look.CENTER)
-	Look.line(self, &"PullIndicator", Themes.ROW, int(STEP), Look.CENTER, Look.CENTER)
+	Look.line(self, &"SwipeReveal", Themes.ROW, {gap = int(STEP), justify = Look.START, align = Look.CENTER})
+	Look.line(self, &"PullIndicator", Themes.ROW, {gap = int(STEP), justify = Look.CENTER, align = Look.CENTER})
 	# a screen: the ground itself, two steps of air from the glass's edge
 	Look.ground(self, &"PhoneScreen", Look.flat(PALETTE[&"ground"], {pad = STEP * 2.0}))
 	set_constant(&"holds", Themes.NOTICE, 1)

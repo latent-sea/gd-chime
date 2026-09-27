@@ -2,21 +2,22 @@ extends "interaction.gd"
 
 const Chimes := preload("chimes.gd")
 
-## A control's part in the chimes: the bells it hears, each arriving at
-## heard() under its name, and the bells it hangs and strikes - the half of a
-## screen that listens, under presentation.gd, which draws.
+## A control's part in the chimes: its region, the bells it hangs and
+## strikes, and the bells it hears by address, each arriving at heard() under
+## its name - the half of a screen under presentation.gd, which draws.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## What it listens to arrives as addresses as it is built, and what it reads
-## arrives as models, so making one and connecting it are a single statement:
+## A FACT IS NOT HEARD HERE. What a screen shows it reads, as values, and
+## presentation.gd follows what it read; nothing lists a bell for a fact.
+## Listening by address is for a bell a part of the floor rings by hand -
+## a command having run, a pointer's arrival - given as it is built:
 ##
-##     var readout := Readout.new(chimes, prices, [[&"a_screen", &"price_changed"]], &"a_screen")
+##     var readout := Readout.new(chimes, [[Chimes.GLOBAL, Commands.COMMAND_RAN]], &"a_screen")
 ##
 ## The connecting is done by the chimes, which record it, so what reaches this
 ## is answerable from one place and a whole region of connections can be
-## dropped at once. This never calls connect itself, and every wake arrives at
-## heard().
+## dropped at once. This never calls connect itself.
 ##
 ## It never decides what a wake means, and never draws: heard() is the
 ## screen's own, and what it read as it drew is followed by presentation.gd.
@@ -81,7 +82,6 @@ func listening_to() -> Array[StringName]:
 ##
 ##     func heard(what: StringName) -> void:
 ##         match what:
-##             &"price_changed": needs_refresh()
-##             &"shown": _note_it()
+##             Commands.COMMAND_RAN: _note_it()
 func heard(_what: StringName) -> void:
 	pass

@@ -71,7 +71,7 @@ static func make(ui: Ui, notifications: Notifications, offers: Dictionary = {}, 
 	var showing: Bound = standing.map(showing_of)
 	var waiting: Bound = standing.map(func(all: Array) -> Variant: return null if all.size() <= 1 else Phrase.counted("%d more", "%d more", all.size() - 1))
 	var list := ui.each(showing, func(notice: Bound) -> Desc: return _one(ui, notice, offers, waiting), func(one: Dictionary) -> int: return one["id"], style)
-	var room := {"notifications": notifications, "style": Themes.COLUMN, "sample": _sample(ui, offers)}
+	var room := {"notifications": notifications, "style": Themes.COLUMN, "sample": _sample.bind(ui, offers)}
 	return Desc.new(&"tray_stand", room, [ui.scroll(list).grow()])
 
 
@@ -93,14 +93,20 @@ static func _one(ui: Ui, notice: Bound, offers: Dictionary, waiting: Bound) -> D
 	return ui.surface(Themes.NOTICE, [ui.row(presses + [ui.text(notice.field("words"), Themes.FACE).wraps().grow(), ui.text(waiting, Themes.REASON).hides_empty().named(&"waiting")])])
 
 
-## The sample the room is measured by: words of as many lines as the look
-## allows, each as many of the widest letter as the look says a line holds
-## at least, after the widest offer and the dismissal, before the most a count says -
-## each press drawn as a button is with no reason under it, but a press of
-## a local of its own, so no door is asked about a notification that is not there.
+## The sample the room is measured by, made as the tray is built
+## (tray_stand.gd): words of as many lines as the look allows, each as many
+## of the widest letter as the look says a line holds at least, after the
+## widest offer and the dismissal, before the most a count says - each press
+## drawn as a button is with no reason under it, but a press of a local of
+## its own, so no door is asked about a notification that is not there. The
+## look is the one the tray is built under, where it stands: a themed
+## piece's, or the root's (built_within.gd).
 static func _sample(ui: Ui, offers: Dictionary) -> Desc:
-	var lines: int = ui.root.get_theme_constant(Feedback.LINES, Themes.NOTICE)
-	var line := TrayStand.sample_line(ui.root)
+	var look: Theme = ui.current_look()
+	# a constant of the notice in that look, or, built under none, in the root's
+	var notice := func(name: StringName) -> int: return look.get_constant(name, Themes.NOTICE) if look != null else ui.root.get_theme_constant(name, Themes.NOTICE)
+	var lines: int = notice.call(Feedback.LINES)
+	var line := TrayStand.LETTER.repeat(notice.call(Feedback.LETTERS))
 	var actions: Array = []
 	if not offers.is_empty():
 		actions.append(Array(offers.keys()).reduce(func(wide: StringName, offer: StringName) -> StringName: return offer if str(ui.words(offer)).length() > str(ui.words(wide)).length() else wide))

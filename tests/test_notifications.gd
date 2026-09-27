@@ -73,6 +73,7 @@ func _init() -> void:
 	await _verdict.states(_its_offer_goes_through_the_door_refused_there_as_any_press_and_done_it_leaves)
 	await _verdict.states(_standing_in_the_layout_s_room_nothing_is_drawn_over_at_any_shape)
 	await _verdict.states(_put_in_a_look_with_a_thicker_notice_box_the_room_holds_one_whole)
+	await _verdict.states(_inside_a_themed_piece_the_room_is_that_look_s)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -163,6 +164,21 @@ func _put_in_a_look_with_a_thicker_notice_box_the_room_holds_one_whole() -> void
 	_done(standing)
 
 
+## Standing inside a themed piece whose look allows a notice more lines, the
+## room is that look's - measured by a sample of as many lines as it says,
+## where the tray stands - and not the root's.
+func _inside_a_themed_piece_the_room_is_that_look_s() -> void:
+	var plain := await _stall()
+	var rooms: Array = [_stand().size.y]
+	_done(plain)
+	var roomy := Themes.new(Themes.NEUTRAL)
+	roomy.set_constant(Feedback.LINES, Themes.NOTICE, 6)
+	var themed := await _stall(roomy)
+	rooms.append(_stand().size.y)
+	_done(themed)
+	_verdict.check(rooms[1] > rooms[0] * 1.5, "a tray in a look allowing six lines holds a room of six, not the root's two: %s" % [rooms])
+
+
 func _a_frame_passes() -> void:
 	await process_frame
 	await process_frame
@@ -171,7 +187,7 @@ func _a_frame_passes() -> void:
 ## The stall - a button to sell - over the tray, with the notifications
 ## counted by hand and the stall's model answering both actions, as
 ## {made, model, notifications}.
-func _stall() -> Dictionary:
+func _stall(tray_look: Theme = null) -> Dictionary:
 	var made := Fixture.new(root, {SELLS: "sell a crate", VIEWS: "view the sales", Notifications.DISMISSES: "dismiss"})
 	var ui := made.ui
 	var model := Grudging.new(made.chimes, &"app")
@@ -182,7 +198,8 @@ func _stall() -> Dictionary:
 	made.commands.register(Chimes.GLOBAL, Notifications.DISMISSES, notifications)
 	# under the root before the app, so the fixture - newest first - frees the tray, which tells them it leaves, before them
 	root.add_child(notifications)
-	ui.start(ui.app(&"app", [ui.column([ui.button(SELLS), NotificationTray.make(ui, notifications, {VIEWS: &""})])]))
+	var tray := NotificationTray.make(ui, notifications, {VIEWS: &""})
+	ui.start(ui.app(&"app", [ui.column([ui.button(SELLS), tray if tray_look == null else ui.themed(tray_look, [tray])])]))
 	await _a_frame_passes()
 	return {"made": made, "model": model, "notifications": notifications}
 

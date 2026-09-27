@@ -11,7 +11,10 @@ const Reads := preload("../../reads.gd")
 ##
 ## The bell is hung at an address nothing else has - a region and a bell of
 ## one name, made from a count - so what reads through it hears it and
-## nothing else does, and one reader may read any number of them.
+## nothing else does, and one reader may read any number of them. A fact
+## there is one of per set of chimes, read by what cannot say whose it reads
+## - a text saying its words in the language on (language.gd) - is given
+## its address by name instead, the same in every set of chimes.
 ##
 ## MOVED, IT RINGS ONCE THE FRAME'S WORK IS DONE, and once however many times
 ## it was moved in the frame: the ring is deferred to the end of the frame,
@@ -32,9 +35,10 @@ var _at: StringName  # the one name of that address, made here so that a read ne
 var _due: bool = false  # whether a ring is waiting for the end of this frame
 
 
-func _init(kind: String) -> void:
+## Of this kind, at an address made from a count - or at this one, given it.
+func _init(kind: String, named: StringName = &"") -> void:
 	_made += 1
-	_address = StringName("%s_%d" % [kind, _made])
+	_address = named if named != &"" else StringName("%s_%d" % [kind, _made])
 	_at = Reads.hung(_address, _address)
 
 

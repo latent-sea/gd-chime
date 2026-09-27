@@ -38,6 +38,7 @@ func _init() -> void:
 	await _verdict.states(_a_lazy_name_gives_the_script_at_its_path_and_the_same_one_after)
 	await _verdict.states(_a_name_it_does_not_hold_is_nothing)
 	await _verdict.states(_every_name_its_three_files_promise_resolves_to_a_script)
+	await _verdict.states(_its_index_lists_exactly_the_names_it_exports)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -82,3 +83,33 @@ func _every_name_its_three_files_promise_resolves_to_a_script() -> void:
 		if not (held is GDScript):
 			lost.append(name)
 	_verdict.check(lost.is_empty(), "every name the facade promises resolves to a script; these do not: %s" % ", ".join(lost))
+
+
+func _its_index_lists_exactly_the_names_it_exports() -> void:
+	var facade: GDScript = load(FACADE)
+	var constants: Dictionary = facade.get_script_constant_map()
+	var whole := FileAccess.get_file_as_string(FACADE)
+	var index := whole.substr(whole.find("## THE INDEX"), whole.find("## IT IS A LIST") - whole.find("## THE INDEX"))
+	# a capitalised name in the index, less the words of its prose and ChimeApp, the one global name beside it
+	var prose: Array[String] = ["THE", "INDEX", "The", "Theme", "ChimeApp"]
+	var listed: Array[String] = []
+	var finder := RegEx.create_from_string("\\b([A-Z]\\w*)\\b")
+	# every capitalised word of the index, as a reader of it would take it
+	for hit: RegExMatch in finder.search_all(index):
+		if not prose.has(hit.get_string(1)):
+			listed.append(hit.get_string(1))
+	var unexported: Array[String] = []
+	# every listed name, read as an application would read it
+	for name: String in listed:
+		if not (constants.get(name, facade.get(name)) is GDScript):
+			unexported.append(name)
+	_verdict.check(listed.size() > 150, "the index lists the framework, not a handful: %d names" % listed.size())
+	_verdict.check(unexported.is_empty(), "every name the index lists, the facade exports; these it does not: %s" % ", ".join(unexported))
+	var unlisted: Array[String] = []
+	# every name of the three files, looked for in the index
+	for path: String in LISTS:
+		var declared := RegEx.create_from_string("(?m)^(?:const|static var) ([A-Z]\\w*)")
+		for hit: RegExMatch in declared.search_all(FileAccess.get_file_as_string(path)):
+			if not listed.has(hit.get_string(1)):
+				unlisted.append(hit.get_string(1))
+	_verdict.check(unlisted.is_empty(), "every name the facade exports, its index lists; these it does not: %s" % ", ".join(unlisted))

@@ -6,34 +6,41 @@ const Value := preload("components/primitives/value.gd")
 const OwnBell := preload("components/primitives/own_bell.gd")
 const Phrase := preload("phrase.gd")
 
-## A controller that faces no reader: it listens, and does its work at once.
+## A model: the facts an application is made of, held as values, and the
+## commands that move them. It faces no reader.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## What it listens to arrives as ADDRESSES, never as bells:
+## A FACT IS A VALUE, declared as a member and set wherever it moves - by a
+## command told through the door, the game's own tick, a job landing:
 ##
-##     var tally := Tally.new(chimes, sums, [[&"a_screen", &"left_changed"]], &"a_screen")
+##     class Crates extends Controller:
+##         var counted := value(0)
+##         func told(_action: StringName, _payload: Dictionary) -> Phrase:
+##             counted.set_value(counted.read() + 1)
+##             return null
 ##
-## It never holds a bell, never sees one, and rings one through the chimes by
-## name. So nothing here can keep hold of something a region was supposed to
-## have dropped, and a wake cannot reach it by any route but the one its
-## address declared.
+## Whoever shows it reads it - `crates.counted`, handed to a text or mapped
+## into words - and the read is tracked: the reader follows exactly what it
+## read, and draws again when any of it moves. Nobody names a bell and nobody
+## writes a list of what changed; a value cannot tell who set it, so a fact
+## moved from outside a press is followed the same way (value.gd, reads.gd).
 ##
-## What it depends on is a model - sums, above - handed to it by whoever builds
-## it, as an argument of its own constructor, and it calls that model: it reads
-## the getters and asks it to do things. A request can carry arguments and get
-## an answer back, so a refusal comes back as an ordinary return value. A call
-## only ever goes toward whoever holds the fact. The model never calls what
-## depends on it: it strikes a bell, and the listener reads. A bell carries
-## nothing, so it is for news travelling back the other way, and for a control
-## that must not know who acts on it, such as a button striking an address -
-## never for an action with arguments, or one that needs an answer.
+## What a model depends on is another model, handed to it by whoever builds
+## it, as an argument of its own constructor, and it calls that model: it
+## reads its values and asks it to do things. A request can carry arguments
+## and get an answer back, so a refusal comes back as an ordinary return
+## value. A call only ever goes toward whoever holds the fact; the model
+## never calls what depends on it. What it works out from another model's
+## values it works out as it is read (ui.bound), or keeps with a follow
+## (follow(), below), which runs the work again whenever what it read moves.
 ##
-## Every wake arrives at heard(), with the name from that address.
+## Listening by address - listen(), heard() - is for a bell a part of the
+## floor rings by hand, never for a fact: a fact is a value.
 ##
 ## WHAT IT FOLLOWS REACHES IT AT THE END OF THE FRAME, never the instant: a
 ## value's bell rings once the frame's work is done (own_bell.gd), and a
-## model's heard() or followed work runs in that ring. So a model that keeps
+## model's followed work runs in that ring. So a model that keeps
 ## its own copy of another's value holds the old one until then. What must
 ## be current the instant an input changes is not copied but WORKED OUT AS
 ## IT IS READ - a function over the values (ui.bound), or one kept with what
@@ -43,9 +50,8 @@ const Phrase := preload("phrase.gd")
 ## where the work is genuinely expensive the answer is to put it in the
 ## background, not to ring sooner.
 ##
-## A bell it hangs is hung in its own region, so it goes when the region does.
-## A bell has to be hung before anything listens to it, so a model hangs its
-## bells as it is built and whatever listens to it is built after.
+## Its values ring one bell of its own, hung as it is built, in its region, so
+## it goes when the region does.
 ##
 ## Freed, it stops listening: the chimes cut its wires as the engine tells it
 ## it is about to go - and a region of its own goes too (own_region) - so
@@ -171,13 +177,14 @@ func follow(key: StringName, work: Callable) -> void:
 	_chimes.follow(self, key, work)
 
 
-## Every wake arrives here and nowhere else, with the name this was listening
-## under. The bell sent nothing: the name was tied to this end of the wire when
-## the connection was made. Overridden by a subclass, which decides in one place
-## what each one means - including that some mean nothing.
+## Every wake of a bell listened to by address arrives here and nowhere else,
+## with the name this was listening under - a bell the floor rings by hand,
+## never a fact, which is a value followed (follow()). The bell sent nothing:
+## the name was tied to this end of the wire when the connection was made.
+## Overridden by a subclass, which decides in one place what each one means.
 ##
 ##     func heard(what: StringName) -> void:
 ##         match what:
-##             &"left_changed", &"right_changed": _total = _sums.get_left() + _sums.get_right()
+##             Commands.COMMAND_RAN: _ran += 1
 func heard(_what: StringName) -> void:
 	pass

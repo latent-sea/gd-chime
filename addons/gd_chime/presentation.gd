@@ -5,26 +5,25 @@ const Themes := preload("theme.gd")
 ## The key what a draw read is followed under.
 const DRAWN := &"drawn"
 
-## A controller that faces a reader: it listens, and draws once a frame however
-## many times it was woken.
+## A piece that faces a reader: it draws what it reads of the models' values,
+## and draws again once a frame however many of them moved.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## The same methods as controller.gd, on a Control rather than a Node, because
-## a script may only extend one thing and only a Control can draw. What it
-## hears - the bells it listens to, heard() - is hearing.gd's, which this
-## extends; what it read as it drew, and the drawing, are this file's.
+## On a Control rather than a Node, because a script may only extend one thing
+## and only a Control can draw; hearing.gd, which this extends, is what ties it
+## to the chimes. What it read as it drew, and the drawing, are this file's.
 ##
-## WHAT IT READ AS IT DREW, IT FOLLOWS: every draw runs with its reads noted
-## (reads.gd), and it is wired to exactly the bells of what it read - a
-## model's values, a refusal's, a bound value's however it was worked out -
-## until the next draw replaces them (chimes.gd, follow). A ring there is a
-## draw due. So a control lists nothing it shows, and cannot forget one.
+## WHAT IT READ AS IT DREW, IT FOLLOWS: refresh() reads values - a model's, a
+## refusal, a bound value however it was worked out - and every draw runs with
+## its reads noted (reads.gd), wired to exactly what it read until the next
+## draw replaces them (chimes.gd, follow). Whoever moved one of those values,
+## a draw is due. So a control lists nothing it shows, and cannot forget one.
 ##
-## A handler decides whether the wake alters anything shown, and says so with
-## needs_refresh(). Drawing then happens once, on the next frame: needs_refresh
-## switches processing on, and a frame with nothing due switches it off, so the
-## engine holds the list of what has work and an idle screen is not on it.
+## A draw due is needs_refresh(), and the drawing then happens once, on the
+## next frame: needs_refresh switches processing on, and a frame with nothing
+## due switches it off, so the engine holds the list of what has work and an
+## idle screen is not on it.
 ##
 ## Processing is given up at the START of a frame that finds nothing due, never
 ## at the end of one that drew: the engine applies a change to its process list

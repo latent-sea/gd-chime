@@ -95,6 +95,11 @@ func _the_panes_stand_at_the_share_each_held_to_its_least() -> void:
 	await _a_frame_passes()
 	_verdict.check(is_equal_approx(page.size.x, page.get_combined_minimum_size().x), "and a share of all of it leaves the page its least: %s" % page.size.x)
 	_done(built)
+	var made := Fixture.new(root, {Panels.RESIZES: "resize"})
+	made.ui.start(made.ui.app(&"app", [made.ui.split(made.ui.text("list").named(&"list"), made.ui.text("page").named(&"page"), Bound.constant(0.5), {resizes = Panels.RESIZES, carries = {"split": "main"}}).named(&"split")]))
+	await _a_frame_passes()
+	_verdict.check(made.ui.node_named(&"list").visible and made.ui.node_named(&"page").visible and is_equal_approx(made.ui.node_named(&"list").size.x, 400.0), "given nothing that folds it, neither pane is folded and the share stands: %s" % made.ui.node_named(&"list").size.x)
+	made.done()
 
 
 func _a_folded_pane_is_hidden_and_the_grip_stays_at_the_edge() -> void:

@@ -41,21 +41,23 @@ func grip(resizes: StringName, carries: Dictionary, options: Dictionary = {}) ->
 
 
 ## Two panes and a grip between them (split.gd): the first taking the share
-## a bound value reads. Its options: resizes, the action the grip dispatches
+## a bound value reads. Its options, the first two required, since a grip
+## that moves nothing is not a split: resizes, the action the grip dispatches
 ## as the reader moves it, and carries, what that carries; folded, a bound
-## value whose reading folds that side away; runs, Layout.COLUMN for panes
+## value whose reading folds that side away - given none, neither side
+## ever folds; runs, Layout.COLUMN for panes
 ## standing one over the other - or a bound value reading one of the two,
 ## the grip turning with them; folds, dispatched as the reader presses the
 ## grip; and style.
 const SPLIT_OPTIONS: Array[String] = ["resizes", "carries", "folded", Options.RUNS, Options.FOLDS, Options.STYLE]
 
-func split(first: Desc, second: Desc, share: Bound, options: Dictionary = {}) -> Desc:
+func split(first: Desc, second: Desc, share: Bound, options: Dictionary) -> Desc:
 	Options.checked("a split", options, SPLIT_OPTIONS)
 	var runs: Variant = options.get(Options.RUNS, Layout.ROW)
 	# which way the panes stand: read as the bound value moves, else settled here
 	var down: Variant = runs.map(func(way: Variant) -> bool: return way == Layout.COLUMN) if runs is Bound else runs == Layout.COLUMN
 	var between := grip(options["resizes"], options["carries"], {Options.FOLDS: options.get(Options.FOLDS, &""), Options.STYLE: options.get(Options.STYLE, GRIP)})
-	return Desc.new(&"split", {"share": share, "folded": options["folded"], "down": down}, [first, between, second])
+	return Desc.new(&"split", {"share": share, "folded": options.get("folded", Bound.constant(&"")), "down": down}, [first, between, second])
 
 
 ## What it holds, given a context menu of these declared actions, each press

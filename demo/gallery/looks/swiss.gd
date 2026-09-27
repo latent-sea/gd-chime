@@ -38,20 +38,20 @@ func _init() -> void:
 	# a pressable: words alone - black available, red live, grey refused; the glow a red bar down the left edge
 	var boxes := {&"normal": _air(10.0), &"hover": _air(10.0), &"inert": _air(10.0), &"glowing": Look.layered(self, [Paint.left_bar(&"accent", 4.0)], 10.0)}
 	var inks := {&"normal": black, &"hover": red, &"inert": grey, &"glowing": black}
-	Look.pressable(self, Themes.PRESSABLE, boxes, inks, Look.layered(self, [Paint.underline(&"ink", 1.0)], 10.0), &"Control")
+	Look.pressable(self, Themes.PRESSABLE, boxes, {inks = inks, focus = Look.layered(self, [Paint.underline(&"ink", 1.0)], 10.0), base = &"Control"})
 	# a tab: typographic - grey words in a line, no flap and no fill; the one you are on is black with a red rule broken under it
 	var tab_boxes := {&"normal": _air(8.0), &"hover": _air(8.0), &"inert": _air(8.0), &"glowing": _air(8.0), &"current": Look.layered(self, [Look.nothing(), Paint.rule(&"accent", 3.0, SIDE_BOTTOM)], 8.0)}
 	var tab_inks := {&"normal": grey, &"hover": red, &"inert": grey, &"glowing": black, &"current": black}
-	Look.pressable(self, &"Tab", tab_boxes, tab_inks, Look.layered(self, [Paint.underline(&"ink", 1.0)], 8.0))
+	Look.pressable(self, &"Tab", tab_boxes, {inks = tab_inks, focus = Look.layered(self, [Paint.underline(&"ink", 1.0)], 8.0)})
 	# no panel at all: the strip stands alone over the page, and the rule under the current word is the only join
 	Look.ground(self, &"TabPanel", Look.nothing())
 	# a chip and an inline link: the same words, tighter, and no rule at all when live
 	for bare: StringName in [&"Chip", &"NavInline", &"Relative"]:
-		Look.pressable(self, bare, {&"normal": _air(6.0), &"hover": _air(6.0), &"inert": _air(6.0), &"glowing": _air(6.0)}, {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red}, Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0))
+		Look.pressable(self, bare, {&"normal": _air(6.0), &"hover": _air(6.0), &"inert": _air(6.0), &"glowing": _air(6.0)}, {inks = {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red}, focus = Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0)})
 	# a tile, a row in a list, a choice: a hairline under each, so the grid shows without a single box
 	for ruled: StringName in [&"CardList", &"CardTile", &"CardDense", &"Choice", &"Picker", &"NavPlay"]:
 		var ruled_boxes := {&"normal": Look.layered(self, [Paint.underline(&"ink", 1.0)], 12.0), &"hover": Look.layered(self, [Paint.underline(&"accent", 1.0)], 12.0), &"inert": Look.layered(self, [Paint.underline(&"ink_soft", 1.0)], 12.0), &"glowing": Look.layered(self, [Paint.underline(&"accent", 1.0), Paint.left_bar(&"accent", 4.0)], 12.0)}
-		Look.pressable(self, ruled, ruled_boxes, {&"normal": black, &"hover": red, &"inert": grey, &"glowing": black}, Look.layered(self, [Paint.underline(&"ink", 2.0)], 12.0))
+		Look.pressable(self, ruled, ruled_boxes, {inks = {&"normal": black, &"hover": red, &"inert": grey, &"glowing": black}, focus = Look.layered(self, [Paint.underline(&"ink", 2.0)], 12.0)})
 	_type(black, red, grey)
 	_grounds()
 	_lines()
@@ -71,7 +71,7 @@ func _air(pad: float) -> StyleBox:
 ## The type scale: one grotesque, and sizes far enough apart that scale alone ranks the page.
 func _type(black: Color, red: Color, grey: Color) -> void:
 	var sans := Look.font(["Helvetica", "Arial", "Segoe UI"])
-	var bold := Look.font(["Helvetica", "Arial", "Segoe UI"], 700)
+	var bold := Look.font(["Helvetica", "Arial", "Segoe UI"], {weight = 700})
 	set_default_font(sans)
 	default_font_size = 18
 	# plain words with no kind of their own: black, or the engine's white leaves them invisible on the paper
@@ -79,14 +79,14 @@ func _type(black: Color, red: Color, grey: Color) -> void:
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, black)
 	# the instruction: the largest thing on the page by a long way
-	Look.words(self, Themes.WORDS, 48, bold, black)
-	Look.words(self, Themes.TITLE, 28, bold, black)
-	Look.words(self, Themes.FACE, 24, sans, black)
-	Look.words(self, Themes.REASON, 16, sans, grey)
-	Look.words(self, READOUT, 18, sans, black)
-	Look.words(self, LINE, 18, sans, black)
+	Look.words(self, Themes.WORDS, 48, {font = bold, colour = black})
+	Look.words(self, Themes.TITLE, 28, {font = bold, colour = black})
+	Look.words(self, Themes.FACE, 24, {font = sans, colour = black})
+	Look.words(self, Themes.REASON, 16, {font = sans, colour = grey})
+	Look.words(self, READOUT, 18, {font = sans, colour = black})
+	Look.words(self, LINE, 18, {font = sans, colour = black})
 	# a dial's number: the one place the red is allowed to be enormous
-	Look.words(self, Themes.NUMBER, 96, bold, red)
+	Look.words(self, Themes.NUMBER, 96, {font = bold, colour = red})
 
 
 ## The grounds: white, and mostly nothing - a captioned box is a rule, not a panel.
@@ -113,12 +113,12 @@ func _lines() -> void:
 		set_constant(&"gap", line, GAP)
 	set_constant(&"row_gap", Themes.GRID, GAP)
 	for tight: StringName in [TIGHT, &"MatrixLine", &"Chips"]:
-		Look.line(self, tight, Themes.COLUMN if tight == TIGHT else Themes.ROW, 8)
+		Look.line(self, tight, Themes.COLUMN if tight == TIGHT else Themes.ROW, {gap = 8})
 	# the instruction bar and the tab bar: asymmetric - everything from the left edge
-	Look.line(self, &"InstructionBar", Themes.ROW, GAP, Look.START, Look.CENTER)
-	Look.line(self, &"TabStrip", Themes.ROW, GAP + 8, Look.START, Look.END)
-	Look.line(self, &"TabSet", Themes.COLUMN, 0)
-	Look.line(self, &"Controls", Themes.ROW, GAP, Look.START, Look.CENTER)
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = GAP, justify = Look.START, align = Look.CENTER})
+	Look.line(self, &"TabStrip", Themes.ROW, {gap = GAP + 8, justify = Look.START, align = Look.END})
+	Look.line(self, &"TabSet", Themes.COLUMN, {gap = 0})
+	Look.line(self, &"Controls", Themes.ROW, {gap = GAP, justify = Look.START, align = Look.CENTER})
 	for drawn: StringName in Charts.DRAWN:
 		set_color(&"line", drawn, PALETTE[&"ink"])
 	set_color(&"link", &"Graph", PALETTE[&"accent"])
@@ -132,24 +132,24 @@ func _lines() -> void:
 ## red tick in a chart of black.
 func _dashboard(black: Color, red: Color, grey: Color) -> void:
 	var sans := Look.font(["Helvetica", "Arial", "Segoe UI"])
-	var bold := Look.font(["Helvetica", "Arial", "Segoe UI"], 700)
-	Look.words(self, &"KpiFigure", 48, bold, black)
-	Look.words(self, &"KpiSays", 16, sans, grey)
-	Look.words(self, &"KpiChange", 18, sans, black)
-	Look.words(self, &"BarChartWords", 18, sans, black)
-	Look.words(self, &"Empty", 16, sans, grey)
-	Look.words(self, &"RegionMapName", 16, sans, black)
+	var bold := Look.font(["Helvetica", "Arial", "Segoe UI"], {weight = 700})
+	Look.words(self, &"KpiFigure", 48, {font = bold, colour = black})
+	Look.words(self, &"KpiSays", 16, {font = sans, colour = grey})
+	Look.words(self, &"KpiChange", 18, {font = sans, colour = black})
+	Look.words(self, &"BarChartWords", 18, {font = sans, colour = black})
+	Look.words(self, &"Empty", 16, {font = sans, colour = grey})
+	Look.words(self, &"RegionMapName", 16, {font = sans, colour = black})
 	# a figure: the ruled tile's hairline under it, red when hovered, the glow's bar when live
 	var ruled := {&"normal": Look.layered(self, [Paint.underline(&"ink", 1.0)], 12.0), &"hover": Look.layered(self, [Paint.underline(&"accent", 1.0)], 12.0), &"inert": Look.layered(self, [Paint.underline(&"ink_soft", 1.0)], 12.0), &"glowing": Look.layered(self, [Paint.underline(&"accent", 1.0), Paint.left_bar(&"accent", 4.0)], 12.0)}
-	Look.pressable(self, &"KpiCard", ruled, {&"normal": black, &"hover": red, &"inert": grey, &"glowing": black}, Look.layered(self, [Paint.underline(&"ink", 2.0)], 12.0))
+	Look.pressable(self, &"KpiCard", ruled, {inks = {&"normal": black, &"hover": red, &"inert": grey, &"glowing": black}, focus = Look.layered(self, [Paint.underline(&"ink", 2.0)], 12.0)})
 	# a bar: words alone, the one picked marked by the red bar down its left
 	var bar_boxes := {&"normal": _air(6.0), &"hover": _air(6.0), &"inert": _air(6.0), &"glowing": _air(6.0), &"current": Look.layered(self, [Paint.left_bar(&"accent", 4.0)], 6.0)}
-	Look.pressable(self, &"BarChartBar", bar_boxes, {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red, &"current": black}, Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0))
+	Look.pressable(self, &"BarChartBar", bar_boxes, {inks = {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red, &"current": black}, focus = Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0)})
 	# a region's name: black words on a scrap of the paper, so they read over any shade, the one picked with the red bar
 	var paper := Look.flat(PALETTE[&"raised"], {pad = 6.0})
 	var pin_boxes := {&"normal": paper, &"hover": paper, &"inert": paper, &"glowing": paper, &"current": Look.layered(self, [paper, Paint.left_bar(&"accent", 4.0)], 6.0)}
-	Look.pressable(self, &"RegionMapPin", pin_boxes, {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red, &"current": black}, Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0))
+	Look.pressable(self, &"RegionMapPin", pin_boxes, {inks = {&"normal": black, &"hover": red, &"inert": grey, &"glowing": red, &"current": black}, focus = Look.layered(self, [Paint.underline(&"ink", 1.0)], 6.0)})
 	# a bar in black, the stretch before's tick across it the one red
 	set_color(&"link", &"BarChartTrack", red)
-	Look.line(self, &"DateRange", Themes.ROW, GAP, Look.START, Look.CENTER)
+	Look.line(self, &"DateRange", Themes.ROW, {gap = GAP, justify = Look.START, align = Look.CENTER})
 	set_constant(&"wrap", &"DateRange", 1)

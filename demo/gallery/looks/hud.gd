@@ -64,7 +64,7 @@ func _init() -> void:
 ## Every pressable: a bracketed film at rest, a brighter bracket and a
 ## lighter film on hover, dim grey when refused, and bloom when prompted.
 func _pressables() -> void:
-	Look.pressable(self, Themes.PRESSABLE, _boxes(14.0, 10.0), _inks(), _focus(16.0), &"Control")
+	Look.pressable(self, Themes.PRESSABLE, _boxes(14.0, 10.0), {inks = _inks(), focus = _focus(16.0), base = &"Control"})
 	# an inline link and a chip: no film, the brackets alone, so a bar of them reads as one strip
 	for bare: StringName in [&"NavInline", &"Chip"]:
 		var boxes := {
@@ -73,10 +73,10 @@ func _pressables() -> void:
 			&"inert": Look.layered(self, [Paint.brackets(Paint.faded(&"ink_soft", 0.55), 1.0, 9.0, 2.0)], 9.0),
 			&"glowing": _bloom(9.0),
 		}
-		Look.pressable(self, bare, boxes, _inks(), _focus(11.0))
+		Look.pressable(self, bare, boxes, {inks = _inks(), focus = _focus(11.0)})
 	# a card in a list or a grid: longer arms, more air, the same language at size
 	for panel: StringName in [&"CardList", &"CardTile", &"CardDense"]:
-		Look.pressable(self, panel, _boxes(18.0, 14.0), _inks(), _focus(20.0))
+		Look.pressable(self, panel, _boxes(18.0, 14.0), {inks = _inks(), focus = _focus(20.0)})
 
 
 ## A pressable's four states, its brackets this long and this much air inside.
@@ -104,9 +104,9 @@ func _tabs() -> void:
 	}
 	var inks := _inks()
 	inks[&"current"] = WHITE
-	Look.pressable(self, Navigation.TAB, boxes, inks, _focus(11.0))
+	Look.pressable(self, Navigation.TAB, boxes, {inks = inks, focus = _focus(11.0)})
 	Look.ground(self, Navigation.TAB_PANEL, Look.layered(self, [Look.flat(FILM), Paint.brackets(Paint.faded(&"accent", 0.7), 1.0, 16.0, 3.0)], 14.0))
-	Look.line(self, Navigation.TAB_SET, Themes.COLUMN, 0)
+	Look.line(self, Navigation.TAB_SET, Themes.COLUMN, {gap = 0})
 
 
 ## One flap: these layers, this much air above the words and ten either
@@ -146,7 +146,7 @@ func _grounds() -> void:
 	for open_ground: StringName in [&"Collection", &"Board", &"Matrix", &"Graph", &"CardEmpty", &"Countdown"]:
 		Look.ground(self, open_ground, Look.layered(self, [Paint.brackets(Paint.faded(&"accent", 0.3), 1.0, 14.0, 2.0)], 12.0))
 	# the text field: a film under a single lit underline, the way an entry reads on an instrument
-	Look.field(self, &"Field", Look.layered(self, [Look.flat(FILM), Paint.underline(&"accent", 1.0, 0.0)], 10.0), Look.layered(self, [Look.flat(FILM), Paint.underline(&"white", 2.0, 0.0)], 10.0), Color.WHITE)
+	Look.field(self, &"Field", {normal = Look.layered(self, [Look.flat(FILM), Paint.underline(&"accent", 1.0, 0.0)], 10.0), focus = Look.layered(self, [Look.flat(FILM), Paint.underline(&"white", 2.0, 0.0)], 10.0)}, Color.WHITE)
 
 
 ## The words: a geometric sans for what is read, monospace for what is
@@ -154,13 +154,13 @@ func _grounds() -> void:
 func _words(mono: Font, sans: Font) -> void:
 	set_default_font(sans)
 	default_font_size = 24
-	Look.words(self, Themes.FACE, 26, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.WORDS, 34, sans, WHITE)
-	Look.words(self, Themes.REASON, 18, mono, PALETTE[&"ink_soft"])
-	Look.words(self, READOUT, 20, mono, METER)
-	Look.words(self, LINE, 22, mono, PALETTE[&"ink"])
-	Look.words(self, Themes.TITLE, 20, sans, CYAN)
-	Look.words(self, Themes.NUMBER, 88, mono, WHITE)
+	Look.words(self, Themes.FACE, 26, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.WORDS, 34, {font = sans, colour = WHITE})
+	Look.words(self, Themes.REASON, 18, {font = mono, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, READOUT, 20, {font = mono, colour = METER})
+	Look.words(self, LINE, 22, {font = mono, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.TITLE, 20, {font = sans, colour = CYAN})
+	Look.words(self, Themes.NUMBER, 88, {font = mono, colour = WHITE})
 
 
 ## The spacing: wide gaps, because a bracket needs empty ground around it
@@ -168,9 +168,9 @@ func _words(mono: Font, sans: Font) -> void:
 func _lines() -> void:
 	for line: StringName in [Themes.ROW, Themes.COLUMN]:
 		set_constant(&"gap", line, 16)
-	Look.line(self, Themes.TILES, Themes.ROW, 16)
-	Look.line(self, &"Chips", Themes.ROW, 10)
+	Look.line(self, Themes.TILES, Themes.ROW, {gap = 16})
+	Look.line(self, &"Chips", Themes.ROW, {gap = 10})
 	# the flaps sit along the baseline, packed from the left, close enough to read as one edge
-	Look.line(self, Navigation.TAB_STRIP, Themes.ROW, 6, Look.START, Look.END)
-	Look.line(self, &"Controls", Themes.ROW, 14, Look.BETWEEN, Look.CENTER)
-	Look.line(self, &"InstructionBar", Themes.ROW, 18, Look.START, Look.CENTER)
+	Look.line(self, Navigation.TAB_STRIP, Themes.ROW, {gap = 6, justify = Look.START, align = Look.END})
+	Look.line(self, &"Controls", Themes.ROW, {gap = 14, justify = Look.BETWEEN, align = Look.CENTER})
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = 18, justify = Look.START, align = Look.CENTER})

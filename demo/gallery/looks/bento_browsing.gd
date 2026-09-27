@@ -40,16 +40,16 @@ static func dress(theme: Theme, bento: Dictionary) -> void:
 	var inks := {&"normal": bento["ink"], &"hover": bento["ink"], &"inert": bento["soft"]}
 	# every small press of browsing: a pill, as every press of the tray is
 	for small: StringName in [&"FacetValue", &"CollectionMore", &"DrawerClose", &"GalleryStep", &"QuickViewStep"]:
-		Look.pressable(theme, small, pill.call(10.0), inks, focus)
+		Look.pressable(theme, small, pill.call(10.0), {inks = inks, focus = focus})
 	var picked: Dictionary = {}
 	# every state of a value picked, the one indigo block
 	for state: StringName in [&"normal", &"hover", &"inert"]:
 		picked[state] = Look.flat(bento["indigo"], {radius = bento["pill"], shadow = 10.0, shadow_colour = bento["glow"], shadow_offset = Vector2(0.0, 4.0), pad = 10.0})
-	Look.pressable(theme, &"FacetPicked", picked, {&"normal": white, &"hover": white, &"inert": white}, focus)
-	Look.words(theme, &"FacetCount", 17, null, bento["soft"])
+	Look.pressable(theme, &"FacetPicked", picked, {inks = {&"normal": white, &"hover": white, &"inert": white}, focus = focus})
+	Look.words(theme, &"FacetCount", 17, {colour = bento["soft"]})
 	# a facet: a white compartment with the seam, its title bold, as a heading is
 	Look.ground(theme, &"FacetCell", Look.flat(white, {radius = cell, border = 1.0, border_colour = bento["seam"], pad = 18.0}))
-	Look.words(theme, &"FacetTitle", 20, bento["bold"], bento["ink"])
+	Look.words(theme, &"FacetTitle", 20, {font = bento["bold"], colour = bento["ink"]})
 	theme.set_constant(&"gap", &"FacetValues", 10)
 	theme.set_constant(&"gap", &"Facet", 6)
 	# a slider - a price's range among them: a pale pill of a track, filled with the indigo block, its handles white pills ringed in indigo
@@ -58,7 +58,7 @@ static func dress(theme: Theme, bento: Dictionary) -> void:
 	theme.set_stylebox(&"handle", &"ValueSlider", Look.flat(white, {radius = bento["pill"], border = 2.0, border_colour = bento["indigo"]}))
 	# a thumbnail: a small cell with a seam, its ring the indigo seam while it is the one showing
 	var thumb := {&"normal": Look.flat(white, {radius = cell / 2.0, border = 1.0, border_colour = bento["seam"], pad = 4.0}), &"hover": Look.flat(bento["pastel"], {radius = cell / 2.0, border = 1.0, border_colour = bento["seam"], pad = 4.0}), &"inert": Look.flat(bento["pale"], {radius = cell / 2.0, pad = 4.0}), &"selected": Look.flat(white, {radius = cell / 2.0, border = 3.0, border_colour = bento["indigo"], pad = 4.0})}
-	Look.pressable(theme, &"GalleryThumb", thumb, {&"normal": bento["ink"], &"hover": bento["ink"], &"inert": bento["soft"], &"selected": bento["ink"]}, Look.ring(bento["indigo"], {width = 2.0, radius = cell / 2.0, inset = 2.0}))
+	Look.pressable(theme, &"GalleryThumb", thumb, {inks = {&"normal": bento["ink"], &"hover": bento["ink"], &"inert": bento["soft"], &"selected": bento["ink"]}, focus = Look.ring(bento["indigo"], {width = 2.0, radius = cell / 2.0, inset = 2.0})})
 	# the largest cells: a quick view and a drawer, each rounded as a cell is
 	Look.ground(theme, &"QuickView", Look.flat(white, {radius = 24.0, border = 1.0, border_colour = bento["seam"], pad = 26.0}))
 	var drawer := Look.flat(white, {radius = 24.0, border = 1.0, border_colour = bento["seam"], pad = 26.0})

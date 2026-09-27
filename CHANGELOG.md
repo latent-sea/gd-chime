@@ -164,6 +164,56 @@ The hosting round. Nothing grows over a session.
   this round's part 6 - each draw reads its follow's record, and each ring
   goes through the record's one arrival - accepted as the price of a
   follow keeping the work handed last.
+- THE LOOK'S HELPERS TAKE NAMED OPTIONS, as its boxes do: no more than four
+  positional parameters and no bare boolean, an option they do not know said
+  out loud. `Look.font(families, weight, italic)` is `Look.font(families,
+  {weight = 700, italic = true})`; `Look.pressable(theme, type, boxes, inks,
+  focus, base)` is `Look.pressable(theme, type, boxes, {inks = inks, focus =
+  focus, base = base})`, inks and focus required; `Look.words(theme, kind,
+  size, font, colour)` is `Look.words(theme, kind, size, {font = font, colour
+  = colour})`; `Look.line(theme, type, base, gap, justify, align)` is
+  `Look.line(theme, type, base, {gap = 8, justify = Look.END, align =
+  Look.CENTER})`, no gap when not said; `Look.marked(theme, type, mark, thick,
+  side)` is `Look.marked(theme, type, mark, {thick = 6.0, side =
+  SIDE_LEFT})`; `Look.field(theme, type, normal, focus, ink)` is
+  `Look.field(theme, type, {normal = box, focus = box}, ink)`;
+  `Paint.dashed(ink, width, dash, gap, inset, radius)` is `Paint.dashed(ink,
+  width, {dash = 8.0, gap = 6.0, inset = 0.0, radius = 0.0})`; and
+  `Paint.hatch(ink, spacing, width, diagonal)` is `Paint.hatch(ink, {spacing
+  = 4.0, width = 1.0, diagonal = true})`.
+- THE PROMPTS' FACTS ARE VALUES (`prompts.gd`): the current prompt and the
+  mutings are read as values and heard at the frame's end, one timing with
+  every other fact. `Prompts.PROMPT_MOVED` and `Prompts.MUTE_CHANGED` are
+  gone: read `get_glowing()`, `get_source()`, `get_words()` or
+  `is_muted(source)` where you draw or in a `follow()`, and what you read is
+  followed. An action control no longer listens to the prompts; it follows
+  what its draw read of them.
+- A LONG LIST'S FACTS ARE VALUES (`long_list.gd`, and `feed.gd` and
+  `growing_list.gd` over it): the look - the first row and how many show -
+  and the pages held, each on a bell of its own, heard at the frame's end.
+  `LongList.LOOK_MOVED`, `PAGE_LANDED`, `PAGE_FAILED` and
+  `FAILURES_FORGOTTEN` are gone: read `get_first()` and `get_showing()` for
+  the look, `count()`, `has()`, `get_item()` and `has_failed()` for the
+  pages, where you draw or in a `follow()`. A page landing, a page failing
+  and failures forgotten all move the pages; forgetting them on a reset or a
+  drop does not, until the pages asked for land. A virtual list follows what
+  it reads of its list rather than listening to it; a feed no longer gathers
+  its rings through a throttle, since values ring once a frame by themselves.
+- THE LANGUAGE ON IS A VALUE (`language.gd`), heard at the frame's end with
+  every other fact, at an address by name (`Language.ON`) the same in every
+  app's chimes. `Language.LANGUAGE_CHANGED` and `Language.HEARD` are gone: a
+  text follows the language because saying a phrase reads it, and listens to
+  no bell; what draws its own words reads `Language.on()` or
+  `language.get_language()` where it draws, as before. Words that are data,
+  never looked up, no longer draw again as the language moves.
+- NOTHING IS KEPT ON AN ENGINE OBJECT. The words said to be missing, which
+  app held a window's focus last, and the settings already reported are the
+  floor's own state, where they were metadata on the TranslationServer, the
+  window and the input map. `Language.MISSING` is gone: nothing outside the
+  floor reads that memory.
+- `Confirm.for_leaving(ui, proceeds, style)` takes its style as an option,
+  as `Confirm.make` does: `Confirm.for_leaving(ui, proceeds, {style =
+  &"Mine"})`.
 
 The hosting round. A pop-up wears the look it is described in.
 

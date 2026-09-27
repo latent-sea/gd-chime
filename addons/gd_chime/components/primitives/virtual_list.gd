@@ -42,7 +42,8 @@ const KeptRow := preload("kept_row.gd")
 ## (LongList.SHOWS) and builds or frees slots to match - on a resize, never
 ## on a scroll.
 
-const LIST_BELLS: Array[StringName] = [LongList.LOOK_MOVED, LongList.PAGE_LANDED, LongList.PAGE_FAILED, LongList.FAILURES_FORGOTTEN]
+## The key what it reads of the list - the look and the pages held - is followed under.
+const LIST := &"list"
 
 var _ui: RefCounted
 var _commands: Commands
@@ -61,8 +62,9 @@ var _fits: bool  # whether it shows as many rows as its height holds
 
 
 func _init(ui: RefCounted, list: LongList, template: Callable, style: StringName, in_region: StringName, cursor: Dictionary, fits: bool) -> void:
-	# the reader moving, and every bell of the list's, each a reason to see which slots have something new
-	super(chimes_of(ui), LIST_BELLS.map(func(bell: StringName) -> Array: return [list.region, bell]) + [[Chimes.GLOBAL, Driver.NAVIGATED]], in_region)
+	# the reader moving; the list's look and its pages are followed, each move a reason to see which slots have something new
+	super(chimes_of(ui), [[Chimes.GLOBAL, Driver.NAVIGATED]], in_region)
+	_chimes.follow(self, LIST, func() -> Array: return [list.get_first(), list.count()], _follow_rows)
 	_ui = ui
 	_commands = ui.commands
 	_place = ui.current_place()
@@ -222,14 +224,11 @@ func _follow_cursor() -> void:
 		_take_focus()
 
 
-## The list's bells: the slots follow it. The reader moving: the row it
-## stands at kept and found again, and, shown, a list with a cursor takes
-## the focus.
-func heard(what: StringName) -> void:
-	if LIST_BELLS.has(what):
-		_follow_rows()
+## The reader moving: the row it stands at kept and found again, and,
+## shown, a list with a cursor takes the focus.
+func heard(_what: StringName) -> void:
 	# shown, a list with a cursor is where the reader is: it takes the focus, once the place's own first focus is given
-	elif _kept.navigated(self) and _cursor != null:
+	if _kept.navigated(self) and _cursor != null:
 		_follow_cursor.call_deferred()
 		_take_focus.call_deferred()
 

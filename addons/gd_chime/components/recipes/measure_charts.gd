@@ -33,28 +33,31 @@ const TREND := &"LineChart"
 
 ## A figure's days as an area over its stretch, and, while comparing, the
 ## stretch before as a line over it.
-## Its options: says, what the chart is called; x_words and y_words, what
-## the axes are called; says_empty, the words over nothing; comparing, a
-## bound value while which the stretch before is drawn, and before_words,
-## what that stretch is called.
+## Its options, the first four required, since a chart says what it shows:
+## says, what the chart is called; x_words and y_words, what the axes are
+## called; says_empty, the words over nothing; comparing, a bound value
+## while which the stretch before is drawn - given none, it never is - and
+## before_words, a bound value of what that stretch is called.
 const OPTIONS: Array[String] = ["says", "x_words", "y_words", Options.SAYS_EMPTY, "comparing", "before_words"]
 
-static func trend(ui: Ui, measures: Measures, figure: StringName, options: Dictionary = {}) -> Desc:
+static func trend(ui: Ui, measures: Measures, figure: StringName, options: Dictionary) -> Desc:
 	Options.checked("a trend chart", options, OPTIONS)
 	var says: Variant = options["says"]
 	var x_words: Variant = options["x_words"]
 	var y_words: Variant = options["y_words"]
 	var says_empty: Variant = options[Options.SAYS_EMPTY]
-	var drawn: Bound = Bound.all([ui.bound(measures.get_figures), options["comparing"], options["before_words"]], func(figures: Variant, comparing: bool, before: Variant) -> Variant: return null if figures == null else _trend(figures[figure], comparing, says, before, x_words, y_words))
+	var comparing: Bound = options.get("comparing", Bound.constant(false))
+	var drawn: Bound = Bound.all([ui.bound(measures.get_figures), comparing, options.get("before_words", Bound.constant(null))], func(figures: Variant, compared: bool, before: Variant) -> Variant: return null if figures == null else _trend(figures[figure], compared, says, before, x_words, y_words))
 	return _stated(ui, measures, figure, drawn, says_empty)
 
 
 ## A spread's days as its middle half, an area, and its middle, a line.
-## Its options: says_middle and says_half, what the two lines are called;
-## x_words and y_words, what the axes are called; and says_empty.
+## Its options, every one required: says_middle and says_half, what the two
+## lines are called; x_words and y_words, what the axes are called; and
+## says_empty.
 const BAND_OPTIONS: Array[String] = ["says_middle", "says_half", "x_words", "y_words", Options.SAYS_EMPTY]
 
-static func band(ui: Ui, measures: Measures, figure: StringName, options: Dictionary = {}) -> Desc:
+static func band(ui: Ui, measures: Measures, figure: StringName, options: Dictionary) -> Desc:
 	Options.checked("a band chart", options, BAND_OPTIONS)
 	var says_middle: Variant = options["says_middle"]
 	var says_half: Variant = options["says_half"]

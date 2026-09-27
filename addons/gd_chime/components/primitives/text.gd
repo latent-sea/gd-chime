@@ -28,10 +28,10 @@ const DrawnReach := preload("drawn_reach.gd")
 ## in a description, by a recipe, by a model, or as the door's answer, which
 ## a reason shows. Anything else - a string above all - is data, shown as it
 ## is however like a word it looks. The text says a phrase in the language
-## on each time it draws,
-## and every text the builder makes hears the language change and draws
-## again, in place: nothing holds words finished in a language no longer
-## on, and nothing is built again. The engine is told never to translate a
+## on each time it draws, and saying it reads the language on, a value
+## (language.gd), so the text follows it and draws again, in place, as it
+## follows any value it read: nothing holds words finished in a language no
+## longer on, and nothing is built again. The engine is told never to translate a
 ## label itself: it would take a reader's data spelled like a key - a crate
 ## called "won" - for a word.
 ##
@@ -102,10 +102,6 @@ func get_reach(side: int) -> float:
 		reach_count += 1
 		_reach = DrawnReach.walked(self, DrawnReach.worn(self))
 	return _reach[side]
-
-
-func heard(_what: StringName) -> void:
-	needs_refresh()
 
 
 ## Hidden while empty, its own draw is what shows it again (presentation.gd).
@@ -190,8 +186,5 @@ func _settled() -> void:
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	var content: Variant = ui.current_pressable().reason() if desc.kind == &"reason" else desc.props["content"]
 	var made: Control = ui.primitive(&"text").new(ui.chimes, content, desc.props["style"], ui.region(), desc.kind == &"reason" or desc.props["hides_empty"], desc.kind == &"reason" or desc.props.get("wraps", false))
-	# every text reads again when the language changes, whatever its words were worded by
-	if not made.listening_to().has(Language.LANGUAGE_CHANGED):
-		made.listen_to(Chimes.GLOBAL, Language.LANGUAGE_CHANGED)
 	ui.attach(made, parent, desc.facts)
 	return made

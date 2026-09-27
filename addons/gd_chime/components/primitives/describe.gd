@@ -150,14 +150,15 @@ func virtual_list(list: Object, template: Callable, style: StringName = &"Column
 
 ## A line of cells at their columns' widths, on a ground (cells.gd): a
 ## part per column, named in order, and the columns shown - a bound value
-## of [{name, share}]. Its options: samples, the words each column may
-## hold, {column: {"words"}}, one dictionary shared by every line of a
-## table, which keeps their measures; words_kind, the kind they are
+## of [{name, share}]. Its options, the first two required, since a column
+## is as wide as the widest words it may hold: samples, the words each
+## column may hold, {column: {"words"}}, one dictionary shared by every line
+## of a table, which keeps their measures; words_kind, the kind they are
 ## measured in; ground, what the line is drawn on; and edges, an edge per
 ## part standing after its column.
 const CELLS_OPTIONS: Array[String] = ["samples", "words_kind", "ground", "edges"]
 
-func cells(parts: Array, names: Array, columns: Bound, options: Dictionary = {}) -> Desc:
+func cells(parts: Array, names: Array, columns: Bound, options: Dictionary) -> Desc:
 	Options.checked("a line of cells", options, CELLS_OPTIONS)
 	var edges: Array = options.get("edges", [])
 	return Desc.new(&"cells", {"names": names, "columns": columns, "samples": options["samples"], "words_kind": options["words_kind"], "ground": options.get("ground"), "edges": edges.size()}, parts + edges)
@@ -198,22 +199,24 @@ func keyframes(content: Array, frames: Array, lasts: StringName, options: Dictio
 
 ## A canvas the reader pans, zooms and picks on: the actions, as
 ## {pans, zooms, picks}, are the model's that holds the view. Its options:
-## hit, which answers what is under a point, and style.
+## hit, which answers what is under a point - given none, a press picks
+## nothing - and style.
 const PAN_ZOOM_OPTIONS: Array[String] = ["hit", Options.STYLE]
 
 func pan_zoom(paint: Callable, content: Variant, actions: Dictionary, options: Dictionary = {}) -> Desc:
 	Options.checked("a panned canvas", options, PAN_ZOOM_OPTIONS)
-	return Desc.new(&"pan_zoom", {"paint": paint, "content": content, "actions": actions, "hit": options["hit"], "style": options.get(Options.STYLE, &"")})
+	return Desc.new(&"pan_zoom", {"paint": paint, "content": content, "actions": actions, "hit": options.get("hit", Callable()), "style": options.get(Options.STYLE, &"")})
 
 
 ## A drawing with parts pinned on it (pinned.gd): paint draws in the unit
 ## square fitted to it, and each part stands on its point of that square -
-## the keys and the pad walking the parts. Its options: points, one per
-## part; picks, the action a press on the drawing itself dispatches with
-## {"picked": hit(point)}, nothing where hit answers none; hit; and style.
+## the keys and the pad walking the parts. Its options, all but style
+## required: points, one per part; picks, the action a press on the drawing
+## itself dispatches with {"picked": hit(point)}, nothing where hit answers
+## none; hit; and style.
 const PINNED_OPTIONS: Array[String] = ["points", "picks", "hit", Options.STYLE]
 
-func pinned(paint: Callable, content: Variant, parts: Array, options: Dictionary = {}) -> Desc:
+func pinned(paint: Callable, content: Variant, parts: Array, options: Dictionary) -> Desc:
 	Options.checked("a pinned drawing", options, PINNED_OPTIONS)
 	return Desc.new(&"pinned", {"paint": paint, "content": content, "points": options["points"], "picks": options["picks"], "hit": options["hit"], "style": options.get(Options.STYLE, &"")}, parts)
 

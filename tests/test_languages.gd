@@ -9,8 +9,9 @@ const Actions := preload("res://addons/gd_chime/actions.gd")
 ## where it matches a catalogue word; a reason is words, its pattern
 ## translated and a name in it kept as it is; a refusal with a number in it
 ## leaves nothing behind that grows; two patterns that read the same in
-## English stay apart in every language; a change rings one bell, whoever
-## made it - the locale is the game's, read and never set; a count
+## English stay apart in every language; a change moves the language on,
+## a value, once, whoever made it - the locale is the game's, read and never
+## set; a text follows it as it follows any value, listening to no bell; a count
 ## of none says its own words where it has them, and one and many are the
 ## catalogue's plural, in each language by its own rule; a number, money and
 ## a date are written as the language writes them; a word the catalogue lacks is said out loud once and
@@ -30,7 +31,6 @@ const Actions := preload("res://addons/gd_chime/actions.gd")
 const Fixture := preload("res://tests/fixture.gd")
 const Themes := preload("res://addons/gd_chime/theme.gd")
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
-const Controller := preload("res://addons/gd_chime/controller.gd")
 const Bound := preload("res://addons/gd_chime/components/primitives/bound.gd")
 const Desc := preload("res://addons/gd_chime/components/primitives/desc.gd")
 const Text := preload("res://addons/gd_chime/components/primitives/text.gd")
@@ -89,14 +89,6 @@ class Hearing extends Logger:
 		return said.filter(func(one: String) -> bool: return one.contains("catalogue has no"))
 
 
-## How many times the language's bell has rung.
-class Ears extends Controller:
-	var rang: int = 0
-
-	func heard(_what: StringName) -> void:
-		rang += 1
-
-
 ## A model with every read these properties show.
 class Shown extends Fixture.Model:
 	func get_sections() -> Variant: return of(&"sections").read()
@@ -137,7 +129,7 @@ func _init() -> void:
 	await _verdict.states(_two_patterns_that_read_the_same_in_english_stay_apart_in_every_language)
 	await _verdict.states(_every_word_the_floor_s_recipes_show_is_in_its_french_catalogue)
 	await _verdict.states(_the_grid_s_and_the_shell_s_words_are_in_the_french_catalogue_too)
-	await _verdict.states(_a_change_rings_language_changed_once_and_only_when_the_language_moves)
+	await _verdict.states(_a_change_moves_the_language_on_once_and_only_when_it_moves)
 	await _verdict.states(_the_language_is_the_game_s_locale_read_never_set_and_followed_whoever_sets_it)
 	await _verdict.states(_a_count_of_none_says_its_own_words_and_one_and_many_are_the_catalogue_s_plural_in_each_language)
 	await _verdict.states(_numbers_money_and_dates_are_written_as_the_language_writes_them)
@@ -409,7 +401,7 @@ func _a_refusal_with_a_number_in_it_leaves_nothing_behind_that_grows() -> void:
 		await process_frame
 		if left == 9 or left == 199:
 			await _a_frame_passes()
-			counts.append([Performance.get_monitor(Performance.OBJECT_COUNT), TranslationServer.get_meta(Language.MISSING).size()])
+			counts.append([Performance.get_monitor(Performance.OBJECT_COUNT), Language._said_missing.size()])
 	_verdict.check(reason.get_text() == "plus que 199", "in French, the reason says the last refusal, its pattern translated and its number put in: %s" % reason.get_text())
 	_verdict.check(counts[1] == counts[0], "and after 190 more refusals, each with its own number, as many objects are alive and as many words said missing as after the first ten - [objects, missing]: %s" % [counts])
 	await _change(made, Language.SOURCE)
@@ -434,17 +426,17 @@ func _two_patterns_that_read_the_same_in_english_stay_apart_in_every_language() 
 	made.done()
 
 
-func _a_change_rings_language_changed_once_and_only_when_the_language_moves() -> void:
+func _a_change_moves_the_language_on_once_and_only_when_it_moves() -> void:
 	var made := Fixture.new(root)
-	var ears := Ears.new(made.chimes, [Language.HEARD])
+	var ears := Fixture.Heard.new(made.chimes, made.ui.language.get_language)
 	await _change(made, &"fr")
-	_verdict.check(ears.rang == 1 and Language.current() == &"fr" and made.ui.language.get_language() == &"fr", "changed into French, the bell rang once and the language on is French: %d" % ears.rang)
+	_verdict.check(ears.rung == 1 and Language.current() == &"fr" and made.ui.language.get_language() == &"fr", "changed into French, the language on moved once, and is French: %d" % ears.rung)
 	await _change(made, &"fr")
-	_verdict.check(ears.rang == 1, "changed into the language already on, nothing moved and nothing rang: %d" % ears.rang)
+	_verdict.check(ears.rung == 1, "changed into the language already on, nothing moved: %d" % ears.rung)
 	var refused := await _change(made, &"de")
-	_verdict.check(str(refused) == "There are no words in de" and ears.rang == 1 and Language.current() == &"fr", "a language there are no words for is refused, in English as the door carries it, and nothing rang: %s" % refused)
+	_verdict.check(str(refused) == "There are no words in de" and ears.rung == 1 and Language.current() == &"fr", "a language there are no words for is refused, in English as the door carries it, and nothing moved: %s" % refused)
 	await _change(made, Language.SOURCE)
-	_verdict.check(ears.rang == 2 and Language.current() == Language.SOURCE, "changed back, it rang once more: %d" % ears.rang)
+	_verdict.check(ears.rung == 2 and Language.current() == Language.SOURCE, "changed back, it moved once more: %d" % ears.rung)
 	ears.free()
 	made.done()
 
@@ -456,17 +448,18 @@ func _a_change_rings_language_changed_once_and_only_when_the_language_moves() ->
 func _the_language_is_the_game_s_locale_read_never_set_and_followed_whoever_sets_it() -> void:
 	TranslationServer.set_locale("fr_FR")
 	var made := Fixture.new(root)
-	var ears := Ears.new(made.chimes, [Language.HEARD])
+	var ears := Fixture.Heard.new(made.chimes, made.ui.language.get_language)
 	made.ui.start(made.ui.app(&"app", [made.ui.text(Phrase.of("save")).named(&"word")]))
 	await _a_frame_passes()
 	var word: Text = made.ui.node_named(&"word")
 	_verdict.check(TranslationServer.get_locale() == "fr_FR" and made.ui.language.get_language() == &"fr" and word.get_text() == "enregistrer", "made and started under the game's fr_FR, the language set nothing, is French, and says it: %s %s %s" % [TranslationServer.get_locale(), made.ui.language.get_language(), word.get_text()])
 	TranslationServer.set_locale("en_GB")
+	_verdict.check(word.get_text() == "enregistrer" and word.listening_to().is_empty(), "the text listens to no bell, and has not moved the instant the locale did: the language on is a value, heard at the frame's end: %s %s" % [word.get_text(), word.listening_to()])
 	await _a_frame_passes()
-	_verdict.check(ears.rang == 1 and made.ui.language.get_language() == Language.SOURCE and word.get_text() == "save", "the game setting its locale itself, the bell rang once, the language on is English and the words followed: %d %s %s" % [ears.rang, made.ui.language.get_language(), word.get_text()])
+	_verdict.check(ears.rung == 1 and made.ui.language.get_language() == Language.SOURCE and word.get_text() == "save", "the game setting its locale itself, the language on moved once, is English, and the words followed: %d %s %s" % [ears.rung, made.ui.language.get_language(), word.get_text()])
 	await _change(made, Language.PSEUDO)
 	await _change(made, &"fr")
-	_verdict.check(ears.rang == 3 and TranslationServer.get_locale() == "fr" and not TranslationServer.pseudolocalization_enabled, "a choice into the pseudo-locale and out of it into French - two settings of the engine's each - rang once each: %d" % ears.rang)
+	_verdict.check(ears.rung == 3 and TranslationServer.get_locale() == "fr" and not TranslationServer.pseudolocalization_enabled, "a choice into the pseudo-locale and out of it into French - two settings of the engine's each - moved it once each: %d" % ears.rung)
 	await _change(made, Language.SOURCE)
 	ears.free()
 	made.done()

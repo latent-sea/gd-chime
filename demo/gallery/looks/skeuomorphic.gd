@@ -71,9 +71,9 @@ func _init() -> void:
 	# the spacing scale: panelled things want a little air between them
 	for line: StringName in [Themes.ROW, Themes.COLUMN]:
 		set_constant(&"gap", line, 14)
-	Look.line(self, Pressables.PROMPT_BAR, Themes.ROW, 18, Look.CENTER)
-	Look.line(self, &"Chips", Themes.TILES, 10)
-	Look.line(self, &"AmountField", Themes.ROW, 10, Look.START, Look.CENTER)
+	Look.line(self, Pressables.PROMPT_BAR, Themes.ROW, {gap = 18, justify = Look.CENTER})
+	Look.line(self, &"Chips", Themes.TILES, {gap = 10})
+	Look.line(self, &"AmountField", Themes.ROW, {gap = 10, justify = Look.START, align = Look.CENTER})
 	# a slow warm pulse, as a lamp behind glass rather than a blink
 	set_constant(&"period", Themes.PULSE, 1600)
 	set_constant(&"depth", Themes.PULSE, 40)
@@ -93,10 +93,10 @@ func _plates() -> void:
 		&"glowing": plate(&"brass_top", &"brass_bottom", RADIUS, 12.0, false, 3.0),
 	}
 	var inks := {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": DEAD_INK, &"glowing": WALNUT}
-	Look.pressable(self, Themes.PRESSABLE, boxes, inks, focus_ring(RADIUS), &"Control")
+	Look.pressable(self, Themes.PRESSABLE, boxes, {inks = inks, focus = focus_ring(RADIUS), base = &"Control"})
 	# every other kind of pressable wears the same plate, and is told so, or the engine has no ink for its words
 	for same: StringName in [Pressables.BUTTON, &"NavPlay", &"Relative", &"Choice", &"Picker"]:
-		Look.pressable(self, same, boxes, inks, focus_ring(RADIUS))
+		Look.pressable(self, same, boxes, {inks = inks, focus = focus_ring(RADIUS)})
 	# a tab: an index-card divider standing out of the counter, the one you are on in the counter's own leather, taller, merged into it
 	var tabs := {
 		&"normal": divider(Color("#c3ab7f"), 10.0),
@@ -105,21 +105,21 @@ func _plates() -> void:
 		&"glowing": divider(PALETTE[&"brass_top"], 10.0),
 		&"current": Look.flap(COUNTER, {radius = 9.0, pad_top = 22.0, pad = 14.0}),
 	}
-	Look.pressable(self, &"Tab", tabs, {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": PALETTE[&"ink"], &"glowing": WALNUT, &"current": PALETTE[&"lit"]}, focus_ring(4.0))
+	Look.pressable(self, &"Tab", tabs, {inks = {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": PALETTE[&"ink"], &"glowing": WALNUT, &"current": PALETTE[&"lit"]}, focus = focus_ring(4.0)})
 	# a chip: the same plate, small and fully rounded, as a stud
 	Look.pressable(self, &"Chip", {
 		&"normal": plate(&"face_top", &"face_bottom", 9.0, 9.0),
 		&"hover": plate(&"pressed_top", &"pressed_bottom", 9.0, 9.0, true),
 		&"inert": dead(9.0, 9.0),
 		&"glowing": plate(&"brass_top", &"brass_bottom", 9.0, 9.0, false, 3.0),
-	}, {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": DEAD_INK, &"glowing": WALNUT}, focus_ring(9.0))
+	}, {inks = {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": DEAD_INK, &"glowing": WALNUT}, focus = focus_ring(9.0)})
 	# an inline word: no plate at all, an underlined line of ink, as printed text
 	Look.pressable(self, &"NavInline", {
 		&"normal": Look.layered(self, [Paint.underline(&"amber_deep", 2.0, 2.0)], 8.0),
 		&"hover": Look.layered(self, [Paint.underline(&"accent", 3.0, 2.0)], 8.0),
 		&"inert": Look.layered(self, [], 8.0),
 		&"glowing": Look.layered(self, [Paint.underline(&"accent", 3.0, 2.0)], 8.0),
-	}, {&"normal": Color("#7a4f10"), &"hover": Color("#8a5a14"), &"inert": DEAD_INK, &"glowing": Color("#7a4f10")}, focus_ring(4.0))
+	}, {inks = {&"normal": Color("#7a4f10"), &"hover": Color("#8a5a14"), &"inert": DEAD_INK, &"glowing": Color("#7a4f10")}, focus = focus_ring(4.0)})
 	# a listed card and a tile: a wide plate, softer cornered, roomier inside
 	for card: StringName in [&"CardList", &"CardTile", &"CardDense"]:
 		Look.pressable(self, card, {
@@ -127,7 +127,7 @@ func _plates() -> void:
 			&"hover": plate(&"card_lit_top", &"card_lit_bottom", 6.0, 16.0),
 			&"inert": dead(6.0, 16.0),
 			&"glowing": plate(&"brass_top", &"brass_bottom", 6.0, 16.0, false, 3.0),
-		}, {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": DEAD_INK, &"glowing": WALNUT}, focus_ring(6.0))
+		}, {inks = {&"normal": PALETTE[&"ink"], &"hover": PALETTE[&"ink"], &"inert": DEAD_INK, &"glowing": WALNUT}, focus = focus_ring(6.0)})
 
 
 ## Every surface: leather, walnut or tan board, stitched where it is a panel.
@@ -177,13 +177,13 @@ func _type(serif: Font, sans: Font) -> void:
 	set_color(&"font_color", &"Label", PALETTE[&"ink"])
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, PALETTE[&"ink"])
-	Look.words(self, Themes.TITLE, 24, Look.font(["Georgia", "Cambria", "Times New Roman"], 700), WALNUT)
-	Look.words(self, Themes.WORDS, 34, serif, WALNUT)
-	Look.words(self, Themes.FACE, 26, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.REASON, 19, sans, PALETTE[&"ink_soft"])
-	Look.words(self, READOUT, 21, sans, PALETTE[&"ink_soft"])
-	Look.words(self, LINE, 23, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.NUMBER, 88, Look.font(["Georgia", "Cambria", "Times New Roman"], 700), WALNUT)
+	Look.words(self, Themes.TITLE, 24, {font = Look.font(["Georgia", "Cambria", "Times New Roman"], {weight = 700}), colour = WALNUT})
+	Look.words(self, Themes.WORDS, 34, {font = serif, colour = WALNUT})
+	Look.words(self, Themes.FACE, 26, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.REASON, 19, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, READOUT, 21, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, LINE, 23, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.NUMBER, 88, {font = Look.font(["Georgia", "Cambria", "Times New Roman"], {weight = 700}), colour = WALNUT})
 
 
 ## A plate: a vertical gradient, a bevel raised - or sunken, pressed - and a
@@ -232,7 +232,7 @@ func focus_ring(radius: float) -> StyleBox:
 
 ## A stitched edge: the dashed painter run on the rect pulled this far in.
 func stitch(thread: StringName, inset: float) -> Callable:
-	var dashes := Paint.dashed(thread, 2.0, 7.0, 6.0)
+	var dashes := Paint.dashed(thread, 2.0, {dash = 7.0, gap = 6.0})
 	return func(canvas: RID, rect: Rect2, theme: Theme) -> void:
 		dashes.call(canvas, rect.grow(-inset), theme)
 

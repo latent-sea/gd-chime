@@ -201,12 +201,14 @@ func _the_settings_it_needs_are_reported_once_and_set_only_on_request() -> void:
 	InputMap.action_erase_events(NeededSettings.ACCEPT)
 	var missing := NeededSettings.missing()
 	_verdict.check(missing.size() == 2 and missing[0].contains(NeededSettings.STRETCH) and missing[0].contains("\"disabled\"") and missing[1].contains(NeededSettings.ACCEPT) and missing[1].contains("button 0"), "a stretched window and an accept with no pad button are each named with the value wanted: %s" % [missing])
-	InputMap.set_meta(NeededSettings.SAID, {})
+	NeededSettings._said = {}
 	var warned := _hearing.warned.size()
+	var metas := InputMap.get_meta_list()
 	await _standing()
 	_done()
-	var said: Dictionary = InputMap.get_meta(NeededSettings.SAID)
+	var said: Dictionary = NeededSettings._said
 	_verdict.check(said.size() == 2, "two apps entering said each missing setting once, not twice: %d" % said.size())
+	_verdict.check(InputMap.get_meta_list() == metas, "and what was said is the floor's to remember, never kept on the input map: %s" % [InputMap.get_meta_list()])
 	_verdict.check(_hearing.warned.size() == warned + 2 and _hearing.warned.slice(warned).all(func(one: String) -> bool: return one.contains("GdChime.apply_project_settings(get_window())")), "and each says the call that sets it, with its argument: %s" % [_hearing.warned.slice(warned)])
 	_verdict.check(ProjectSettings.get_setting(NeededSettings.STRETCH) == "canvas_items" and InputMap.action_get_events(NeededSettings.ACCEPT).is_empty(), "and an app entering set nothing")
 	NeededSettings.apply(root)

@@ -1,7 +1,6 @@
 extends "controller.gd"
 
 const Actions := preload("actions.gd")
-const Reads := preload("reads.gd")
 
 ## Which action is being prompted, and the words that go with it: one at a
 ## time, chosen from every source that has something to say.
@@ -40,27 +39,27 @@ const Reads := preload("reads.gd")
 ## whoever composes the application. A source this was not built with is
 ## refused, out loud and as the answer.
 ##
-## Two bells, both in the global region, since there is one of these per
-## application and it outlives every screen. PROMPT_MOVED sounds whenever the
-## current prompt changes - a different action, a different source, or none -
-## and never for a change that leaves it as it was.
-## MUTE_CHANGED sounds whenever a source is muted or unmuted, whether or not the
-## current prompt moved, so a switch showing it follows a change made anywhere.
-## Every read notes the two (reads.gd), so whatever shows the words or a
-## switch follows them and lists nothing.
+## TWO FACTS, EACH A VALUE, one timing with every other fact: the current
+## prompt - its action and its source - set whenever it changes, a different
+## action, a different source, or none, and never for a change that leaves it
+## as it was; and the sources muted, set whenever one is muted or unmuted,
+## whether or not the current prompt moved, so a switch showing it follows a
+## change made anywhere. The prompt rings a bell of its own, so what shows the
+## prompt is not woken by a muting that left it where it was. In the global
+## region, since there is one of these per application and it outlives every
+## screen.
 ##
-## It decides and rings; it calls nothing. A control that performs an action
-## is handed this, reads get_glowing() as it arrives and again when the bell
-## sounds, and glows while the action is its own. Whatever shows the words
-## reads get_words() the same way. Calls go one way, toward what holds the fact.
+## It decides; it calls nothing. A control that performs an action is handed
+## this, reads get_glowing() as it draws, and glows while the action is its
+## own; the read is followed, as every read of a value is. Whatever shows the
+## words reads get_words() the same way. Calls go one way, toward what holds
+## the fact.
 ##
 ## Deliberately absent: how a glowing control flashes, which is the control's
 ## own drawing; which untaken action to remind the player of, which reads the
 ## map; finding the way back to a step, which is routing; and where the words
 ## are drawn.
 
-const PROMPT_MOVED := &"prompt_moved"
-const MUTE_CHANGED := &"mute_changed"
 ## The two commands this is told, each carrying the source as {source}.
 const MUTES := &"mutes"
 const UNMUTES := &"unmutes"
@@ -68,13 +67,15 @@ const UNMUTES := &"unmutes"
 var _actions: Actions
 var _sources: Array[StringName] = []
 var _raised: Dictionary = {}  # source -> action, for every source with a prompt raised
-var _muted: Dictionary = {}  # the sources muted, used as a set
-var _source: StringName = &""
-var _glowing: StringName = &""
+var _moved := OwnBell.new("prompt")  # the bell the current prompt rings, apart from the mutings
+var _source := value(&"", _moved)  # where the current prompt came from, or an empty name for none
+var _glowing := value(&"", _moved)  # the action the current prompt names, or an empty name for none
+var _muted := value({})  # the sources muted, used as a set: changed in place and set again
 
 
 func _init(chimes: Chimes, actions: Actions, sources: Array[StringName]) -> void:
 	super(chimes, [], Chimes.GLOBAL)
+	_moved.hang(chimes)
 	_actions = actions
 	# each source named, keeping the first of one named twice and refusing the repeat
 	for source: StringName in sources:
@@ -82,8 +83,6 @@ func _init(chimes: Chimes, actions: Actions, sources: Array[StringName]) -> void
 			push_error("the prompts' source %s is named twice" % source)
 		else:
 			_sources.append(source)
-	register_bell(PROMPT_MOVED)
-	register_bell(MUTE_CHANGED)
 
 
 ## Ask for this action to be noticed. Whatever this source had raised before
@@ -108,19 +107,19 @@ func withdraw(source: StringName) -> void:
 
 ## Mute this source, or unmute it. Its prompt, if it has one, is kept either way.
 func set_muted(source: StringName, muted: bool) -> void:
-	if not _knows(source) or muted == _muted.has(source):
+	var held: Dictionary = _muted.read()
+	if not _knows(source) or muted == held.has(source):
 		return
 	if muted:
-		_muted[source] = true
+		held[source] = true
 	else:
-		_muted.erase(source)
+		held.erase(source)
+	_muted.set_value(held)
 	_choose()
-	strike(region, MUTE_CHANGED)
 
 
 func is_muted(source: StringName) -> bool:
-	_noted()
-	return _muted.has(source)
+	return _muted.read().has(source)
 
 
 ## A mute or an unmute was dispatched for a source: done, or refused for a
@@ -135,26 +134,18 @@ func told(action: StringName, payload: Dictionary) -> Phrase:
 
 ## The action whose controls should glow, or an empty name for none.
 func get_glowing() -> StringName:
-	_noted()
-	return _glowing
+	return _glowing.read()
 
 
 ## The words saying what it does, the register's, or nothing.
 func get_words() -> String:
-	_noted()
-	return _actions.get_words(_glowing) if _glowing != &"" else ""
+	var glowing: StringName = _glowing.read()
+	return _actions.get_words(glowing) if glowing != &"" else ""
 
 
 ## The source the current prompt came from, or an empty name for none.
 func get_source() -> StringName:
-	_noted()
-	return _source
-
-
-## A read of the prompts moves as a prompt moves or a muting changes: both noted for whoever reads.
-func _noted() -> void:
-	Reads.note(region, PROMPT_MOVED)
-	Reads.note(region, MUTE_CHANGED)
+	return _source.read()
 
 
 ## Whether this was built with the source; one it was not is refused out loud.
@@ -165,18 +156,18 @@ func _knows(source: StringName) -> bool:
 	return false
 
 
-## The current prompt worked out again, and the bell struck if it is not what it was.
+## The current prompt worked out again, and set if it is not what it was.
 func _choose() -> void:
 	var source := &""
 	var glowing := &""
+	var muted: Dictionary = _muted.read()
 	# the sources in the order they win, for the first with a prompt raised and not muted
 	for named: StringName in _sources:
-		if _raised.has(named) and not _muted.has(named):
+		if _raised.has(named) and not muted.has(named):
 			source = named
 			glowing = _raised[named]
 			break
-	if source == _source and glowing == _glowing:
+	if source == _source.read() and glowing == _glowing.read():
 		return
-	_source = source
-	_glowing = glowing
-	strike(region, PROMPT_MOVED)
+	_source.set_value(source)
+	_glowing.set_value(glowing)

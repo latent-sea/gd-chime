@@ -83,14 +83,15 @@ func slider(action: StringName, value: Bound, options: Dictionary = {}) -> Desc:
 
 
 ## A row a finger swipes (swipe.gd): tapped, a press of this action with
-## this payload. Its options: sides, {Swipe.RIGHT: action, Swipe.LEFT:
+## this payload. Its options, the first two required, since a row swiped to
+## nothing is a pressable: sides, {Swipe.RIGHT: action, Swipe.LEFT:
 ## action}, dispatched when the row is drawn across and let go past the
-## look's share, with the same payload; reveals, {side: description},
-## standing where the row slid from; style; and goes_to, where the tap
-## goes. Its place declares every one of them.
+## look's share, with the same payload; reveals, {side: description} for
+## every side, standing where the row slid from; style; and goes_to, where
+## the tap goes. Its place declares every one of them.
 const SWIPE_OPTIONS: Array[String] = ["sides", "reveals", Options.STYLE, Options.GOES_TO]
 
-func swipe(action: StringName, payload: Variant, content: Desc, options: Dictionary = {}) -> Desc:
+func swipe(action: StringName, payload: Variant, content: Desc, options: Dictionary) -> Desc:
 	Options.checked("a swiped row", options, SWIPE_OPTIONS)
 	var sides: Dictionary = options["sides"]
 	var reveals: Dictionary = options["reveals"]

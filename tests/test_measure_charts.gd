@@ -65,7 +65,7 @@ func _incidents(each_day: int) -> PackedRows:
 
 
 ## Measures over these rows and a chart of them built: [made, comparing, measures, the chart's holder].
-func _charted(rows: PackedRows, band: bool) -> Array:
+func _charted(rows: PackedRows, band: bool, compares: bool = true) -> Array:
 	var made := Fixture.new(root)
 	var ui := made.ui
 	var budget := FrameBudget.new(made.chimes, 16.0, 0.9, 3)
@@ -80,7 +80,10 @@ func _charted(rows: PackedRows, band: bool) -> Array:
 	# whether the dashboard compares, and what it calls the stretch before: the caller's, as a card's and a bar's are
 	var comparing := ui.local(false)
 	var before := ui.bound(func() -> Phrase: return Phrase.of("The 7 days before"))
-	var chart := MeasureCharts.band(ui, measures, &"repair", {says_middle = Phrase.of("the middle repair"), says_half = Phrase.of("the middle half"), x_words = "days", y_words = "hours", says_empty = Phrase.of("nothing was repaired")}) if band else MeasureCharts.trend(ui, measures, &"reported", {says = Phrase.of("incidents"), x_words = "days", y_words = "incidents", says_empty = Phrase.of("no incidents"), comparing = comparing, before_words = before})
+	var said := {says = Phrase.of("incidents"), x_words = "days", y_words = "incidents", says_empty = Phrase.of("no incidents")}
+	if compares:
+		said.merge({comparing = comparing, before_words = before})
+	var chart := MeasureCharts.band(ui, measures, &"repair", {says_middle = Phrase.of("the middle repair"), says_half = Phrase.of("the middle half"), x_words = "days", y_words = "hours", says_empty = Phrase.of("nothing was repaired")}) if band else MeasureCharts.trend(ui, measures, &"reported", said)
 	ui.start(ui.app(&"app", [ui.column([chart.grow()]).named(&"chart")]))
 	return [made, comparing, measures, ui.node_named(&"chart")]
 
@@ -125,6 +128,11 @@ func _a_trend_lays_the_stretch_before_over_it_only_while_comparing() -> void:
 	var laid: Variant = drawn["series"][1] if drawn["series"].size() > 1 else null
 	_verdict.check(laid != null and str(laid["name"]) == "The 7 days before" and laid["points"].size() == 7 and not laid.has("under"), "comparing, the stretch before is laid over it as a line, called as the caller calls it: %s" % [drawn["series"]])
 	(built[0] as Fixture).done()
+	var alone: Array = _charted(_incidents(4), false, false)
+	await _landed(alone[2])
+	var plotted: Variant = _plot(alone[3])
+	_verdict.check(plotted != null and plotted["chart"]["series"].size() == 1, "given nothing to compare by, a trend is its own stretch alone: %s" % [plotted])
+	(alone[0] as Fixture).done()
 
 
 func _a_band_is_the_middle_half_as_an_area_and_the_middle_as_a_line() -> void:

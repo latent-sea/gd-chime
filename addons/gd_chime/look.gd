@@ -70,12 +70,14 @@ static func worn_by(node: Node) -> Theme:
 	return null
 
 
-## A system font by family, the first the machine has.
-static func font(families: Array[String], weight: int = 400, italic: bool = false) -> SystemFont:
+## A system font by family, the first the machine has; by option its
+## weight and whether it is italic.
+static func font(families: Array[String], options: Dictionary = {}) -> SystemFont:
+	var with := _options(options, {"weight": 400, "italic": false}, "a font")
 	var found := SystemFont.new()
 	found.font_names = PackedStringArray(families)
-	found.font_weight = weight
-	found.font_italic = italic
+	found.font_weight = with["weight"]
+	found.font_italic = with["italic"]
 	return found
 
 
@@ -96,11 +98,15 @@ static func dress(theme: Theme, script: String) -> void:
 		theme.default_font = theme.get_font(script, FONTS)
 
 
-## A pressable's states and its focus, under this type: a box and an ink
-## per state, the focus box over whichever shows. A look that draws no
-## selected - a local press's chosen one - has it drawn as its glowing.
-static func pressable(theme: Theme, type: StringName, boxes: Dictionary, inks: Dictionary, focus: StyleBox, base: StringName = Themes.PRESSABLE) -> void:
-	_vary(theme, type, base)
+## A pressable's states and its focus, under this type: a box per state,
+## and by option the ink per state and the focus box drawn over whichever
+## shows - both required - and the type it varies, the pressable's own
+## unless given. A look that draws no selected - a local press's chosen
+## one - has it drawn as its glowing.
+static func pressable(theme: Theme, type: StringName, boxes: Dictionary, options: Dictionary) -> void:
+	Options.checked("a pressable's look", options, ["inks", "focus", "base"])
+	var inks: Dictionary = options["inks"]
+	_vary(theme, type, options.get("base", Themes.PRESSABLE))
 	# every state the look draws, its box and its ink
 	for state: StringName in boxes:
 		theme.set_stylebox(state, type, boxes[state])
@@ -108,25 +114,28 @@ static func pressable(theme: Theme, type: StringName, boxes: Dictionary, inks: D
 	if boxes.has(&"glowing") and not boxes.has(&"selected"):
 		theme.set_stylebox(&"selected", type, boxes[&"glowing"])
 		theme.set_color(&"font_color_selected", type, inks[&"glowing"])
-	theme.set_stylebox(&"focus", type, focus)
+	theme.set_stylebox(&"focus", type, options["focus"])
 
 
-## A kind of words: its size, and its font and colour when given.
-static func words(theme: Theme, kind: StringName, size: int, family: Font = null, colour: Variant = null) -> void:
+## A kind of words: its size, and by option its font and colour.
+static func words(theme: Theme, kind: StringName, size: int, options: Dictionary = {}) -> void:
+	var with := _options(options, {"font": null, "colour": null}, "a kind of words")
 	theme.set_type_variation(kind, &"Label")
 	theme.set_font_size(&"font_size", kind, size)
-	if family != null:
-		theme.set_font(&"font", kind, family)
-	if colour != null:
-		theme.set_color(&"font_color", kind, colour)
+	if with["font"] != null:
+		theme.set_font(&"font", kind, with["font"])
+	if with["colour"] != null:
+		theme.set_color(&"font_color", kind, with["colour"])
 
 
-## A line layout: its gap, and how it packs and lines up, in the flex layout's own constants.
-static func line(theme: Theme, type: StringName, base: StringName, gap: int, justify: int = START, align: int = STRETCH) -> void:
+## A line layout: by option its gap, and how it packs and lines up, in the
+## flex layout's own constants.
+static func line(theme: Theme, type: StringName, base: StringName, options: Dictionary = {}) -> void:
+	var with := _options(options, {"gap": 0, "justify": START, "align": STRETCH}, "a line layout")
 	_vary(theme, type, base)
-	theme.set_constant(&"gap", type, gap)
-	theme.set_constant(&"justify", type, justify)
-	theme.set_constant(&"align", type, align)
+	theme.set_constant(&"gap", type, with["gap"])
+	theme.set_constant(&"justify", type, with["justify"])
+	theme.set_constant(&"align", type, with["align"])
 
 
 ## Everything marked as chosen, from the look's own pressable: a toggle
@@ -144,19 +153,22 @@ static func toggle(theme: Theme, mark: Variant, thick: float = 6.0) -> void:
 		# every state the look draws, its own box, so an option is dressed like every other press on the screen
 		for state: StringName in theme.get_stylebox_list(Themes.PRESSABLE):
 			theme.set_stylebox(state, plain, theme.get_stylebox(state, Themes.PRESSABLE))
-	marked(theme, Pressables.TOGGLE_ON, mark, thick)
-	marked(theme, Pressables.CHOICE_CHOSEN, mark, thick)
+	marked(theme, Pressables.TOGGLE_ON, mark, {thick = thick})
+	marked(theme, Pressables.CHOICE_CHOSEN, mark, {thick = thick})
 	# every chosen inline option, marked on the side it carries its bar, and drawn selected as it is drawn normal: the chosen look is the same whoever chose (press_local.gd)
 	for chosen: StringName in Pressables.BARS:
-		marked(theme, chosen, mark, thick, Pressables.BARS[chosen])
+		marked(theme, chosen, mark, {thick = thick, side = Pressables.BARS[chosen]})
 		theme.set_stylebox(&"selected", chosen, theme.get_stylebox(&"normal", chosen))
 		theme.set_color(&"font_color_selected", chosen, theme.get_color(&"font_color_normal", Themes.PRESSABLE))
 	Pressables.stand_apart(theme)
 
 
 ## A pressable under this type with a bar of this ink along one side of
-## every state.
-static func marked(theme: Theme, type: StringName, mark: Variant, thick: float = 6.0, side: Side = SIDE_BOTTOM) -> void:
+## every state; by option how thick the bar is and which side it runs along.
+static func marked(theme: Theme, type: StringName, mark: Variant, options: Dictionary = {}) -> void:
+	var with := _options(options, {"thick": 6.0, "side": SIDE_BOTTOM}, "a marked pressable")
+	var thick: float = with["thick"]
+	var side: Side = with["side"]
 	_vary(theme, type, Themes.PRESSABLE)
 	# every state the pressable draws, its box laid under the bar
 	for state: StringName in theme.get_stylebox_list(Themes.PRESSABLE):
@@ -170,14 +182,15 @@ static func marked(theme: Theme, type: StringName, mark: Variant, thick: float =
 		theme.set_stylebox(state, type, turned)
 
 
-## A field: a typed line under this type, its box at rest and with the
-## focus, its ink and caret - a variation of the engine's own LineEdit,
-## which is what a field is.
-static func field(theme: Theme, type: StringName, normal: StyleBox, focus: StyleBox, ink: Color) -> void:
+## A field: a typed line under this type, its boxes by state - at rest,
+## `normal`, and with the focus, `focus`, both required - and its ink and
+## caret: a variation of the engine's own LineEdit, which is what a field is.
+static func field(theme: Theme, type: StringName, boxes: Dictionary, ink: Color) -> void:
+	Options.checked("a field's boxes", boxes, ["normal", "focus"])
 	_vary(theme, type, &"LineEdit")
-	theme.set_stylebox(&"normal", type, normal)
-	theme.set_stylebox(&"focus", type, focus)
-	theme.set_stylebox(&"read_only", type, normal)
+	theme.set_stylebox(&"normal", type, boxes["normal"])
+	theme.set_stylebox(&"focus", type, boxes["focus"])
+	theme.set_stylebox(&"read_only", type, boxes["normal"])
 	theme.set_color(&"font_color", type, ink)
 	theme.set_color(&"caret_color", type, ink)
 

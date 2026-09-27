@@ -75,9 +75,10 @@ static func make(ui: Ui, consequence: Variant, action: StringName, options: Dict
 ## The one question every place asking before it is left may be handed: the
 ## words its guard asked as the move was stopped - none before any was - the
 ## cancel back where the reader stood, and the confirm going on with the
-## move it was raised about.
-static func for_leaving(ui: Ui, proceeds: StringName, style: StringName = &"Confirm") -> Desc:
-	return ui.pop_up(KIND, _leaving.bind(ui, proceeds, style))
+## move it was raised about. Its one option: style.
+static func for_leaving(ui: Ui, proceeds: StringName, options: Dictionary = {}) -> Desc:
+	Options.checked("a question for leaving", options, [Options.STYLE])
+	return ui.pop_up(KIND, _leaving.bind(ui, proceeds, options.get(Options.STYLE, &"Confirm")))
 
 
 ## The question for which one it was opened as.

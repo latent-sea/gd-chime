@@ -62,6 +62,8 @@ static var MotionTokens: GDScript:
 	get: return _at("motion_tokens.gd")
 static var Navigation: GDScript:
 	get: return _at("theme_navigation.gd")
+static var Overlays: GDScript:
+	get: return _at("theme_overlays.gd")
 static var Paint: GDScript:
 	get: return _at("paint.gd")
 static var PaintedBox: GDScript:

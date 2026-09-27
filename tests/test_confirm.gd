@@ -217,6 +217,13 @@ func _the_question_about_leaving_says_the_words_it_carries_and_goes_on_with_the_
 	_button(LETS_GO).pressed()
 	await _a_frame_passes()
 	_verdict.check(not _made.driver.is_raised() and _made.driver.get_top() == [&"app", &"there"] and _made.commands.get_last()["action"] == LETS_GO and _made.commands.get_last()["answer"] == null, "confirmed, it is lowered and the move it carries is made: %s" % [_made.driver.get_top()])
+	root.theme.set_type_variation(&"Plainly", Themes.SURFACE)
+	var plainly := Confirm.for_leaving(ui, LETS_GO, {style = &"Plainly"})
+	ui.build(plainly, root)
+	_made.commands.dispatch(Chimes.GLOBAL, Driver.GO, {"place": plainly.get_place(), "parameter": stopped})
+	await _a_frame_passes()
+	var styles: Array = _made.driver.index.place_named(plainly.get_place()).find_children("*", "Control", true, false).map(func(part: Node) -> StringName: return (part as Control).theme_type_variation)
+	_verdict.check(styles.has(&"Plainly") and not styles.has(&"Confirm"),"given a style as its option, its sheet wears that style and not the confirm's own: %s" % [styles])
 	_done()
 
 

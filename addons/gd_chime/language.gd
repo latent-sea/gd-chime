@@ -4,8 +4,8 @@ const Look := preload("look.gd")
 const Reads := preload("reads.gd")
 const Catalogues := preload("catalogues.gd")
 
-## The language words are said in: which one is on, the one bell a change of
-## it rings, and the lookups a text makes as it draws.
+## The language words are said in: which one is on, a value, and the lookups
+## a text makes as it draws, each a read of it.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -19,9 +19,10 @@ const Catalogues := preload("catalogues.gd")
 ## ONLY A TEXT TRANSLATES, AS IT DRAWS (text.gd). A description, a recipe, a
 ## model and the door all carry the English - a key, or a phrase of a pattern
 ## and its data (phrase.gd) - and the text says it in the language on at the
-## moment it draws, and again whenever LANGUAGE_CHANGED rings. So a change of
-## language reaches every word where it stands, nothing is built again, and
-## nothing holds words finished in a language that is no longer on. The
+## moment it draws. Every lookup reads the language on, a value, so the text
+## follows it as any value it read, at the frame's end with every other fact:
+## a change of language reaches every word where it stands, nothing is built
+## again, and nothing holds words finished in a language no longer on. The
 ## lookups below are the text's, and nothing else calls them.
 ##
 ## THE WORDS ARE CATALOGUES, files read off disk (catalogues.gd): the floor's
@@ -30,9 +31,9 @@ const Catalogues := preload("catalogues.gd")
 ## THE LANGUAGE IS THE GAME'S: the engine's locale, which this reads and never
 ## sets of its own accord - made, entering or leaving. Whoever sets it - the
 ## game, another app, a player's choice told here - the engine tells every
-## node; this hears it and, where the language on moved, rings
-## LANGUAGE_CHANGED, a global bell, so every text follows. The language on is
-## the one with words nearest the locale: French for fr_FR, English for en_GB.
+## node; this hears it and, where the language on moved, sets it, so every
+## text follows. The language on is the one with words nearest the locale:
+## French for fr_FR, English for en_GB.
 ##
 ## A WORD THE CATALOGUE ON LACKS is said out loud in a developer's build,
 ## once, naming the word and the language, and the reader is shown the
@@ -60,9 +61,9 @@ const Catalogues := preload("catalogues.gd")
 ## so a count is put through it here; a way of writing never is, being
 ## written by rather than read.
 
-## The bell a change of language rings, and where every reader hears it.
-const LANGUAGE_CHANGED := &"language_changed"
-const HEARD := [Chimes.GLOBAL, LANGUAGE_CHANGED]
+## The address the language on is hung at, by name and the same in every set
+## of chimes (own_bell.gd): the lookups are static, and cannot say whose they read.
+const ON := &"language_on"
 ## The command that changes the language, {"value": &"fr"}: the payload a
 ## choice carries (setting.gd), so a settings screen's choice of language presses it.
 const CHANGES_LANGUAGE := &"changes_language"
@@ -75,30 +76,31 @@ const FLOOR_CATALOGUES := "words"
 const SCRIPT := "the script its words are written in"
 ## What a catalogue names a key or a pad button under, apart from its words.
 const NAMES := "the name of a key or button"
-## Where every word said to be missing is remembered, so each is said once:
-## on the engine's TranslationServer, beside the catalogues that lack it -
-## a script of static functions holding it would be kept past the end.
-const MISSING := &"words_said_missing"
+
+## Every word said to be missing, so each is said once: the floor's own, never
+## the engine's, and begun afresh as a language is made.
+static var _said_missing: Dictionary = {}
 
 var _under: Node  # what this stands under, whose look is dressed for the script on
-var _heard: StringName  # the language on when this last heard the locale move
+var _on_bell := OwnBell.new("language", ON)  # the bell the language on rings, at the address by name
+var _on: Value  # the language on, made once the floor's catalogues are read, since which is on depends on them
 var _telling: bool = false  # whether a choice told here is setting the engine now, heard once it is set
 
 
 func _init(chimes: Chimes, under: Node) -> void:
 	super(chimes, [], Chimes.GLOBAL)
-	register_bell(LANGUAGE_CHANGED)
+	_on_bell.hang(chimes)
 	_under = under
-	TranslationServer.set_meta(MISSING, {})
+	_said_missing = {}
 	# the catalogues beside this script, wherever the addon was installed: nothing here knows where it sits
 	Catalogues.read((get_script() as Script).resource_path.get_base_dir().path_join(FLOOR_CATALOGUES))
-	_heard = current()
+	_on = value(current(), _on_bell)
 
 
 ## The language on: English, a catalogue's, or the pseudo-locale - read, so
 ## the change of language is noted for whoever is reading.
 func get_language() -> StringName:
-	return on().read()
+	return _on.read()
 
 
 ## Every language there are words for: English, each catalogue's, and the pseudo-locale.
@@ -138,18 +140,16 @@ func _notification(what: int) -> void:
 		_moved()
 
 
-## The locale heard: where the language on moved, the look dressed for its
-## script and the bell rung; where it did not - the engine says so on entering
-## the tree as well - nothing.
+## The locale heard: where the language on moved, it set and the look dressed
+## for its script; where not - the engine says so on entering the tree too - nothing.
 func _moved() -> void:
-	if current() == _heard:
+	if current() == _on.read():
 		return
-	_heard = current()
+	_on.set_value(current())
 	var look := Look.worn_by(_under)
 	# nothing wearing a look of its own has no fonts to change
 	if look != null:
 		Look.dress(look, written_in())
-	strike(region, LANGUAGE_CHANGED)
 
 
 ## --- the text's lookups ---
@@ -174,7 +174,7 @@ static func current() -> StringName:
 ## draws its own words - a painter - to add to its sources (Bound.all).
 static func on() -> Bound:
 	return Bound.new(func() -> StringName:
-		Reads.note(HEARD[0], HEARD[1])
+		Reads.note(ON, ON)
 		return current())
 
 
@@ -212,8 +212,9 @@ static func written_in() -> String:
 
 ## The catalogues the engine holds for the language on - a French one for
 ## fr_FR as for fr: none for English, whose words are their keys, and none
-## for the pseudo-locale, which is English.
+## for the pseudo-locale, which is English. Every lookup reads the language on here.
 static func _catalogues() -> Array[Translation]:
+	Reads.note(ON, ON)
 	return TranslationServer.find_translations(TranslationServer.get_locale(), false)
 
 
@@ -236,10 +237,9 @@ static func _found(key: String, context: String, many: String = "", count: int =
 		return said
 	# a developer's build alone, where it can be mended, and only where there is a catalogue to lack it
 	if OS.is_debug_build() and not _catalogues().is_empty():
-		var missing: Dictionary = TranslationServer.get_meta(MISSING)
 		var which := "%s | %s | %s" % [TranslationServer.get_locale(), context, key]
-		if not missing.has(which):
-			missing[which] = true
+		if not _said_missing.has(which):
+			_said_missing[which] = true
 			push_error("the %s catalogue has no \"%s\"%s, so the English is shown" % [TranslationServer.get_language_name(TranslationServer.get_locale()), key, "" if context == "" else " under \"%s\"" % context])
 	# English's rule: the first form for one, the other for any other count
 	return key if many == "" or count == 1 else many

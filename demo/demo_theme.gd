@@ -55,7 +55,7 @@ func _init(colours: Dictionary = Themes.NEUTRAL) -> void:
 	# every ground, a surface in one of the palette's colours
 	for ground: StringName in GROUNDS:
 		Look.ground(self, ground, Look.flat(colours[GROUNDS[ground]]))
-	Look.line(self, TIGHT, Themes.COLUMN, 2)
+	Look.line(self, TIGHT, Themes.COLUMN, {gap = 2})
 	Look.ground(self, CONFIRM, Look.flat(colours[&"lit"], {"pad": 24}))
 
 

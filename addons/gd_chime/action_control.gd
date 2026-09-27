@@ -40,19 +40,19 @@ const Phrase := preload("phrase.gd")
 ## nothing. One whose action goes somewhere hears the driver too, so its
 ## look follows every move.
 ##
-## Its prompts can be set after it is built; it then listens where they
-## ring, and glows while they name its action, its place is on the screen,
-## and the door would not refuse it - so a button behind a pop-up never
-## glows while it is blocked. Rebound to listen to something else, it goes
-## on hearing the door's bells, the prompts and the driver.
+## Its prompts can be set after it is built; it then glows while they name
+## its action, its place is on the screen, and the door would not refuse it -
+## so a button behind a pop-up never glows while it is blocked. What the
+## prompts name is a value it reads as it draws, so it follows it as it
+## follows everything else it drew. Rebound to listen to something else, it
+## goes on hearing the driver.
 ##
 ## Anything it hears is a draw. A PRESS REFUSED FOLLOWS WHAT THE REFUSAL
 ## READS, apart from the draw (key REFUSAL), and a ring there clears it: a
 ## "not enough credits" is not left standing after the credits arrive, while
 ## its own look moving - a slider's held value let go as the press lands -
-## leaves it. A bell it listens to clears it too, but the prompts' - a
-## reminder moving says nothing about the credits - so a refusal stands
-## through that.
+## leaves it, and so does a prompt moving, which is only a draw. A bell it
+## listens to clears it too.
 ##
 ## How it looks is the face's (face.gd), which this extends and which knows
 ## nothing of actions; the states the door and the prompts give it belong to
@@ -71,14 +71,10 @@ var action: StringName = &"":
 		action = named
 		needs_refresh()
 
-## The prompts it asks whether to glow, set after it is built. Set, it
-## listens where they ring - one address, since there is one set of prompts
-## per application - and draws again, since whether it glows may have
-## changed.
+## The prompts it asks whether to glow, set after it is built. Set, it draws
+## again, since whether it glows may have changed.
 var prompts: Prompts = null:
 	set(given):
-		if prompts == null and given != null:
-			listen_to(Chimes.GLOBAL, Prompts.PROMPT_MOVED)
 		prompts = given
 		needs_refresh()
 
@@ -102,12 +98,10 @@ func get_goes_to() -> StringName:
 
 
 ## Rebinding drops everything this listened to, so what it hears by itself
-## is listened to again: the prompts, and the driver when its press goes
-## somewhere. What its draw and its refusal read it follows, apart from these.
+## is listened to again: the driver, when its press goes somewhere. What its
+## draw and its refusal read it follows, apart from this.
 func listen(listening: Array) -> void:
 	super.listen(listening)
-	if prompts != null:
-		listen_to(Chimes.GLOBAL, Prompts.PROMPT_MOVED)
 	if get_goes_to() != &"":
 		listen_to(Chimes.GLOBAL, _place.driver.NAVIGATED)
 
@@ -135,11 +129,9 @@ func is_glowing() -> bool:
 	return named and _place.driver.get_top().has(_place.name) and is_usable()
 
 
-## Something it listens to rang: a draw is due, and unless it was the prompts
-## moving, a refusal no longer stands.
-func heard(what: StringName) -> void:
-	if what != Prompts.PROMPT_MOVED:
-		_keep_refusal(null)
+## Something it listens to rang: a draw is due, and a refusal no longer stands.
+func heard(_what: StringName) -> void:
+	_keep_refusal(null)
 	needs_refresh()
 
 

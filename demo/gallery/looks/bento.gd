@@ -41,7 +41,7 @@ const GUTTER := 16
 func _init() -> void:
 	super(PALETTE)
 	var sans := Look.font(["Segoe UI", "Helvetica", "Arial"])
-	var bold := Look.font(["Segoe UI", "Helvetica", "Arial"], 700)
+	var bold := Look.font(["Segoe UI", "Helvetica", "Arial"], {weight = 700})
 	_pressables()
 	_cells()
 	_type(sans, bold)
@@ -60,12 +60,12 @@ func _init() -> void:
 ## block when it is the thing to press. The focus is a two-pixel ring.
 func _pressables() -> void:
 	var focus := Look.ring(INDIGO, {width = 2.0, radius = PILL, inset = 2.0})
-	Look.pressable(self, Themes.PRESSABLE, _pill_boxes(14.0), _pill_inks(), focus, &"Control")
+	Look.pressable(self, Themes.PRESSABLE, _pill_boxes(14.0), {inks = _pill_inks(), focus = focus, base = &"Control"})
 	# a bell button: the same pill with more air around its word
-	Look.pressable(self, Pressables.BUTTON, _pill_boxes(18.0), _pill_inks(), focus)
+	Look.pressable(self, Pressables.BUTTON, _pill_boxes(18.0), {inks = _pill_inks(), focus = focus})
 	# a chip, an inline link and a small picker: a tighter pill
 	for small: StringName in [&"Chip", &"NavInline", &"Picker", &"Choice", &"Relative"]:
-		Look.pressable(self, small, _pill_boxes(10.0), _pill_inks(), focus)
+		Look.pressable(self, small, _pill_boxes(10.0), {inks = _pill_inks(), focus = focus})
 	# a tab: a pill flap on the top edge of the tray's main cell, white with the seam; the
 	# one you are on is taller and drops its bottom seam, so it is that cell's own lip
 	Look.pressable(self, &"Tab", {
@@ -74,14 +74,14 @@ func _pressables() -> void:
 		&"inert": _flap(PALE, 10.0, true),
 		&"glowing": _flap(PASTEL, 10.0, true),
 		&"current": _flap(WHITE, 20.0, false),
-	}, {&"normal": PALETTE[&"ink_soft"], &"hover": PALETTE[&"ink"], &"inert": PALETTE[&"ink_soft"], &"glowing": PALETTE[&"ink"], &"current": PALETTE[&"ink"]}, focus)
+	}, {inks = {&"normal": PALETTE[&"ink_soft"], &"hover": PALETTE[&"ink"], &"inert": PALETTE[&"ink_soft"], &"glowing": PALETTE[&"ink"], &"current": PALETTE[&"ink"]}, focus = focus})
 	# a play button in a nav: the indigo block whatever its state, since it is the one move
 	Look.pressable(self, &"NavPlay", {
 		&"normal": _glow_box(14.0),
 		&"hover": Look.flat(INDIGO.darkened(0.15), {radius = PILL, pad = 14.0}),
 		&"inert": Look.flat(PALE, {radius = PILL, border = 1.0, border_colour = SEAM, pad = 14.0}),
 		&"glowing": _glow_box(14.0),
-	}, {&"normal": WHITE, &"hover": WHITE, &"inert": PALETTE[&"ink_soft"], &"glowing": WHITE}, focus)
+	}, {inks = {&"normal": WHITE, &"hover": WHITE, &"inert": PALETTE[&"ink_soft"], &"glowing": WHITE}, focus = focus})
 	# the pressables that are themselves cells in the tray: the cell radius, not the pill
 	for tile: StringName in [&"CardList", &"CardTile", &"CardDense"]:
 		Look.pressable(self, tile, {
@@ -89,7 +89,7 @@ func _pressables() -> void:
 			&"hover": Look.flat(PASTEL, {radius = CELL, border = 1.0, border_colour = SEAM, pad = 16.0}),
 			&"inert": Look.flat(PALE, {radius = CELL, border = 1.0, border_colour = SEAM, pad = 16.0}),
 			&"glowing": Look.flat(INDIGO, {radius = CELL, shadow = 12.0, shadow_colour = INDIGO_GLOW, shadow_offset = Vector2(0.0, 4.0), pad = 16.0}),
-		}, _pill_inks(), Look.ring(INDIGO, {width = 2.0, radius = CELL, inset = 2.0}))
+		}, {inks = _pill_inks(), focus = Look.ring(INDIGO, {width = 2.0, radius = CELL, inset = 2.0})})
 
 
 ## A pill's four boxes at this padding.
@@ -155,15 +155,15 @@ func _type(sans: Font, bold: Font) -> void:
 	default_font_size = 22
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, PALETTE[&"ink"])
-	Look.words(self, Themes.WORDS, 36, bold, PALETTE[&"ink"])
-	Look.words(self, Themes.FACE, 22, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.REASON, 17, sans, PALETTE[&"ink_soft"])
-	Look.words(self, Themes.TITLE, 24, bold, PALETTE[&"ink"])
-	Look.words(self, READOUT, 18, sans, PALETTE[&"ink_soft"])
-	Look.words(self, LINE, 20, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.NUMBER, 76, bold, INDIGO)
+	Look.words(self, Themes.WORDS, 36, {font = bold, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.FACE, 22, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.REASON, 17, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, Themes.TITLE, 24, {font = bold, colour = PALETTE[&"ink"]})
+	Look.words(self, READOUT, 18, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, LINE, 20, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.NUMBER, 76, {font = bold, colour = INDIGO})
 	# the clock in the strip: the second voice, never a heading
-	Look.words(self, &"Countdown", 20, sans, PALETTE[&"ink_soft"])
+	Look.words(self, &"Countdown", 20, {font = sans, colour = PALETTE[&"ink_soft"]})
 	# the drawn readouts: indigo, the one accent, with the graph's links grey
 	for drawn: StringName in Charts.DRAWN:
 		set_color(&"line", drawn, INDIGO)
@@ -180,20 +180,20 @@ func _lines() -> void:
 		set_constant(&"gap", line, GUTTER)
 	for grid: StringName in [&"gap", &"row_gap"]:
 		set_constant(grid, Themes.GRID, GUTTER)
-	Look.line(self, TIGHT, Themes.COLUMN, 6)
-	Look.line(self, Themes.CENTRED, Themes.ROW, GUTTER, Look.CENTER)
-	Look.line(self, &"Chips", Themes.ROW, 10)
+	Look.line(self, TIGHT, Themes.COLUMN, {gap = 6})
+	Look.line(self, Themes.CENTRED, Themes.ROW, {gap = GUTTER, justify = Look.CENTER})
+	Look.line(self, &"Chips", Themes.ROW, {gap = 10})
 	# the flaps' strip: bottom-aligned on the panel's top edge, a hair of air between pills
-	Look.line(self, &"TabStrip", Themes.ROW, 6, Look.START, Look.END)
+	Look.line(self, &"TabStrip", Themes.ROW, {gap = 6, justify = Look.START, align = Look.END})
 	# the strip and its panel with nothing between them
-	Look.line(self, &"TabSet", Themes.COLUMN, 0)
-	Look.line(self, &"Controls", Themes.ROW, GUTTER, Look.END)
-	Look.line(self, &"InstructionBar", Themes.ROW, GUTTER, Look.BETWEEN, Look.CENTER)
-	Look.line(self, &"Outcomes", Themes.COLUMN, 10)
-	Look.line(self, &"FilterSet", Themes.ROW, 10)
-	Look.line(self, &"MatrixLine", Themes.ROW, 8)
-	Look.line(self, &"Disposition", Themes.ROW, GUTTER)
-	Look.line(self, &"AmountField", Themes.ROW, 10, Look.START, Look.CENTER)
+	Look.line(self, &"TabSet", Themes.COLUMN, {gap = 0})
+	Look.line(self, &"Controls", Themes.ROW, {gap = GUTTER, justify = Look.END})
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = GUTTER, justify = Look.BETWEEN, align = Look.CENTER})
+	Look.line(self, &"Outcomes", Themes.COLUMN, {gap = 10})
+	Look.line(self, &"FilterSet", Themes.ROW, {gap = 10})
+	Look.line(self, &"MatrixLine", Themes.ROW, {gap = 8})
+	Look.line(self, &"Disposition", Themes.ROW, {gap = GUTTER})
+	Look.line(self, &"AmountField", Themes.ROW, {gap = 10, justify = Look.START, align = Look.CENTER})
 	# the compartments that are stacks of lines, not surfaces: the gutter between their rows
 	for stacked: StringName in [&"Board", &"Collection", &"Matrix"]:
-		Look.line(self, stacked, Themes.COLUMN, 10)
+		Look.line(self, stacked, Themes.COLUMN, {gap = 10})

@@ -155,14 +155,18 @@ base is caught before somebody opens it.
 The promise is `addons/gd_chime/gd_chime.gd` and the two lists it extends -
 every name they re-export, read as `GdChime.<Name>` - plus `ChimeApp`, the
 node an application extends. Everything else in the addon is internal and may
-change without a changelog entry, however public its own names look.
+change without a changelog entry, however public its own names look. That
+includes `application.gd`, the main loop the demos and their probes are run
+through: it is named from `demo/` and `checks/` and nowhere else, and a game
+extends `ChimeApp`.
 
 Within that promise, a name beginning with an underscore is internal and may
 change; everything else is kept: breaking it needs a version bump and a line
 in the changelog, including before version one.
 
 The edge of the promise is a check: `checks/convention_lint.py` refuses a demo
-or app file that path-loads a framework file the facade does not export. What
+or app file that path-loads a framework file the facade does not export, and
+any file outside `demo/` and `checks/` that names `application.gd`. What
 is kept within it is review's, the third exception: a scanner cannot tell a
 break from a change, and it is stated anyway because it governs what may be
 relied on from outside.

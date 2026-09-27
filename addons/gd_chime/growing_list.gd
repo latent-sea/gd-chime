@@ -41,12 +41,11 @@ func _init(chimes: Chimes, fetch: Callable, page: int, rows: Bound) -> void:
 
 
 ## The items, whether there is more, whether it is empty and whether a row
-## failed move as the look does, as a page lands or fails, and as failures
-## are forgotten: all four noted for whoever reads one.
+## failed move as the look does and as the pages held do: both read, so
+## whoever reads one follows both, the items kept from the last read included.
 func _noted() -> void:
-	# every bell of the list's
-	for bell: StringName in [LOOK_MOVED, PAGE_LANDED, PAGE_FAILED, FAILURES_FORGOTTEN]:
-		Reads.note(region, bell)
+	get_showing()
+	count()
 
 
 ## One per row showing: {at, item}, the item null while it is on its way -
@@ -99,11 +98,10 @@ func told(action: StringName, payload: Dictionary) -> Phrase:
 
 ## The rows changed under it: the first page alone, asked for again.
 func reset() -> void:
-	_showing = _page_rows
+	_showing.set_value(_page_rows)
 	_known = false
 	_items_now = null
 	super()
-	strike(region, LOOK_MOVED)
 
 
 ## Looking again, as its place fills: nothing is known until a page lands.

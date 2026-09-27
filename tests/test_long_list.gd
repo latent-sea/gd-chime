@@ -11,20 +11,24 @@ extends SceneTree
 ## the look asks for its pages and one either side, each once; pages land in
 ## either order, each in its own place; never more than KEEP are held and the
 ## farthest goes first; a bell from the source resets it and a stale answer is
-## dropped; PAGE_LANDED sounds on a landing and not otherwise; an index not
-## held answers null; a reset asks again for the look's pages and asking again
-## with nothing failed asks for nothing more and rings nothing; the look starts at the top and
-## moves by command - a row, a page, any number of rows - never below zero,
-## every command done; once the total is known the look stops where the rows
-## still fill the screen, and a total that shrinks pulls it back on the next
-## landing; and LOOK_MOVED sounds once whenever the first row changes,
-## whatever moved it, and never for a move that went nowhere.
+## dropped; whatever reads the pages held wakes on a landing and not on a
+## look, a reset or a dropped answer; an index not held answers null; a reset
+## asks again for the look's pages and asking again with nothing failed asks
+## for nothing more and wakes nothing; the look starts at the top and moves
+## by command - a row, a page, any number of rows - never below zero, every
+## command done; once the total is known the look stops where the rows still
+## fill the screen, and a total that shrinks pulls it back on the next
+## landing; and whatever reads the look wakes once whenever the first row
+## changes, whatever moved it, and never for a move that went nowhere.
 ##
 ## And when the source could not give a page: it is known as failed, row by
-## row, apart from a page still coming, and PAGE_FAILED sounds once; a look
-## does not ask for it again, and asking again does; a failure a later look no
-## longer covers is forgotten, so coming back asks again; and a reset forgets
-## every failure, while a failure from before the reset is dropped.
+## row, apart from a page still coming, and a reader of the pages wakes once;
+## a look does not ask for it again, and asking again does; a failure a later
+## look no longer covers is forgotten, so coming back asks again; and a reset
+## forgets every failure, while a failure from before the reset is dropped.
+##
+## The look and the pages held are values: whatever read one wakes at the
+## frame's end, so a property about what woke waits a frame (_settled).
 ##
 ## The source is stood in for by one that records every request and answers
 ## a request only when told to, in any order - so every property is about
@@ -49,11 +53,12 @@ const SHOWING := 4
 var _verdict := Verdict.new()
 
 
+## Reads one of the list's facts, as a screen would, and counts how often it woke.
 class Ear extends RefCounted:
 	var rings := 0
 
-	func heard(_what: StringName) -> void:
-		rings += 1
+	func _init(chimes: Chimes, reads: Callable) -> void:
+		chimes.follow(self, &"read", reads, func() -> void: rings += 1)
 
 
 ## Stands in for the source: records every request, and answers one only
@@ -91,14 +96,14 @@ func _init() -> void:
 	await _verdict.states(_two_pages_on_their_way_land_in_either_order_each_in_its_own_place)
 	await _verdict.states(_never_more_than_keep_are_held_and_the_farthest_goes_first)
 	await _verdict.states(_a_bell_from_the_source_resets_it_and_a_stale_answer_is_dropped)
-	await _verdict.states(_page_landed_sounds_on_a_landing_and_not_otherwise)
+	await _verdict.states(_a_reader_of_the_pages_wakes_on_a_landing_and_not_otherwise)
 	await _verdict.states(_an_index_not_held_answers_null_and_has_says_so)
 	await _verdict.states(_a_reset_asks_again_for_the_look_and_asking_again_with_nothing_failed_asks_nothing)
 	await _verdict.states(_the_look_starts_at_the_top_and_moves_by_command_never_below_zero)
 	await _verdict.states(_the_look_stops_where_the_rows_still_fill_the_screen_once_the_total_is_known)
 	await _verdict.states(_a_total_that_shrinks_pulls_the_look_back_on_the_next_landing)
-	await _verdict.states(_look_moved_sounds_once_whenever_the_first_row_changes_whatever_moved_it)
-	await _verdict.states(_a_page_the_source_could_not_give_is_known_as_failed_and_rings_once)
+	await _verdict.states(_a_reader_of_the_look_wakes_once_whenever_the_first_row_changes_whatever_moved_it)
+	await _verdict.states(_a_page_the_source_could_not_give_is_known_as_failed_and_wakes_once)
 	await _verdict.states(_a_failed_page_is_not_asked_for_again_until_asked)
 	await _verdict.states(_a_failure_a_later_look_no_longer_covers_is_forgotten)
 	await _verdict.states(_a_reset_forgets_every_failure_and_a_stale_failure_is_dropped)
@@ -108,11 +113,12 @@ func _init() -> void:
 
 
 ## A list over a source of this many rows, listening to the source's bell,
-## with an ear on PAGE_LANDED and another on PAGE_FAILED, as a dictionary:
-## list, source, ear, failures, chimes, commands. This test hangs the belfry
-## and the source's bell by hand, standing in for whatever composes an
-## application. Built and told to look, the list looks at the top and has
-## asked for pages 0 and 1.
+## with an ear reading the pages held and another reading the look, as a
+## dictionary: list, source, ear, moves, chimes, commands. This test hangs
+## the belfry and the source's bell by hand, standing in for whatever
+## composes an application. Built and told to look, the list looks at the
+## top and has asked for pages 0 and 1; a frame on, what building it set has
+## woken nothing that came after.
 func _made(rows: int) -> Dictionary:
 	var chimes := Chimes.new(Belfry.new())
 	var commands := Commands.new(chimes)
@@ -121,11 +127,15 @@ func _made(rows: int) -> Dictionary:
 	var list := LongList.new(chimes, source.fetch, PAGE, KEEP, SHOWING, Bound.on_bell(func() -> Variant: return null, REGION, CHANGED))
 	commands.stand(REGION, list)
 	list.look(Token.new())
-	var ear := Ear.new()
-	chimes.listen(ear, list.region, LongList.PAGE_LANDED)
-	var failures := Ear.new()
-	chimes.listen(failures, list.region, LongList.PAGE_FAILED)
-	return {"list": list, "source": source, "ear": ear, "failures": failures, "chimes": chimes, "commands": commands}
+	var ear := Ear.new(chimes, list.count)
+	var moves := Ear.new(chimes, list.get_first)
+	return {"list": list, "source": source, "ear": ear, "moves": moves, "chimes": chimes, "commands": commands}
+
+
+## A frame's end passed, so whatever a value woke has been woken.
+func _settled() -> void:
+	await process_frame
+	await process_frame
 
 
 ## The look moved by this many rows, as the wheel would move it.
@@ -211,37 +221,45 @@ func _a_bell_from_the_source_resets_it_and_a_stale_answer_is_dropped() -> void:
 	var chimes: Chimes = made["chimes"]
 	_scroll(made, 4)
 	source.deliver(1, true)
-	_verdict.check(list.has(4) and ear.rings == 1, "a page is held, and rang once")
+	await _settled()
+	_verdict.check(list.has(4) and ear.rings == 1, "a page is held, and its reader woke once")
 
 	chimes.strike(REGION, CHANGED)
 
 	_verdict.check(not list.has(4) and list.count() == 0, "the bell forgot everything")
 	_verdict.check(source.firsts() == [0, 4, 8, 0, 4, 8], "and the pages of the look were asked for again")
 	source.deliver(0, true)
-	_verdict.check(not list.has(0) and ear.rings == 1, "an answer to a request from before the bell is dropped, and rings nothing")
+	await _settled()
+	_verdict.check(not list.has(0) and ear.rings == 1, "an answer to a request from before the bell is dropped, and wakes nothing")
 	source.deliver(4, true)
-	_verdict.check(list.has(4) and ear.rings == 2, "and an answer to a request from after it is held, and rings")
+	await _settled()
+	_verdict.check(list.has(4) and ear.rings == 2, "and an answer to a request from after it is held, and wakes it")
 	_done(made)
 
 
-func _page_landed_sounds_on_a_landing_and_not_otherwise() -> void:
+func _a_reader_of_the_pages_wakes_on_a_landing_and_not_otherwise() -> void:
 	var made := _made(40)
 	var source: Source = made["source"]
 	var ear: Ear = made["ear"]
 	var chimes: Chimes = made["chimes"]
 
 	_scroll(made, 4)
+	await _settled()
 	_verdict.check(ear.rings == 0, "not on a look")
 	source.deliver(1, true)
+	_verdict.check(ear.rings == 0, "not the instant a page lands: the pages are a value, heard at the frame's end")
+	await _settled()
 	_verdict.check(ear.rings == 1, "once on a landing")
 	chimes.strike(REGION, CHANGED)
+	await _settled()
 	_verdict.check(ear.rings == 1, "not on a reset")
 	source.deliver(0, true)
+	await _settled()
 	_verdict.check(ear.rings == 1, "not for an answer that was dropped")
-	source.deliver(4, false)
-	_verdict.check(ear.rings == 1, "not for an answer of null")
 	source.deliver(3, true)
-	_verdict.check(ear.rings == 2, "and once more on the next landing")
+	source.deliver(4, true)
+	await _settled()
+	_verdict.check(ear.rings == 2, "and once for the two next landings in one frame")
 	_done(made)
 
 
@@ -328,25 +346,28 @@ func _a_total_that_shrinks_pulls_the_look_back_on_the_next_landing() -> void:
 
 
 ## Whatever depends on where the list looks hears it move, whatever moved it,
-## and hears nothing for a move that went nowhere.
-func _look_moved_sounds_once_whenever_the_first_row_changes_whatever_moved_it() -> void:
+## and hears nothing for a move that went nowhere or for pages landing.
+func _a_reader_of_the_look_wakes_once_whenever_the_first_row_changes_whatever_moved_it() -> void:
 	var made := _made(40)
 	var source: Source = made["source"]
 	var chimes: Chimes = made["chimes"]
 	var commands: Commands = made["commands"]
-	var list: LongList = made["list"]
-	var moves := Ear.new()
-	chimes.listen(moves, list.region, LongList.LOOK_MOVED)
+	var moves: Ear = made["moves"]
 	source.deliver(0, true)
-	_verdict.check(moves.rings == 0, "built at the top and a page landed there: nothing moved and nothing rang")
+	await _settled()
+	_verdict.check(moves.rings == 0, "built at the top and a page landed there: nothing moved and nothing woke")
 
 	commands.dispatch(REGION, LongList.SCROLL_ROW_UP, {})
-	_verdict.check(moves.rings == 0, "a row up at the top is refused and rings nothing")
+	await _settled()
+	_verdict.check(moves.rings == 0, "a row up at the top is refused and wakes nothing")
 	commands.dispatch(REGION, LongList.SCROLL_PAGE_DOWN, {})
-	_verdict.check(moves.rings == 1, "a page down rings once")
+	await _settled()
+	_verdict.check(moves.rings == 1, "a page down wakes it once")
 	_scroll(made, 2)
-	_verdict.check(moves.rings == 2, "the wheel's rows ring once too")
+	await _settled()
+	_verdict.check(moves.rings == 2, "the wheel's rows once too")
 	_scroll(made, 100)
+	await _settled()
 	source.length = 10
 	chimes.strike(REGION, CHANGED)
 	var rung := moves.rings
@@ -355,29 +376,30 @@ func _look_moved_sounds_once_whenever_the_first_row_changes_whatever_moved_it() 
 	while i < source.requests.size():
 		source.deliver(i, true)
 		i += 1
-	_verdict.check(moves.rings == rung + 1, "and a landing that pulls it back when the list shrinks rings once: %d" % moves.rings)
+	await _settled()
+	_verdict.check(moves.rings == rung + 1, "and a landing that pulls it back when the list shrinks wakes it once: %d" % moves.rings)
 	_done(made)
 
 
 ## A page the source could not give is not the same as one still coming, and a
 ## screen must be able to tell them apart to show the failure where it happened.
 ## Every row of the failed page says so, a row of a page still coming does not,
-## and PAGE_FAILED sounds once - while PAGE_LANDED, which is about rows arriving,
-## does not.
-func _a_page_the_source_could_not_give_is_known_as_failed_and_rings_once() -> void:
+## and whatever reads the pages wakes once, the count unchanged.
+func _a_page_the_source_could_not_give_is_known_as_failed_and_wakes_once() -> void:
 	var made := _made(40)
 	var list: LongList = made["list"]
 	var source: Source = made["source"]
 	var ear: Ear = made["ear"]
-	var failures: Ear = made["failures"]
 	_scroll(made, 4)
+	await _settled()
 
 	source.deliver(1, false)
+	await _settled()
 
 	_verdict.check(list.has_failed(4) and list.has_failed(7), "every row of the page that could not come says so")
-	_verdict.check(not list.has(4), "and none of it is held")
+	_verdict.check(not list.has(4) and list.count() == 0, "and none of it is held, nor any total")
 	_verdict.check(not list.has_failed(0) and not list.has(0), "while a row of a page still coming is neither held nor failed")
-	_verdict.check(failures.rings == 1 and ear.rings == 0, "and PAGE_FAILED sounded once, PAGE_LANDED not at all: %d and %d" % [failures.rings, ear.rings])
+	_verdict.check(ear.rings == 1, "and a reader of the pages woke once: %d" % ear.rings)
 	_done(made)
 
 
@@ -389,20 +411,23 @@ func _a_failed_page_is_not_asked_for_again_until_asked() -> void:
 	var list: LongList = made["list"]
 	var source: Source = made["source"]
 	var commands: Commands = made["commands"]
-	var forgotten := Ear.new()
-	(made["chimes"] as Chimes).listen(forgotten, list.region, LongList.FAILURES_FORGOTTEN)
+	var forgotten: Ear = made["ear"]
 	_scroll(made, 4)
 	source.deliver(1, false)
 
 	_scroll(made, 0)
 	_scroll(made, 1)
+	await _settled()
 	_verdict.check(source.firsts() == [0, 4, 8, 12], "looking again asks for the failed page no more: %s" % [source.firsts()])
 
+	var woke := forgotten.rings
 	commands.dispatch(REGION, LongList.ASK_AGAIN, {})
+	await _settled()
 	_verdict.check(source.firsts() == [0, 4, 8, 12, 4], "asking again asks for it, and only it: %s" % [source.firsts()])
-	_verdict.check(not list.has_failed(4) and forgotten.rings == 1, "and it is no longer failed while it comes, which rang once: %d" % forgotten.rings)
+	_verdict.check(not list.has_failed(4) and forgotten.rings == woke + 1, "and it is no longer failed while it comes, which woke a reader of the pages once: %d" % (forgotten.rings - woke))
 	commands.dispatch(REGION, LongList.ASK_AGAIN, {})
-	_verdict.check(forgotten.rings == 1, "asking again with nothing failed rings nothing")
+	await _settled()
+	_verdict.check(forgotten.rings == woke + 1, "asking again with nothing failed wakes nothing")
 	source.deliver(4, true)
 	_verdict.check(list.has(4) and list.get_item(4) == 4, "and this time it lands")
 	_done(made)
@@ -427,22 +452,24 @@ func _a_failure_a_later_look_no_longer_covers_is_forgotten() -> void:
 ## A reset means the rows changed, so a page that could not come before may
 ## come now: every failure is forgotten and asked for again. A failure answered
 ## to a request from before the reset describes rows that are no longer there,
-## so it is dropped, and rings nothing.
+## so it is dropped, and wakes nothing.
 func _a_reset_forgets_every_failure_and_a_stale_failure_is_dropped() -> void:
 	var made := _made(40)
 	var list: LongList = made["list"]
 	var source: Source = made["source"]
-	var failures: Ear = made["failures"]
+	var failures: Ear = made["ear"]
 	var chimes: Chimes = made["chimes"]
 	_scroll(made, 4)
 	source.deliver(1, false)
+	await _settled()
 
 	chimes.strike(REGION, CHANGED)
 
 	_verdict.check(not list.has_failed(4), "the reset forgot the failure")
 	_verdict.check(source.firsts() == [0, 4, 8, 0, 4, 8], "and the failed page was asked for again with the rest: %s" % [source.firsts()])
 	source.deliver(0, false)
-	_verdict.check(not list.has_failed(0) and failures.rings == 1, "a failure answered to a request from before the reset is dropped, and rings nothing")
+	await _settled()
+	_verdict.check(not list.has_failed(0) and failures.rings == 1, "a failure answered to a request from before the reset is dropped, and wakes nothing")
 	_done(made)
 
 

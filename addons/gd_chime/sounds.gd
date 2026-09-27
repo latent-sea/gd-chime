@@ -8,6 +8,7 @@ const LookSounds := preload("look_sounds.gd")
 const Look := preload("look.gd")
 const Notifications := preload("notifications.gd")
 const SoundBus := preload("sound_bus.gd")
+const Reads := preload("reads.gd")
 
 ## The interface's sounds: a look's sound for each moment, played by hearing
 ## the bells that already ring.
@@ -16,7 +17,8 @@ const SoundBus := preload("sound_bus.gd")
 ##
 ## IT IS TOLD NOTHING. It listens, and on every wake it READS: the control a
 ## press landed on and that control's answer to it, the driver for where the
-## reader is, the prompts for what glows, the viewport for the focused control.
+## reader is, the viewport for the focused control. What the prompts name is a
+## value, which it follows.
 ##
 ## THE SOUNDS BELONG TO THE LOOK, kept on its Theme (look_sounds.gd), read
 ## from the root every time, so a palette brings its sounds with it.
@@ -99,7 +101,8 @@ func _init(chimes: Chimes, driver: Driver, prompts: Prompts, under: Node, bus: S
 	# the moments of a person's hand, hung here because the faces that ring them cannot
 	for moment: StringName in [HOVERED, FOCUS_MOVED, PRESSED]:
 		register_bell(moment)
-	listen([[Chimes.GLOBAL, Driver.NAVIGATED], [Chimes.GLOBAL, Prompts.PROMPT_MOVED], [Chimes.GLOBAL, HOVERED], [Chimes.GLOBAL, FOCUS_MOVED], [Chimes.GLOBAL, PRESSED], [Chimes.GLOBAL, Notifications.ARRIVED]])
+	listen([[Chimes.GLOBAL, Driver.NAVIGATED], [Chimes.GLOBAL, HOVERED], [Chimes.GLOBAL, FOCUS_MOVED], [Chimes.GLOBAL, PRESSED], [Chimes.GLOBAL, Notifications.ARRIVED]])
+	follow(&"glowing", _glowed)
 	# a voice for each sound that may overlap, built here so nothing is connected and nothing is found by name
 	for voice: int in VOICES:
 		var player := AudioStreamPlayer.new()
@@ -115,7 +118,6 @@ func heard(what: StringName) -> void:
 		FOCUS_MOVED when _arrived: _play(FOCUS_MOVED, _style_now())
 		HOVERED: _play(HOVERED, &"")
 		Driver.NAVIGATED: _moved()
-		Prompts.PROMPT_MOVED: _glowed()
 		Notifications.ARRIVED: _play(NOTIFIED, &"")
 
 
@@ -160,12 +162,13 @@ func _sound_the_move() -> void:
 	_top = top
 
 
-## The prompts moved: a glow STARTED where there was none or another, and
-## nothing while it stays where it is.
+## What the prompts name, followed (follow()): a glow STARTED where there was
+## none or another, and nothing while it stays where it is. Whatever else the
+## sound reads as it plays is read apart, so only the prompt is followed.
 func _glowed() -> void:
 	var glowing := _prompts.get_glowing()
 	if glowing != &"" and glowing != _glowing:
-		_play(GLOW_STARTED, &"")
+		Reads.apart(_play.bind(GLOW_STARTED, &""))
 	_glowing = glowing
 
 

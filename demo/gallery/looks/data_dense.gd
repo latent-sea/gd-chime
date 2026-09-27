@@ -38,7 +38,7 @@ func _init() -> void:
 	super(PALETTE)
 	# the type: one dense sans at every size, and a hairline scale of gaps
 	var sans := Look.font(["Segoe UI", "Verdana", "Tahoma", "Arial"])
-	var sans_bold := Look.font(["Segoe UI", "Verdana", "Tahoma", "Arial"], 700)
+	var sans_bold := Look.font(["Segoe UI", "Verdana", "Tahoma", "Arial"], {weight = 700})
 	set_default_font(sans)
 	default_font_size = 15
 	_press(sans)
@@ -56,7 +56,7 @@ func _init() -> void:
 ## words, and the prompt alone is underscored.
 func _press(sans: Font) -> void:
 	# a dotted hairline ring, just inside the edge, for the focus
-	var focus := Look.layered(self, [Paint.dashed(&"ink_soft", 1.0, 3.0, 3.0)])
+	var focus := Look.layered(self, [Paint.dashed(&"ink_soft", 1.0, {dash = 3.0, gap = 3.0})])
 	var boxes := {
 		&"normal": Look.layered(self, [], 7.0),
 		&"hover": Look.layered(self, [], 7.0),
@@ -65,7 +65,7 @@ func _press(sans: Font) -> void:
 		&"glowing": Look.layered(self, [Paint.underline(&"accent", 1.0, 3.0)], 7.0),
 	}
 	var inks := {&"normal": PALETTE[&"ink"], &"hover": TEAL, &"inert": PALETTE[&"ink_soft"], &"glowing": TEAL_DEEP}
-	Look.pressable(self, Themes.PRESSABLE, boxes, inks, focus, &"Control")
+	Look.pressable(self, Themes.PRESSABLE, boxes, {inks = inks, focus = focus, base = &"Control"})
 	# the tabs: words on one hairline running the width, the current one on
 	# a thicker teal stroke in the deep ink - the rule breaks, so the word
 	# you are on reads as the heading of the panel below it, not as a button
@@ -76,7 +76,7 @@ func _press(sans: Font) -> void:
 		&"inert": Look.layered(self, [Paint.underline(&"rule", 1.0)], 6.0),
 		&"glowing": Look.layered(self, [Paint.underline(&"accent", 1.0)], 6.0),
 		&"current": Look.layered(self, [Paint.underline(&"accent", 2.0)], 6.0),
-	}, tab_inks, focus)
+	}, {inks = tab_inks, focus = focus})
 	# a row of a table: the pointer marks it with a faint tint, the only fill in the language
 	for listed: StringName in [&"CardList", &"CardDense", &"Relative"]:
 		Look.pressable(self, listed, {
@@ -84,7 +84,7 @@ func _press(sans: Font) -> void:
 			&"hover": Look.layered(self, [Look.flat(PALETTE[&"lit"])], 6.0),
 			&"inert": Look.layered(self, [], 6.0),
 			&"glowing": Look.layered(self, [Paint.left_bar(&"accent", 2.0)], 6.0),
-		}, inks, focus)
+		}, {inks = inks, focus = focus})
 	# a chip and an inline word: smaller still, and one that is set reads ruled
 	for bare: StringName in [&"Chip", &"NavInline", &"Choice", &"Picker"]:
 		Look.pressable(self, bare, {
@@ -92,7 +92,7 @@ func _press(sans: Font) -> void:
 			&"hover": Look.layered(self, [Paint.underline(&"accent", 1.0, 1.0)], 4.0),
 			&"inert": Look.layered(self, [], 4.0),
 			&"glowing": Look.layered(self, [Paint.underline(&"accent", 1.0, 1.0)], 4.0),
-		}, inks, focus)
+		}, {inks = inks, focus = focus})
 		set_font_size(&"font_size", bare, 13)
 		set_font(&"font", bare, sans)
 
@@ -105,14 +105,14 @@ func _words(sans: Font, sans_bold: Font) -> void:
 	set_font_size(&"font_size", &"Label", 15)
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, PALETTE[&"ink"])
-	Look.words(self, Themes.FACE, 17, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.REASON, 13, sans, PALETTE[&"ink_soft"])
-	Look.words(self, Themes.WORDS, 26, sans, PALETTE[&"ink"])
-	Look.words(self, Themes.TITLE, 16, sans_bold, PALETTE[&"ink"])
-	Look.words(self, READOUT, 15, sans, PALETTE[&"ink"])
-	Look.words(self, LINE, 15, sans, PALETTE[&"ink"])
+	Look.words(self, Themes.FACE, 17, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.REASON, 13, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, Themes.WORDS, 26, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, Themes.TITLE, 16, {font = sans_bold, colour = PALETTE[&"ink"]})
+	Look.words(self, READOUT, 15, {font = sans, colour = PALETTE[&"ink"]})
+	Look.words(self, LINE, 15, {font = sans, colour = PALETTE[&"ink"]})
 	# the dial's number: still the loudest thing on the page, but set as a figure, not a poster
-	Look.words(self, Themes.NUMBER, 52, Look.font(["Segoe UI", "Verdana", "Tahoma", "Arial"], 300), TEAL_DEEP)
+	Look.words(self, Themes.NUMBER, 52, {font = Look.font(["Segoe UI", "Verdana", "Tahoma", "Arial"], {weight = 300}), colour = TEAL_DEEP})
 
 
 ## The grounds: the page itself, with a hairline where a rule genuinely
@@ -144,19 +144,19 @@ func _surfaces() -> void:
 func _lines() -> void:
 	for line: StringName in [Themes.ROW, Themes.COLUMN, Themes.TILES]:
 		set_constant(&"gap", line, 7)
-	Look.line(self, TIGHT, Themes.COLUMN, 2)
-	Look.line(self, Themes.CENTRED, Themes.ROW, 8, Look.CENTER)
-	Look.line(self, &"Chips", Themes.TILES, 6)
+	Look.line(self, TIGHT, Themes.COLUMN, {gap = 2})
+	Look.line(self, Themes.CENTRED, Themes.ROW, {gap = 8, justify = Look.CENTER})
+	Look.line(self, &"Chips", Themes.TILES, {gap = 6})
 	# the strip: words spaced along one line, sitting on its baseline
-	Look.line(self, &"TabStrip", Themes.ROW, 14, Look.START, Look.END)
-	Look.line(self, &"TabSet", Themes.COLUMN, 0)
-	Look.line(self, &"MatrixLine", Themes.ROW, 6)
-	Look.line(self, &"InstructionBar", Themes.ROW, 8, Look.BETWEEN, Look.CENTER)
-	Look.line(self, &"Controls", Themes.ROW, 8, Look.END, Look.CENTER)
-	Look.line(self, &"AmountField", Themes.ROW, 6, Look.START, Look.CENTER)
-	Look.line(self, &"Outcomes", Themes.COLUMN, 6)
-	Look.line(self, &"FilterSet", Themes.ROW, 8, Look.START, Look.CENTER)
-	Look.line(self, &"Disposition", Themes.ROW, 8, Look.BETWEEN, Look.CENTER)
+	Look.line(self, &"TabStrip", Themes.ROW, {gap = 14, justify = Look.START, align = Look.END})
+	Look.line(self, &"TabSet", Themes.COLUMN, {gap = 0})
+	Look.line(self, &"MatrixLine", Themes.ROW, {gap = 6})
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = 8, justify = Look.BETWEEN, align = Look.CENTER})
+	Look.line(self, &"Controls", Themes.ROW, {gap = 8, justify = Look.END, align = Look.CENTER})
+	Look.line(self, &"AmountField", Themes.ROW, {gap = 6, justify = Look.START, align = Look.CENTER})
+	Look.line(self, &"Outcomes", Themes.COLUMN, {gap = 6})
+	Look.line(self, &"FilterSet", Themes.ROW, {gap = 8, justify = Look.START, align = Look.CENTER})
+	Look.line(self, &"Disposition", Themes.ROW, {gap = 8, justify = Look.BETWEEN, align = Look.CENTER})
 	set_constant(&"gap", Themes.GRID, 8)
 	set_constant(&"row_gap", Themes.GRID, 8)
 	for drawn: StringName in Charts.DRAWN:

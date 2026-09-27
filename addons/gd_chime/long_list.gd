@@ -16,26 +16,31 @@ const Reads := preload("reads.gd")
 ## length of the whole list, or null for the rows, meaning it could not. A
 ## row is opaque: nothing here knows what the rows are or why they changed.
 ##
+## TWO FACTS, EACH A VALUE ON A BELL OF ITS OWN, one timing with every other
+## fact: THE LOOK and THE PAGES HELD. Whatever reads one follows it, as a
+## read of any value is followed, and is not woken by the other.
+##
 ## THE LOOK is this model's: the first row showing and how many show. A
-## screen holds no offset; it reads get_first() and draws, and a read of
-## the look notes LOOK_MOVED, of the total PAGE_LANDED, for whoever reads. The look moves
+## screen holds no offset; it reads get_first() and draws. The look moves
 ## only by command - the four SCROLLs, SCROLL_ROWS (by the payload's rows,
 ## the wheel's), SHOWS {count}, how many rows fit where it is shown, and
 ## ASK_AGAIN, registered in its own region; a scroll up at the top or down
 ## at the end is refused (would), the rest clamped to the first rows that
-## still fill the screen. LOOK_MOVED sounds when the first row or how many
-## show changes, never for a move that went nowhere.
+## still fill the screen. It is set when the first row or how many show
+## changes, never for a move that went nowhere.
 ##
 ## THE PAGES are held_pages.gd's: a move asks the source, each once, for the
 ## pages covering the look and one either side that are not held, on the
 ## way or failed; a page landed is kept, the farthest let go past KEEP,
-## which is at least the pages one look covers plus two, and PAGE_LANDED
-## sounds. An answer of null means the source could not give that page:
-## PAGE_FAILED sounds, has_failed(index) is true for every row of it, and a
-## look covering it does not ask again - a screen shows the failure where
-## the rows would be. ASK_AGAIN forgets every failure and asks again;
-## FAILURES_FORGOTTEN sounds when it forgot any. Why the source could not is
-## the source's to report, to the developer's log.
+## which is at least the pages one look covers plus two. An answer of null
+## means the source could not give that page: has_failed(index) is true for
+## every row of it, and a look covering it does not ask again - a screen
+## shows the failure where the rows would be. ASK_AGAIN forgets every
+## failure and asks again. A page landing, a page failing and failures
+## forgotten each set the pages again; forgetting everything, as a reset or
+## a drop does, does not, since what is shown stands until the pages asked
+## for land. Why the source could not is the source's to report, to the
+## developer's log.
 ##
 ## What is held is read by index: count(), has(index), get_item(index) -
 ## null for one not held, a screen's dots. has_failed(index) tells a row
@@ -43,9 +48,10 @@ const Reads := preload("reads.gd")
 ##
 ## The rows change under this. It is built with a bound value reading
 ## whatever the rows move with - the source's model - and follows what that
-## read (reads.gd); as it moves it resets: everything forgotten, its token reissued, the look's pages asked
-## for again, PAGE_LANDED sounding as they land. An answer carries the token
-## it was asked under (token.gd); one whose token is dead is dropped.
+## read (reads.gd); as it moves it resets: everything forgotten, its token
+## reissued, the look's pages asked for again, and set again as they land.
+## An answer carries the token it was asked under (token.gd); one whose
+## token is dead is dropped.
 ##
 ## DATA LOADS WHEN SHOWN. Built, this holds and asks for nothing until
 ## look(token): the place it sits in calls it as it fills, with the token of
@@ -55,10 +61,6 @@ const Reads := preload("reads.gd")
 ## Deliberately absent: a margin wider than one page, row identity, and a
 ## total before the first answer (count() is 0 until a page lands).
 
-const LOOK_MOVED := &"look_moved"
-const PAGE_LANDED := &"page_landed"
-const PAGE_FAILED := &"page_failed"
-const FAILURES_FORGOTTEN := &"failures_forgotten"
 const SCROLL_ROW_UP := &"scroll_row_up"
 const SCROLL_ROW_DOWN := &"scroll_row_down"
 const SCROLL_PAGE_UP := &"scroll_page_up"
@@ -71,9 +73,11 @@ const COMMANDS: Array[StringName] = [SCROLL_ROW_UP, SCROLL_ROW_DOWN, SCROLL_PAGE
 
 var _fetch: Callable
 var _page: int
-var _showing: int
-var _first: int = 0
-var _held: HeldPages
+var _look_moved := OwnBell.new("look")  # the bell the look rings
+var _pages_moved := OwnBell.new("pages")  # the bell the pages held ring
+var _showing: Value  # how many rows show, made as this is built
+var _first := value(0, _look_moved)  # the first row showing
+var _held: Value  # the pages held (held_pages.gd), made as this is built, changed in place and set again
 var _token: Token = Token.new()  # carried by every request, issued under the place's: dead with it or on a reset
 var _under: Token = null
 var _looking: bool = false  # between look() and drop(): the source is asked for the look's pages
@@ -82,15 +86,13 @@ var _rows: Bound  # whatever the rows move with, read to follow it
 
 func _init(chimes: Chimes, fetch: Callable, page: int, keep: int, showing: int, rows: Bound) -> void:
 	super(chimes, [], own_region("long_list"))
+	_look_moved.hang(chimes)
+	_pages_moved.hang(chimes)
 	_fetch = fetch
 	_rows = rows
 	_page = page
-	_showing = showing
-	_held = HeldPages.new(page, keep)
-	register_bell(LOOK_MOVED)
-	register_bell(PAGE_LANDED)
-	register_bell(PAGE_FAILED)
-	register_bell(FAILURES_FORGOTTEN)
+	_showing = value(showing, _look_moved)
+	_held = value(HeldPages.new(page, keep), _pages_moved)
 	follow(&"rows", _rows_moved)
 
 
@@ -110,36 +112,33 @@ func drop() -> void:
 
 ## How long the whole list is, as the source last said. 0 until a page lands.
 func count() -> int:
-	Reads.note(region, PAGE_LANDED)
-	return _held.count()
+	return _held.read().count()
 
 
 ## The first row showing.
 func get_first() -> int:
-	Reads.note(region, LOOK_MOVED)
-	return _first
+	return _first.read()
 
 
 ## How many rows show.
 func get_showing() -> int:
-	Reads.note(region, LOOK_MOVED)
-	return _showing
+	return _showing.read()
 
 
 ## Whether the row at this index is held. An index past the end is not, even
 ## when the page it would fall on is.
 func has(index: int) -> bool:
-	return _held.has(index)
+	return _held.read().has(index)
 
 
 ## Whether the row at this index falls on a page the source could not give.
 func has_failed(index: int) -> bool:
-	return _held.has_failed(index)
+	return _held.read().has_failed(index)
 
 
 ## The row at this index, or null if it is not held.
 func get_item(index: int) -> Variant:
-	return _held.get_item(index)
+	return _held.read().get_item(index)
 
 
 ## A scroll past the top or the end, as the look and the total now stand, is refused.
@@ -152,21 +151,21 @@ func would(action: StringName, _payload: Dictionary) -> Phrase:
 
 
 func told(action: StringName, payload: Dictionary) -> Phrase:
+	var first: int = _first.read()
 	match action:
-		SCROLL_ROW_UP: _move_to(_first - 1)
-		SCROLL_ROW_DOWN: _move_to(_first + 1)
-		SCROLL_PAGE_UP: _move_to(_first - _showing)
-		SCROLL_PAGE_DOWN: _move_to(_first + _showing)
-		SCROLL_ROWS: _move_to(_first + payload["by"])
+		SCROLL_ROW_UP: _move_to(first - 1)
+		SCROLL_ROW_DOWN: _move_to(first + 1)
+		SCROLL_PAGE_UP: _move_to(first - _showing.read())
+		SCROLL_PAGE_DOWN: _move_to(first + _showing.read())
+		SCROLL_ROWS: _move_to(first + payload["by"])
 		SHOWS:
-			_showing = payload["count"]
-			_move_to(_first)
-			strike(region, LOOK_MOVED)
+			_showing.set_value(payload["count"])
+			_move_to(first)
 		ASK_AGAIN:
-			var forgot := _held.forget_failures()
+			var held: HeldPages = _held.read()
+			if held.forget_failures():
+				_held.set_value(held)
 			_look()
-			if forgot:
-				strike(region, FAILURES_FORGOTTEN)
 	return null
 
 
@@ -184,20 +183,22 @@ func _rows_moved() -> void:
 	Reads.apart(reset)
 
 
+## Everything held forgotten in place, and not set: what is shown stands
+## until the pages asked for land.
 func _forget() -> void:
-	_held.forget()
+	(_held.read() as HeldPages).forget()
 	_token.cancel()
 	_token = Token.new(_under)
 
 
-## The first row set and clamped, the look's pages asked for, LOOK_MOVED if it changed.
+## The first row clamped and, if it changed, set; the look's pages asked for.
 func _move_to(first: int) -> void:
-	var was := _first
+	var showing: int = _showing.read()
 	# an unknown total (0 until a page lands) is no bound; a known one is the last first row that fills the screen
-	_first = maxi(first, 0) if count() == 0 else clampi(first, 0, maxi(count() - _showing, 0))
+	var clamped := maxi(first, 0) if count() == 0 else clampi(first, 0, maxi(count() - showing, 0))
+	if clamped != _first.read():
+		_first.set_value(clamped)
 	_look()
-	if _first != was:
-		strike(region, LOOK_MOVED)
 
 
 ## The look's pages the held pages want, asked for - and only while looking.
@@ -205,23 +206,23 @@ func _look() -> void:
 	if not _looking:
 		return
 	# every page wanted, asked of the source under the token it goes with
-	for page: int in _held.wanted(_first, _showing):
+	for page: int in (_held.read() as HeldPages).wanted(_first.read(), _showing.read()):
 		_fetch.call(page * _page, _page, _landed.bind(page, _token))
 
 
 ## An answer from the source, bound with the page it is for and the token it
-## was asked under. A total that shrank pulls the look back before the
-## landing sounds, so a screen drawing on it reads the first row it will keep.
+## was asked under. A total that shrank pulls the look back as the pages are
+## set, so a screen drawing on them reads the first row it will keep.
 func _landed(rows: Variant, total: int, page: int, token: Token) -> void:
 	if not token.is_live():
 		return
+	var held: HeldPages = _held.read()
 	if rows == null:
-		_held.failed(page)
-		strike(region, PAGE_FAILED)
-		return
-	_held.landed(page, rows, total)
-	_move_to(_first)
-	strike(region, PAGE_LANDED)
+		held.failed(page)
+	else:
+		held.landed(page, rows, total)
+		_move_to(_first.read())
+	_held.set_value(held)
 
 
 ## Every action this model is told.

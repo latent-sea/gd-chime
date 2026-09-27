@@ -52,6 +52,7 @@ func _init() -> void:
 	await _verdict.states(_a_layered_box_draws_its_layers_in_order_at_their_offsets)
 	await _verdict.states(_a_type_is_never_made_a_variation_of_itself)
 	await _verdict.states(_a_box_takes_named_options_and_reports_one_it_does_not_know)
+	await _verdict.states(_the_helpers_take_named_options_and_report_one_they_do_not_know)
 	await _verdict.states(_rounded_paint_follows_the_corners_and_square_paint_over_a_rounded_box_is_reported)
 	await _verdict.states(_a_look_put_on_the_root_re_dresses_what_shows)
 	await _verdict.states(_a_ground_with_a_blur_frosts_what_is_behind_it)
@@ -90,8 +91,8 @@ func _a_layered_box_draws_its_layers_in_order_at_their_offsets() -> void:
 func _a_type_is_never_made_a_variation_of_itself() -> void:
 	var theme := Theme.new()
 	Look.ground(theme, Themes.SURFACE, Look.flat(Color.RED))
-	Look.pressable(theme, Themes.PRESSABLE, {&"normal": Look.flat(Color.RED)}, {&"normal": Color.WHITE}, Look.nothing())
-	Look.line(theme, Themes.ROW, Themes.ROW, 8)
+	Look.pressable(theme, Themes.PRESSABLE, {&"normal": Look.flat(Color.RED)}, {inks = {&"normal": Color.WHITE}, focus = Look.nothing()})
+	Look.line(theme, Themes.ROW, Themes.ROW, {gap = 8})
 	_verdict.check(theme.get_type_variation_base(Themes.SURFACE) == &"" and theme.get_type_variation_base(Themes.PRESSABLE) == &"" and theme.get_type_variation_base(Themes.ROW) == &"", "a surface, a pressable and a row styled as themselves are no variation of themselves")
 	Look.ground(theme, &"Raised", Look.flat(Color.RED))
 	_verdict.check(theme.get_type_variation_base(&"Raised") == Themes.SURFACE, "and another type is a variation of the base")
@@ -112,8 +113,8 @@ func _a_look_put_on_the_root_re_dresses_what_shows() -> void:
 	var press: Pressable = ui.node_named(&"press")
 	_verdict.check(row.theme_type_variation == Themes.ROW and press.theme_type_variation == Themes.PRESSABLE, "under the placeholder, unknown styles fell back to their bases")
 	var look := DemoTheme.new()
-	Look.line(look, &"Wide", Themes.ROW, 40)
-	Look.pressable(look, &"Special", {&"normal": Look.flat(Color.RED), &"hover": Look.flat(Color.RED), &"inert": Look.flat(Color.RED), &"glowing": Look.flat(Color.RED)}, {&"normal": Color.WHITE, &"hover": Color.WHITE, &"inert": Color.WHITE, &"glowing": Color.WHITE}, Look.nothing())
+	Look.line(look, &"Wide", Themes.ROW, {gap = 40})
+	Look.pressable(look, &"Special", {&"normal": Look.flat(Color.RED), &"hover": Look.flat(Color.RED), &"inert": Look.flat(Color.RED), &"glowing": Look.flat(Color.RED)}, {inks = {&"normal": Color.WHITE, &"hover": Color.WHITE, &"inert": Color.WHITE, &"glowing": Color.WHITE}, focus = Look.nothing()})
 	root.theme = look
 	await _a_frame_passes()
 	_verdict.check(row.theme_type_variation == &"Wide" and is_equal_approx(row._gap, 40.0), "a look defining the row's style is read live: gap %s" % [row._gap])
@@ -156,8 +157,44 @@ func _a_box_takes_named_options_and_reports_one_it_does_not_know() -> void:
 	Look.ring(Color.RED, {thickness = 3})
 	_verdict.check(_hearing.refusals == before + 2, "an option a box does not know is reported out loud, each time")
 	var theme := Theme.new()
-	Look.line(theme, &"Foot", Themes.ROW, 4, Look.END, Look.CENTER)
+	Look.line(theme, &"Foot", Themes.ROW, {gap = 4, justify = Look.END, align = Look.CENTER})
 	_verdict.check(theme.get_constant(&"justify", &"Foot") == Layout.END and theme.get_constant(&"align", &"Foot") == Layout.CENTER and Look.STRETCH == Layout.STRETCH, "a line takes the flex layout's own constants")
+	OS.remove_logger(_hearing)
+
+
+## The helpers that put a look into a theme take what they have past their
+## first few as named options, as the boxes do: each lands where it says, one
+## left out takes its default, and one they do not know is said out loud.
+func _the_helpers_take_named_options_and_report_one_they_do_not_know() -> void:
+	OS.add_logger(_hearing)
+	var theme := Theme.new()
+	var heavy := Look.font(["Arial"], {weight = 700, italic = true})
+	_verdict.check(heavy.font_weight == 700 and heavy.font_italic and Look.font(["Arial"]).font_weight == 400 and not Look.font(["Arial"]).font_italic, "a font takes its weight and italic by name, 400 and upright when not said")
+	Look.words(theme, &"Big", 30, {font = heavy, colour = Color.RED})
+	Look.words(theme, &"Plain", 12)
+	_verdict.check(theme.get_font(&"font", &"Big") == heavy and theme.get_color(&"font_color", &"Big") == Color.RED and not theme.has_font(&"font", &"Plain") and not theme.has_color(&"font_color", &"Plain"), "a kind of words takes its font and colour by name, and none when not said")
+	Look.line(theme, &"Bare", Themes.ROW)
+	_verdict.check(theme.get_constant(&"gap", &"Bare") == 0 and theme.get_constant(&"justify", &"Bare") == Look.START and theme.get_constant(&"align", &"Bare") == Look.STRETCH, "a line left bare has no gap, packs from the start and stretches")
+	Look.pressable(theme, &"Tag", {&"normal": Look.flat(Color.RED)}, {inks = {&"normal": Color.BLUE}, focus = Look.ring(Color.GREEN), base = &"Control"})
+	_verdict.check(theme.get_type_variation_base(&"Tag") == &"Control" and theme.get_color(&"font_color_normal", &"Tag") == Color.BLUE and (theme.get_stylebox(&"focus", &"Tag") as StyleBoxFlat).border_color == Color.GREEN, "a pressable takes its inks, its focus and its base by name")
+	var rest := Look.flat(Color.RED)
+	var lit := Look.flat(Color.BLUE)
+	Look.field(theme, &"Entry", {normal = rest, focus = lit}, Color.WHITE)
+	_verdict.check(theme.get_stylebox(&"normal", &"Entry") == rest and theme.get_stylebox(&"focus", &"Entry") == lit and theme.get_stylebox(&"read_only", &"Entry") == rest, "a field takes its boxes by the state each is for")
+	Look.pressable(theme, Themes.PRESSABLE, {&"normal": Look.flat(Color.RED)}, {inks = {&"normal": Color.BLUE}, focus = Look.nothing()})
+	var before := _hearing.refusals
+	Look.marked(theme, &"Side", &"accent", {thick = 3.0, side = SIDE_LEFT})
+	Paint.dashed(&"ink", 1.0, {dash = 4.0, gap = 2.0, inset = 1.0, radius = 3.0})
+	Paint.hatch(&"ink", {spacing = 10.0, width = 2.0, diagonal = true})
+	_verdict.check(_hearing.refusals == before and theme.get_stylebox(&"normal", &"Side") is PaintedBox, "a marked pressable, a dash and a hatch take every option they know by name, nothing said")
+	Look.font(["Arial"], {wieght = 700})
+	Look.words(theme, &"Big", 30, {size = 4})
+	Look.line(theme, &"Bare", Themes.ROW, {spacing = 4})
+	Look.pressable(theme, &"Tag", {&"normal": Look.flat(Color.RED)}, {inks = {&"normal": Color.BLUE}, focus = Look.nothing(), bse = &"Control"})
+	Look.marked(theme, &"Side", &"accent", {thickness = 3.0})
+	Paint.dashed(&"ink", 1.0, {dahs = 4.0})
+	Paint.hatch(&"ink", {slanted = true})
+	_verdict.check(_hearing.refusals == before + 7, "an option a helper does not know is reported out loud, each time: %d of 7" % (_hearing.refusals - before))
 	OS.remove_logger(_hearing)
 
 
@@ -176,7 +213,7 @@ func _rounded_paint_follows_the_corners_and_square_paint_over_a_rounded_box_is_r
 	_verdict.check(inside, "every point of a rounded outline is inside the rect and off its square corner")
 	var before := _hearing.refusals
 	var into := DemoTheme.new()
-	Look.layered(into, [Look.flat(Color.RED, {radius = 10}), Paint.gradient(&"ink", &"ground", 10.0), Paint.dashed(&"ink", 1.0, 8.0, 6.0, 0.0, 10.0)])
+	Look.layered(into, [Look.flat(Color.RED, {radius = 10}), Paint.gradient(&"ink", &"ground", 10.0), Paint.dashed(&"ink", 1.0, {dash = 8.0, gap = 6.0, inset = 0.0, radius = 10.0})])
 	_verdict.check(_hearing.refusals == before, "a rounded gradient and rounded dashes over a rounded box are what was asked")
 	Look.layered(into, [Look.flat(Color.RED, {radius = 10}), Paint.brackets(&"ink", 1.0)])
 	Look.layered(into, [Look.flat(Color.RED, {radius = 10}), Paint.hatch(&"ink")])

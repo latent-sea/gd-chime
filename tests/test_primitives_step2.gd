@@ -97,6 +97,13 @@ func _a_pan_zoom_canvas_dispatches_a_drag_a_wheel_and_a_pick_to_the_model() -> v
 	await _a_frame_passes()
 	_verdict.check(model.told_actions == [&"pans", &"zooms", &"picks"] and made.commands.get_last()["payload"] == {"picked": "node"}, "a press that never moved picks what the hit function answers: %s" % [model.told_actions])
 	canvas.get_parent().free()
+	var blind: PanZoom = ui.build(ui.pan_zoom(func(_control: Control, _value: Variant) -> void: pass, null, {"pans": &"pans", "zooms": &"zooms", "picks": &"picks"}), _host(Vector2(400, 400)))
+	await _a_frame_passes()
+	_mouse(MOUSE_BUTTON_LEFT, true, Vector2(50, 50))
+	_mouse(MOUSE_BUTTON_LEFT, false, Vector2(50, 50))
+	await _a_frame_passes()
+	_verdict.check(model.told_actions.size() == 3, "given no hit function, a press picks nothing: %s" % [model.told_actions])
+	blind.get_parent().free()
 	model.free()
 	made.done()
 

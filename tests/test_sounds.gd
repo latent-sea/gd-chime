@@ -331,8 +331,9 @@ func _a_move_and_a_pop_up_raised_and_lowered_each_play_theirs() -> void:
 	_done(heard)
 
 
-## A prompt raised is a glow starting. The prompts ringing again while the
-## same action still glows is not, so it sounds nothing.
+## A prompt raised is a glow starting. The prompt moving and moving back
+## within one frame - heard once, at its end, the same action still glowing -
+## is not, so it sounds nothing.
 func _a_glow_starting_plays_once_and_not_again_while_it_stays() -> void:
 	var heard := _heard({PRESS: "presses it"})
 	var ui: Variant = heard["made"].ui
@@ -346,12 +347,14 @@ func _a_glow_starting_plays_once_and_not_again_while_it_stays() -> void:
 	_verdict.check(_since(heard, mark) == [Sounds.GLOW_STARTED], "a prompt raised plays the glow sound: %s" % [_since(heard, mark)])
 
 	mark = _how_many(heard)
-	(heard["made"] as Fixture).chimes.strike(Chimes.GLOBAL, Prompts.PROMPT_MOVED)
+	prompts.withdraw(&"guide")
+	prompts.raise(&"guide", PRESS)
 	await _a_frame_passes()
-	_verdict.check(_since(heard, mark) == [], "the prompts ringing while the same action glows plays nothing: %s" % [_since(heard, mark)])
+	_verdict.check(_since(heard, mark) == [], "the prompt gone and back within a frame, the same action glowing, plays nothing: %s" % [_since(heard, mark)])
 
 	mark = _how_many(heard)
 	prompts.withdraw(&"guide")
+	await _a_frame_passes()
 	prompts.raise(&"guide", PRESS)
 	await _a_frame_passes()
 	_verdict.check(_since(heard, mark) == [Sounds.GLOW_STARTED], "and a glow that went and came back is a glow starting again: %s" % [_since(heard, mark)])

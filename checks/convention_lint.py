@@ -76,11 +76,12 @@ its header is still checked, as everything else here still is.
 AN APPLICATION USES WHAT THE FACADE EXPORTS AND NOTHING ELSE (CONSTITUTION.md,
 the promise): a script outside the addon - a demo, an app, a check - that
 preloads or extends a file of the addon by its path may name only a file the
-three facade files re-export, the facade itself, ChimeApp, or application.gd,
-the main loop a --script demo is run through in place of a ChimeApp. The
-exported paths are read off the facade files themselves, so a name added
-there is allowed here the same day, and a file reached past the facade is
-reported with what to write instead.
+three facade files re-export, the facade itself, or ChimeApp. The exported
+paths are read off the facade files themselves, so a name added there is
+allowed here the same day, and a file reached past the facade is reported
+with what to write instead. application.gd, the main loop a --script demo or
+probe is run through, is not in the promise: it is allowed from demo/ and
+checks/ alone, and anywhere else reported with ChimeApp to write instead.
 
 Deliberately absent: it does not check that a listener was given addresses
 rather than belfry, nor that a screen was handed a model rather than reaching
@@ -145,9 +146,12 @@ DEMOS = "demo/"
 # a file that describes: it names the builder or a description
 DESCRIBES = re.compile(r"primitives/(?:ui|desc)\.gd\"|-> Desc\b|\bUi\b")
 LINE_CAP = 250
-# the three facade files, whose re-exports are the promise, and the two entry points an app file may name beside them
+# the three facade files, whose re-exports are the promise, and the node an app file may name beside them
 FACADE = ("gd_chime.gd", "gd_chime_recipes.gd", "gd_chime_floor.gd")
-ENTRY_POINTS = ("chime_app.gd", "application.gd")
+ENTRY_POINTS = ("chime_app.gd",)
+# the demos' and probes' main loop, and the folders it may be named from
+MAIN_LOOP = "application.gd"
+LOOP_NAMED_FROM = (DEMOS, "checks/")
 # preload("card.gd") or _at("components/recipes/card.gd") in a facade file: a path it exports, from the addon's root
 EXPORTS = re.compile(r'(?:preload|_at)\("([^"]+)"\)')
 # a quoted absolute path into the addon, preloaded or extended from outside it: what follows the addon's folder is the file reached
@@ -208,7 +212,10 @@ def main() -> int:
                 hits += 1
             # a path into the addon from outside it, for one the facade does not export
             for reached in INTO_ADDON.findall(line) if not rel.startswith(FLOOR) else []:
-                if reached not in promised:
+                if reached == MAIN_LOOP and not rel.startswith(LOOP_NAMED_FROM):
+                    print(f"{rel}:{number}: {MAIN_LOOP} is the demos' and probes' main loop, named from {' and '.join(LOOP_NAMED_FROM)} alone; a game extends ChimeApp")
+                    hits += 1
+                elif reached not in promised and reached != MAIN_LOOP:
                     print(f"{rel}:{number}: {reached} is not what the facade exports; an application uses GdChime.<Name> and ChimeApp, and nothing past them")
                     hits += 1
             if DECLARES_SIGNAL.match(line) and rel not in EMITTERS:

@@ -48,8 +48,8 @@ const INK_FAINT := Color(1.0, 1.0, 1.0, 0.45)
 func _init() -> void:
 	super(PALETTE)
 	var sans := Look.font(["Segoe UI", "Trebuchet MS", "Verdana"])
-	var light := Look.font(["Segoe UI", "Trebuchet MS", "Verdana"], 300)
-	var heavy := Look.font(["Segoe UI", "Trebuchet MS", "Verdana"], 600)
+	var light := Look.font(["Segoe UI", "Trebuchet MS", "Verdana"], {weight = 300})
+	var heavy := Look.font(["Segoe UI", "Trebuchet MS", "Verdana"], {weight = 600})
 	_pressables()
 	_grounds()
 	_words(sans, light, heavy)
@@ -72,7 +72,7 @@ func _pressables() -> void:
 		&"glowing": _pane(WARM, 14.0, WARM_EDGE, 12.0),
 	}
 	var inks := {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}
-	Look.pressable(self, Themes.PRESSABLE, boxes, inks, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 14.0, inset = 3.0}), &"Control")
+	Look.pressable(self, Themes.PRESSABLE, boxes, {inks = inks, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 14.0, inset = 3.0}), base = &"Control"})
 	# a tab: a flap of glass resting on the panel it reveals - a fainter frost than the panel, a hairline of light around its top corners
 	Look.pressable(self, &"Tab", {
 		&"normal": Look.flap(Color(1.0, 1.0, 1.0, 0.08), {radius = 14.0, pad_top = 10.0, pad = 10.0, border = 1.0, border_colour = Color(1.0, 1.0, 1.0, 0.22)}),
@@ -81,21 +81,21 @@ func _pressables() -> void:
 		&"glowing": Look.flap(WARM, {radius = 14.0, pad_top = 10.0, pad = 10.0, border = 1.0, border_colour = WARM_EDGE}),
 		# the flap you are on: the panel's own frost, padded taller, so it stands up out of the strip and merges into the sheet with no seam
 		&"current": Look.flap(SHEET, {radius = 14.0, pad_top = 22.0, pad = 10.0, border = 1.0, border_colour = EDGE}),
-	}, {&"normal": PALETTE[&"ink_soft"], &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE, &"current": WHITE}, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 14.0, inset = 2.0}))
+	}, {inks = {&"normal": PALETTE[&"ink_soft"], &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE, &"current": WHITE}, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 14.0, inset = 2.0})})
 	# a chip: the smallest pane, a pill
 	Look.pressable(self, &"Chip", {
 		&"normal": _pane(Color(1.0, 1.0, 1.0, 0.12), 16.0, EDGE, 8.0),
 		&"hover": _pane(PANE_LIT, 16.0, EDGE_BRIGHT, 8.0),
 		&"inert": _pane(PANE_CLEAR, 16.0, Color(1.0, 1.0, 1.0, 0.16), 8.0),
 		&"glowing": _pane(WARM, 16.0, WARM_EDGE, 8.0),
-	}, {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 2.0}))
+	}, {inks = {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 2.0})})
 	# an inline word: no pane at all, a rule of light under it instead
 	Look.pressable(self, &"NavInline", {
 		&"normal": Look.layered(self, [Paint.underline(Paint.faded(&"ink", 0.3), 1.0, 2.0)], 8.0),
 		&"hover": Look.layered(self, [Paint.underline(&"ink", 2.0, 2.0)], 8.0),
 		&"inert": Look.layered(self, [], 8.0),
 		&"glowing": Look.layered(self, [Paint.underline(Paint.mixed(&"accent", &"ink", 0.45), 2.0, 2.0)], 8.0),
-	}, {&"normal": PALETTE[&"ink_soft"], &"hover": WHITE, &"inert": INK_FAINT, &"glowing": PALETTE[&"accent"]}, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 8.0, inset = 2.0}))
+	}, {inks = {&"normal": PALETTE[&"ink_soft"], &"hover": WHITE, &"inert": INK_FAINT, &"glowing": PALETTE[&"accent"]}, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 8.0, inset = 2.0})})
 	# the card-shaped pressables: bigger panes, more air inside, a wider radius
 	for card: StringName in [&"CardList", &"CardTile", &"CardDense"]:
 		Look.pressable(self, card, {
@@ -103,7 +103,7 @@ func _pressables() -> void:
 			&"hover": _pane(PANE_LIT, 16.0, EDGE_BRIGHT, 16.0),
 			&"inert": _pane(PANE_CLEAR, 16.0, Color(1.0, 1.0, 1.0, 0.18), 16.0),
 			&"glowing": _pane(WARM, 16.0, WARM_EDGE, 16.0),
-		}, {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 3.0}))
+		}, {inks = {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 3.0})})
 
 
 ## Every ground: a frosted pane over the blurred vivid ground, the deeper
@@ -133,9 +133,9 @@ func _grounds() -> void:
 		&"hover": Look.flat(PANE_LIT, {radius = 16.0, border = 1.0, border_colour = EDGE_BRIGHT, pad = 8.0}),
 		&"inert": Look.flat(PANE_CLEAR, {radius = 16.0, border = 1.0, border_colour = Color(1.0, 1.0, 1.0, 0.16), pad = 8.0}),
 		&"glowing": Look.flat(WARM, {radius = 16.0, border = 1.0, border_colour = WARM_EDGE, pad = 8.0}),
-	}, {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 2.0}))
+	}, {inks = {&"normal": WHITE, &"hover": WHITE, &"inert": INK_FAINT, &"glowing": WHITE}, focus = Look.ring(EDGE_BRIGHT, {width = 2.0, radius = 16.0, inset = 2.0})})
 	# the text field: a sunken pane, darker than what is around it, so it reads as a hole
-	Look.field(self, &"Field", _pane(Color(0.0, 0.0, 0.0, 0.18), 12.0, Color(1.0, 1.0, 1.0, 0.30), 12.0), _pane(Color(0.0, 0.0, 0.0, 0.10), 12.0, Color(1.0, 1.0, 1.0, 0.85), 12.0), Color.WHITE)
+	Look.field(self, &"Field", {normal = _pane(Color(0.0, 0.0, 0.0, 0.18), 12.0, Color(1.0, 1.0, 1.0, 0.30), 12.0), focus = _pane(Color(0.0, 0.0, 0.0, 0.10), 12.0, Color(1.0, 1.0, 1.0, 0.85), 12.0)}, Color.WHITE)
 
 
 ## The words: one humanist sans, white on every pane, weight and not colour
@@ -145,14 +145,14 @@ func _words(sans: Font, light: Font, heavy: Font) -> void:
 	default_font_size = 24
 	for kind: StringName in [Themes.FACE, Themes.REASON, Themes.WORDS, READOUT, LINE, Themes.TITLE, Themes.NUMBER]:
 		set_color(&"font_color", kind, WHITE)
-	Look.words(self, Themes.FACE, 26, sans, WHITE)
-	Look.words(self, Themes.REASON, 19, sans, PALETTE[&"ink_soft"])
-	Look.words(self, Themes.WORDS, 34, light, WHITE)
-	Look.words(self, Themes.TITLE, 22, heavy, WHITE)
-	Look.words(self, READOUT, 21, sans, PALETTE[&"ink_soft"])
-	Look.words(self, LINE, 23, sans, WHITE)
+	Look.words(self, Themes.FACE, 26, {font = sans, colour = WHITE})
+	Look.words(self, Themes.REASON, 19, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, Themes.WORDS, 34, {font = light, colour = WHITE})
+	Look.words(self, Themes.TITLE, 22, {font = heavy, colour = WHITE})
+	Look.words(self, READOUT, 21, {font = sans, colour = PALETTE[&"ink_soft"]})
+	Look.words(self, LINE, 23, {font = sans, colour = WHITE})
 	# the big number: thin and luminous, the way glass wants a headline
-	Look.words(self, Themes.NUMBER, 92, light, WHITE)
+	Look.words(self, Themes.NUMBER, 92, {font = light, colour = WHITE})
 	# every drawn line: white, the graph's links fainter, both readable over frost
 	for drawn: StringName in Charts.DRAWN:
 		set_color(&"line", drawn, Color(1.0, 1.0, 1.0, 0.85))
@@ -164,14 +164,14 @@ func _words(sans: Font, light: Font, heavy: Font) -> void:
 func _lines() -> void:
 	for line: StringName in [Themes.ROW, Themes.COLUMN]:
 		set_constant(&"gap", line, 16)
-	Look.line(self, Themes.TILES, Themes.ROW, 16)
-	Look.line(self, &"Chips", Themes.ROW, 10)
+	Look.line(self, Themes.TILES, Themes.ROW, {gap = 16})
+	Look.line(self, &"Chips", Themes.ROW, {gap = 10})
 	# the flaps: a thread of ground between them, bottom-aligned so the current one grows upward off the sheet, and the two as one thing
-	Look.line(self, &"TabStrip", Themes.ROW, 6, Look.START, Look.END)
-	Look.line(self, &"TabSet", Themes.COLUMN, 0)
-	Look.line(self, &"Controls", Themes.ROW, 14, Look.END)
+	Look.line(self, &"TabStrip", Themes.ROW, {gap = 6, justify = Look.START, align = Look.END})
+	Look.line(self, &"TabSet", Themes.COLUMN, {gap = 0})
+	Look.line(self, &"Controls", Themes.ROW, {gap = 14, justify = Look.END})
 	# the instruction bar: its words centred on their own pane
-	Look.line(self, &"InstructionBar", Themes.ROW, 16, Look.CENTER, Look.CENTER)
+	Look.line(self, &"InstructionBar", Themes.ROW, {gap = 16, justify = Look.CENTER, align = Look.CENTER})
 
 
 ## A pane of frost: a translucent white fill at a radius, a hairline edge of

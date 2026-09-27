@@ -147,6 +147,12 @@ Run one from this folder, with the engine on your path:
 Add `-- --probe` and it walks itself instead of waiting for you - every place,
 every press, every window shape - and prints `PROBE OK` or what it found.
 
+A demo is run through `addons/gd_chime/application.gd`, the main loop of the
+demos and their probes: a `SceneTree` that takes the whole window and quits
+when it is done. It is not for a game, and it is not part of what you may
+rely on - the lint allows it under `demo/` and `checks/` alone. A game
+extends `ChimeApp` and puts it in a scene of its own, as above.
+
 ## What you may rely on
 
 What an application may use is exactly what `addons/gd_chime/gd_chime.gd` and

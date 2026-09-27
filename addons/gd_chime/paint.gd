@@ -1,6 +1,7 @@
 extends RefCounted
 
 const Themes := preload("theme.gd")
+const Options := preload("components/primitives/options.gd")
 
 ## The painters: what a flat box cannot draw - a dashed edge, corner
 ## brackets, a rule along one side, a hatch, a gradient, a bevel - each a
@@ -132,10 +133,15 @@ static func outline(rect: Rect2, radius: float) -> PackedVector2Array:
 	return points
 
 
-## A painter: a dashed edge, dash and gap in pixels, this far inside the
-## rect, walked round its outline - rounded by the radius given, so it
-## follows a rounded box's corners.
-static func dashed(ink: Variant, width: float, dash: float = 8.0, gap: float = 6.0, inset: float = 0.0, radius: float = 0.0) -> Callable:
+## A painter: a dashed edge walked round the rect's outline; by option its
+## dash and gap in pixels, how far inside the rect it runs, and the radius
+## its outline is rounded by, so it follows a rounded box's corners.
+static func dashed(ink: Variant, width: float, options: Dictionary = {}) -> Callable:
+	var with := Options.checked("a dashed edge", options, ["dash", "gap", "inset", "radius"])
+	var dash: float = with.get("dash", 8.0)
+	var gap: float = with.get("gap", 6.0)
+	var inset: float = with.get("inset", 0.0)
+	var radius: float = with.get("radius", 0.0)
 	return func(canvas: RID, outer: Rect2, theme: Theme) -> void:
 		var colour := of(ink, theme)
 		var path := outline(outer.grow(-inset), radius)
@@ -190,9 +196,14 @@ static func left_bar(ink: Variant, width: float) -> Callable:
 	return rule(ink, width, SIDE_LEFT)
 
 
-## A painter: parallel hairlines across the rect, this far apart - flat
-## for scanlines, at 45 degrees for a hatch.
-static func hatch(ink: Variant, spacing: float = 4.0, width: float = 1.0, diagonal: bool = false) -> Callable:
+## A painter: parallel hairlines across the rect; by option how far apart
+## and how wide, and `diagonal` - at 45 degrees for a hatch, flat without
+## it for scanlines.
+static func hatch(ink: Variant, options: Dictionary = {}) -> Callable:
+	var with := Options.checked("a hatch", options, ["spacing", "width", "diagonal"])
+	var spacing: float = with.get("spacing", 4.0)
+	var width: float = with.get("width", 1.0)
+	var diagonal: bool = with.get("diagonal", false)
 	return _square(func(canvas: RID, rect: Rect2, theme: Theme) -> void:
 		var colour := of(ink, theme)
 		var reach := rect.size.x + rect.size.y if diagonal else rect.size.y

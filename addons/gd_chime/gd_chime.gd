@@ -24,20 +24,21 @@ class_name GdChime
 ##   (floor_kinds.gd - text, image, surface, pressable, field, row, column,
 ##   grid, stack, scroll, virtual_list, cells, view, when, each, and the
 ##   places: app, screen, pop_up); Desc, a description; Bound, Local,
-##   PressLocal, the values a description reads; Places; Text, Pressable,
-##   Draggable, Grip, MenuTarget, Layout, Transition, SimulatedSight.
+##   PressLocal, the values a description reads; Places; Areas; Text,
+##   Pressable, LazyImage, Draggable, Grip, MenuTarget, Layout, Transition,
+##   SimulatedSight.
 ## - The look: Themes, the Theme itself; Look and PaintedBox, Paint, which
 ##   dress one; and its families of types - Pressables, Fields, Tables,
 ##   Overlays, Charts, Feedback, Collections, Navigation; MotionTokens.
 ## - The floor: Chimes, Belfry, Commands, Driver, Controller, Actions,
 ##   Inputs, Prompts, Language, Catalogues, Phrase, Formats, Dates, Motion, Shape,
 ##   Sounds, SoundBus, Notifications, Reads, Question, Guide, Console, DevCommands,
-##   DebugLog, Touch, Token, Stretch.
+##   DebugLog, Touch, Token, Stretch, Carried.
 ## - The models an application is made of: Form, FormActions, Calendar,
 ##   CommandSearch, Narrowing, Filters, RowQuery, RowFilters, RowSelection,
 ##   RowEdits, EditingCell, TableColumns, TableModels, PackedRows,
 ##   QueriedRows, QueryPacing, Feed, GrowingList, LongList, KeyedItems,
-##   Lane, Orders, Outbox, Fetched, Connection, Documents, Drills,
+##   Lane, Orders, Outbox, Panels, Fetched, Connection, Documents, Drills,
 ##   ImageLoads, Measures, OpenMenu, PacedNotices, Provisional, Reminders,
 ##   RollingSeries, Rollup, SettingsFile, SaveShape, Stream, Taken,
 ##   Thresholds, Throttle, ViewBehind.

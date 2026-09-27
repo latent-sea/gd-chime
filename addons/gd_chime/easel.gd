@@ -33,9 +33,9 @@ const Themes := preload("theme.gd")
 ## since a focused control hidden or freed must not leave its app deaf. One
 ## this app takes is handled and never reaches the host, one it leaves goes
 ## on to the game, and another app never hears it. Which app held the focus
-## last is kept on the window, beside the focus it is about. The easel takes
-## no focus itself, so a click on the canvas's bare ground leaves the focus
-## where it was.
+## last in a window is the floor's own to keep, never the window's, so
+## nothing outside an app notices it. The easel takes no focus itself, so a
+## click on the canvas's bare ground leaves the focus where it was.
 ##
 ## TURNING SWAPS THE BASE. A rect on its end drawn at a landscape base would
 ## be fitted by the width, every word shrunk to a stamp; so the base turns
@@ -58,8 +58,10 @@ const Themes := preload("theme.gd")
 ## The project's base: what `display/window/size` says, read as the easel enters the tree.
 const WIDTH := "display/window/size/viewport_width"
 const HEIGHT := "display/window/size/viewport_height"
-## Where the window keeps which easel's canvas held its focus last.
-const HELD_LAST := &"gd_chime_focus_held_last"
+
+## By each window, the easel whose canvas held its focus last, both by
+## instance id: one entry a window, however many apps come and go in it.
+static var _held_last: Dictionary = {}
 
 ## The viewport the canvas is drawn in, at the rect's real pixels.
 var viewport := SubViewport.new()
@@ -121,12 +123,12 @@ func _propagate_input_event(event: InputEvent) -> bool:
 		return true
 	var nowhere := get_viewport().gui_get_focus_owner() == null
 	# the focus on a control here, or nowhere in the window and held here last
-	return viewport.gui_get_focus_owner() != null or (nowhere and get_window().get_meta(HELD_LAST, 0) == get_instance_id())
+	return viewport.gui_get_focus_owner() != null or (nowhere and _held_last.get(get_window().get_instance_id()) == get_instance_id())
 
 
 ## A control of this app took the window's focus: this is the app that held it last.
 func _focused(_on: Control) -> void:
-	get_window().set_meta(HELD_LAST, get_instance_id())
+	_held_last[get_window().get_instance_id()] = get_instance_id()
 
 
 ## Entering the tree, the project's base read - so settings a host applied in

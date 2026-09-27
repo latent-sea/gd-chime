@@ -221,6 +221,7 @@ func _host_state() -> Dictionary:
 		"inputs": inputs,
 		"clear": RenderingServer.get_default_clear_color(),
 		"window": [root.size, root.content_scale_mode, root.content_scale_size, root.content_scale_aspect, root.content_scale_factor, root.theme],
+		"metas": [root.get_meta_list(), TranslationServer.get_meta_list(), InputMap.get_meta_list()],
 	}
 
 
@@ -350,6 +351,7 @@ func _a_rect_of_no_width_or_no_height_fits_nothing_and_says_nothing() -> void:
 
 func _a_key_an_app_takes_never_reaches_the_host_one_no_app_takes_does_and_only_the_focused_app_hears_it() -> void:
 	await _hosting()
+	var before := _host_state()
 	await _apps()
 	_yard.commands.dispatch(Chimes.GLOBAL, Driver.GO, {"place": _yard.over})
 	await _a_frame_passes()
@@ -380,6 +382,7 @@ func _a_key_an_app_takes_never_reaches_the_host_one_no_app_takes_does_and_only_t
 	await _a_frame_passes()
 	await _key(KEY_SPACE)
 	_verdict.check(_yard.counter.told_actions == [PRESSES] and _stall.counter.told_actions == [PRESSES, PRESSES] and _host.spaces == 0, "the focus moved to the yard's press, Space presses it and nothing else: %s %s %d" % [_yard.counter.told_actions, _stall.counter.told_actions, _host.spaces])
+	_verdict.check(_host_state()["metas"] == before["metas"], "and which app held the focus is the floor's to keep, never the window's: %s" % [_host_state()["metas"]])
 	_done()
 
 

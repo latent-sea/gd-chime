@@ -37,10 +37,11 @@ const ACCEPT := "ui_accept"
 const BASE := Vector2i(1920, 1080)
 const NOT_STRETCHED := "disabled"
 const ACCEPTS := JOY_BUTTON_A
-## Where each finding is remembered so it is said once: on the engine's
-## input map, beside the actions - a script of static functions holding it
-## would be kept past the end.
-const SAID := &"needed_settings_said"
+
+## Every finding already said, so each is said once however many
+## applications enter: the floor's own, never the input map's, so nothing
+## outside an app notices it.
+static var _said: Dictionary = {}
 
 
 ## Every setting the project lacks, each a sentence naming it and the value wanted.
@@ -58,13 +59,11 @@ static func missing() -> Array[String]:
 
 ## What is missing said out loud, once each however many applications enter.
 static func report() -> void:
-	var said: Dictionary = InputMap.get_meta(SAID, {})
 	# every setting found missing, for the ones not yet said
 	for sentence: String in missing():
-		if not said.has(sentence):
-			said[sentence] = true
+		if not _said.has(sentence):
+			_said[sentence] = true
 			push_warning("gd-chime: %s; GdChime.apply_project_settings(get_window()), called in the host's _ready before it adds the app, sets it" % sentence)
-	InputMap.set_meta(SAID, said)
 
 
 ## Every needed setting set: in the project settings, and on this window and

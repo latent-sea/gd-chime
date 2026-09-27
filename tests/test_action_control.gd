@@ -79,13 +79,14 @@ class Model extends RefCounted:
 		return refusal
 
 
-## The smallest control that performs an action: it draws nothing and counts
-## its draws.
+## The smallest control that performs an action: it counts its draws, and
+## asks as it draws whether it glows, as every face drawing one does.
 class Bare extends ActionControl:
 	var drawn := 0
 
 	func refresh() -> void:
 		drawn += 1
+		is_glowing()
 
 
 ## A control whose press says which entry it shows.
@@ -369,21 +370,28 @@ func _it_glows_while_the_prompts_name_its_action() -> void:
 
 
 ## A reused control may be given its prompts while showing, and is rebound to
-## listen to something else; it draws for the one and still hears them after the
-## other.
+## listen to something else; it draws for the one, follows the prompt it read
+## as it drew, and still follows it after the other - listening to no bell of
+## the prompts', since what they name is a value.
 func _given_the_prompts_while_showing_it_draws_and_rebound_it_still_hears_them() -> void:
 	var wired := _wired(&"add_one")
 	var prompted := _prompted(wired)
+	var prompts: Prompts = prompted["prompts"]
 	var bare := _made(wired, &"add_one")
 	await _a_frame_passes()
 	var before := bare.drawn
 
-	bare.prompts = prompted["prompts"]
+	bare.prompts = prompts
 	await _a_frame_passes()
-	_verdict.check(bare.drawn == before + 1 and bare.listening_to() == [Prompts.PROMPT_MOVED], "given the prompts while showing, it draws once and hears them: %s" % [bare.listening_to()])
+	_verdict.check(bare.drawn == before + 1 and bare.listening_to().is_empty(), "given the prompts while showing, it draws once, listening to no bell: %s" % [bare.listening_to()])
+	prompts.raise(&"guide", &"elsewhere")
+	await _a_frame_passes()
+	_verdict.check(bare.drawn == before + 2, "the prompt moving, it draws again, following what it read: %d" % (bare.drawn - before))
 	bare.listen([])
-	_verdict.check(bare.listening_to() == [Prompts.PROMPT_MOVED], "rebound to listen to nothing else, it still hears the prompts: %s" % [bare.listening_to()])
-	(prompted["prompts"] as Prompts).free()
+	prompts.raise(&"guide", &"add_one")
+	await _a_frame_passes()
+	_verdict.check(bare.drawn == before + 3, "rebound to listen to nothing else, it still follows the prompt: %d" % (bare.drawn - before))
+	prompts.free()
 	_done(wired, [bare])
 
 

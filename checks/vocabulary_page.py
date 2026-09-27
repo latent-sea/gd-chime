@@ -44,6 +44,8 @@ EAGER = re.compile(r'^const (\w+) := preload\("([^"]+)"\)', re.M)
 SECTION = re.compile(r"^## --- (.+?) ---$", re.M)
 # const Fields := preload("../../theme_fields.gd") - the family a recipe dresses under
 FAMILY = re.compile(r'preload\("(?:\.\./)*theme_(\w+)\.gd"\)')
+# what follows a name the facade fetches on first read, which GDScript cannot resolve before anything runs
+LAZY_MARK = "*(lazy)*"
 
 
 def header(script: Path) -> str:
@@ -73,18 +75,18 @@ def kinds(addon: Path) -> list[tuple[str, list[tuple[str, str]]]]:
 
 
 def recipes(addon: Path) -> dict[str, list[tuple[str, str]]]:
-    """The recipes by the family of the look each dresses under."""
+    """The recipes by the family of the look each dresses under, every one lazy."""
     by_family: dict[str, list[tuple[str, str]]] = {}
     # every lazy name in the recipes list, its script read for the first theme family it preloads
     for name, path in LAZY.findall((addon / RECIPES).read_text(encoding="utf-8")):
         script = addon / path
         family = FAMILY.search(script.read_text(encoding="utf-8"))
-        by_family.setdefault(family.group(1) if family else "the look's own types", []).append((name, header(script)))
+        by_family.setdefault(family.group(1) if family else "the look's own types", []).append((f"`{name}` {LAZY_MARK}", header(script)))
     return dict(sorted(by_family.items()))
 
 
 def floor(addon: Path) -> list[tuple[str, list[tuple[str, str]]]]:
-    """The eager names and the lazy floor names, by the section each is written under."""
+    """The eager names and the lazy floor names, by the section each is written under, the lazy ones marked."""
     sections: list[tuple[str, list[tuple[str, str]]]] = []
     # both facade files, each cut at its section comments, every name under one read with its script's header
     for listing in FLOOR_LISTS:
@@ -92,9 +94,10 @@ def floor(addon: Path) -> list[tuple[str, list[tuple[str, str]]]]:
         starts = list(SECTION.finditer(text))
         for at, section in enumerate(starts):
             body = text[section.end():starts[at + 1].start() if at + 1 < len(starts) else len(text)]
-            named = [(name, header(addon / path)) for name, path in EAGER.findall(body) + LAZY.findall(body) if not name.startswith("_")]
-            if named:
-                sections.append((section.group(1), named))
+            eager = [(f"`{name}`", header(addon / path)) for name, path in EAGER.findall(body) if not name.startswith("_")]
+            lazy = [(f"`{name}` {LAZY_MARK}", header(addon / path)) for name, path in LAZY.findall(body)]
+            if eager + lazy:
+                sections.append((section.group(1), eager + lazy))
     return sections
 
 
@@ -114,12 +117,21 @@ def written(root: Path) -> str:
     ]
     for group, named in kinds(addon):
         lines += [f"### {group}", ""] + [f"- `{name}` - {said}" for name, said in named] + [""]
-    lines += ["## The recipes, by the family of the look they dress under", ""]
+    lines += [
+        "## The names an application reads",
+        "",
+        f"A name marked {LAZY_MARK} is fetched the first time it is read, so it is read at run time only:",
+        "never as a type (a variable's, an argument's, a return's, an `is`), never inside a `const`, never in `extends`.",
+        "A name without the mark is a constant, usable as a type and inside a `const`.",
+        "",
+        "## The recipes, by the family of the look they dress under",
+        "",
+    ]
     for family, named in recipes(addon).items():
-        lines += [f"### {family}", ""] + [f"- `{name}` - {said}" for name, said in named] + [""]
+        lines += [f"### {family}", ""] + [f"- {name} - {said}" for name, said in named] + [""]
     lines += ["## The floor and the models", ""]
     for section, named in floor(addon):
-        lines += [f"### {section}", ""] + [f"- `{name}` - {said}" for name, said in named] + [""]
+        lines += [f"### {section}", ""] + [f"- {name} - {said}" for name, said in named] + [""]
     return "\n".join(lines)
 
 

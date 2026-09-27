@@ -13,8 +13,9 @@ const Language := preload("../../language.gd")
 ##
 ## ITS WORDS ARE SAID AS A TEXT SAYS THEM (text.gd): a phrase in the language
 ## on as it is laid, data as it is, a bound value read again whenever what
-## it read moves, and every one of them again when the language changes. A
-## link's words are a text of its own, inside the link, said the same way.
+## it read moves, and every one of them again when the language on, a value
+## its draw reads, moves. A link's words are a text of its own, inside the
+## link, said the same way.
 ##
 ## THE ENGINE LAYS IT OUT: the words are shaped into one TextParagraph with
 ## each link an inline object as big as the link needs, so the lines break
@@ -79,13 +80,11 @@ func get_lines() -> Array[Rect2]:
 	return lines
 
 
-func heard(_what: StringName) -> void:
-	needs_refresh()
-
-
-## The words may say something else now: every bound span read, so what it
-## read is followed, and the whole laid again.
+## The words may say something else now: the language on and every bound
+## span read, so what they read is followed, and the whole laid again.
 func refresh() -> void:
+	# the language on, read here since the laying, which says the words in it, is no draw
+	Language.on().read()
 	# every bound span, read for what it reads; the laying says them
 	for span: Variant in _spans:
 		if span is Bound:
@@ -150,11 +149,9 @@ func _draw() -> void:
 
 
 ## The builder's door: the spans kept in order, a link's place held by
-## nothing, the links built into it after as its content; and it reads again
-## when the language changes.
+## nothing, the links built into it after as its content.
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	var spans: Array = desc.props["spans"].map(func(span: Variant) -> Variant: return null if span is Desc else span)
 	var made: Control = ui.primitive(&"paragraph").new(ui.chimes, spans, desc.props["style"], ui.region())
-	made.listen_to(Chimes.GLOBAL, Language.LANGUAGE_CHANGED)
 	ui.attach(made, parent, desc.facts)
 	return made

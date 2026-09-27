@@ -86,9 +86,10 @@ func hold(sample: Control) -> void:
 
 
 ## The builder's door: a stand for these notifications' tray, its sample
-## built first and hidden, the list built into it after.
+## made now, in the look it is built under, built first and hidden, the list
+## built into it after.
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	var made: Control = ui.primitive(&"tray_stand").new(desc.props["notifications"], desc.props["style"])
 	ui.attach(made, parent, desc.facts)
-	made.hold(ui.build(desc.props["sample"], made))
+	made.hold(ui.build(desc.props["sample"].call(), made))
 	return made
