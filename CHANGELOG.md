@@ -20,6 +20,17 @@ here, because that is the one thing a caller has to act on.
 The hosting round: the game owns what is global, and an app owns its
 rectangle and its drawing.
 
+- THE CHECKS BITE WHERE THEY DID NOT. `checks/looks_probe.py` fails on any
+  SCRIPT ERROR in a walk, whatever the walk ends saying, and on finding no
+  look to walk, where it passed "0 of 0". The commit gate is versioned beside
+  the repository's term list (`../governance/pre-commit.sh`) and turned on in
+  a fresh clone with `python ../governance/install_pre_commit.py`;
+  `checks/vocabulary_page.py --check` now runs on every commit.
+  `checks/speed_meter.py` records the folder it measured in and warns when a
+  run's folder differs from its baseline's - the same code reads slower in
+  some folders than others - and `--window=<windowed engine>` adds the
+  easel's render cost in a real 1080p window (`checks/easel_meter.gd`).
+
 - THE LANGUAGE IS THE GAME'S LOCALE (`language.gd`). Made, entering or
   leaving, the language model never sets the engine's locale or its
   pseudolocalization: it reads them, hears the engine say the locale moved

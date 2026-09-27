@@ -163,3 +163,10 @@ models by name.
 check that keeps them true, including the installation check: a second
 project under `checks/installed/` with the addon copied in and the first
 screen above, built, pressed and refused, headless.
+
+The quicker of those checks also run on every commit that touches this
+folder, from the commit gate kept beside the term list in `../governance/`
+of the repository it is developed in. A fresh clone of that repository
+turns the gate on once, from this folder:
+
+    python ../governance/install_pre_commit.py

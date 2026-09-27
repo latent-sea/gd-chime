@@ -15,6 +15,12 @@ The looks are read from looks.gd's NAMES, the list the gallery's own
 buttons are made from, so a look added there is walked here with no change.
 They run a few at a time, each its own engine, since each takes half a
 minute and none shares anything with another.
+
+A walk that prints a SCRIPT ERROR fails too, whatever it says at the end, as
+in stalls_probe.py: the engine's complaint about our code is never something
+a probe provokes on purpose. And finding no look to walk fails: a list read
+as empty - renamed, reshaped, or every look taken out - would otherwise pass
+as "0 of 0", a run over nothing that proves nothing.
 """
 
 from __future__ import annotations
@@ -44,18 +50,24 @@ def names(root: Path) -> list[str]:
 
 
 def walk(root: Path, engine: Path, look: str) -> tuple[str, bool, list[str], str]:
-    """The gallery walked in one look: whether it said PROBE OK, its PROBE lines, and its tail if it said none."""
+    """The gallery walked in one look: whether it said PROBE OK with no script error, its PROBE and first SCRIPT ERROR lines, and its tail if it said none."""
     run = subprocess.run(
         [str(engine), "--headless", "--path", str(root), "--script", GALLERY, "--", "--probe", "--look=" + look],
         capture_output=True, text=True, timeout=WALK_AT_MOST, creationflags=NO_WINDOW,
     )
     lines = [line for line in run.stdout.splitlines() if line.startswith("PROBE")]
-    return look, run.returncode == 0 and "PROBE OK" in lines, lines, (run.stdout + run.stderr)[-2000:]
+    # a script error is a fault in the code however the walk ends, never a refusal a probe provokes
+    broken = [line for line in (run.stdout + run.stderr).splitlines() if line.startswith("SCRIPT ERROR")]
+    ok = run.returncode == 0 and "PROBE OK" in lines and not broken
+    return look, ok, lines + broken[:5], (run.stdout + run.stderr)[-2000:]
 
 
 def main() -> int:
     root, engine = Path(sys.argv[1]), Path(sys.argv[2])
     looks = names(root)
+    if not looks:
+        print(f"no look to walk: {LOOKS}'s NAMES lists none but {WORN}", file=sys.stderr)
+        return 1
     with ThreadPoolExecutor(max_workers=AT_ONCE) as pool:
         walked = list(pool.map(lambda look: walk(root, engine, look), looks))
     failed = [look for look, ok, _, _ in walked if not ok]
