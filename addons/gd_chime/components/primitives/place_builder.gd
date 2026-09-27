@@ -37,6 +37,13 @@ const Driver := preload("../../driver.gd")
 ## way out, CLOSES going back, which no model answers; one PRESENTED - a
 ## moment, up while its model's fact holds - is raised and lowered by the
 ## driver as the fact moves (driver.gd), and its way out is its model's.
+##
+## A POP-UP WEARS THE LOOK IT IS DESCRIBED INSIDE, though it stands beside
+## the app: declaring walks the look through every themed piece, starting
+## from the look the place is built under (built_within.gd), and each pop-up is
+## lifted with its own. Its content is made as it is lifted, in its place,
+## standing beside the app wearing that look - before it is declared, since
+## declaring reads it - so a share of the window it reads is that look's.
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
@@ -53,9 +60,15 @@ static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	# the app is the app from the moment it exists, so what is built into it can ask the driver
 	if desc.kind == &"app":
 		ui.driver.index.app = made
+	var look: Theme = ui.current_look()
+	# a pop-up wears the look it was lifted with, beside the app before its content is made in it, so the content reads that look
+	if desc.kind == ui.POP_UP:
+		made.theme = look
+		ui.attach(made, parent, desc.facts)
+		desc.children = [ui.made_in(made, desc)]
 	# the question it asks before it is left, lifted where it is a pop-up; one that is not is reported by the startup check, never built
-	var lifting: Array = [asks] if asks != null and asks.kind == ui.POP_UP else []
-	declare(ui, desc, made, lifting)
+	var lifting: Array = [[asks, look]] if asks != null and asks.kind == ui.POP_UP else []
+	declare(ui, desc, made, lifting, look)
 	# a moment is up while its fact holds, the driver raising and lowering it; every other pop-up declares the way out it owns, going back
 	if desc.props.has("presented"):
 		ui.driver.present(made.name, desc.props["presented"])
@@ -66,10 +79,11 @@ static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 		if model is Node:
 			ui.also(model as Node)
 		ui.commands.stand(made.name, model)
-	ui.attach(made, parent, desc.facts)
-	# every pop-up met inside, lifted once this stands, so it is drawn over it
-	for overlay: RefCounted in lifting:
-		ui.lift(overlay)
+	if desc.kind != ui.POP_UP:
+		ui.attach(made, parent, desc.facts)
+	# every pop-up met inside, lifted once this stands, so it is drawn over it, wearing the look it was described inside
+	for overlay: Array in lifting:
+		ui.lift(overlay[0], overlay[1])
 	return made
 
 
@@ -84,8 +98,10 @@ static func models_of(given: Variant) -> Array:
 ## declared on the place: its action, and where it goes. Either side of a
 ## when is inside it; what a template will build is asked of it once, with
 ## an empty handle, so a collection empty at startup declares all the same.
-## Every pop-up met is put in lifting, for the place to lift once it stands.
-static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Array) -> void:
+## Every pop-up met is put in lifting, for the place to lift once it stands,
+## beside the look it is described inside: this look, or a themed piece's
+## within, which is what everything inside that piece wears.
+static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Array, look: Theme) -> void:
 	var inside: Array = desc.children.duplicate()
 	if desc.kind == &"when":
 		for side: StringName in [&"a", &"b"]:
@@ -97,12 +113,12 @@ static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Arra
 			inside.append(described)
 	for child: RefCounted in inside:
 		if child.kind == ui.POP_UP:
-			lifting.append(child)
+			lifting.append([child, look])
 		if ui.PLACES.has(child.kind):
 			continue
 		# a pop-up a press opens, carried on the press
 		if child.props.get("overlay") != null:
-			lifting.append(child.props["overlay"])
+			lifting.append([child.props["overlay"], look])
 		if child.kind == &"pressable":
 			place.performs[child.props["action"]] = child.props["goes_to"]
 		# a description that says what it declares, {action: where it goes}: where it goes stands over a menu's offer of the same, which goes nowhere of itself
@@ -120,7 +136,7 @@ static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Arra
 		if child.kind == &"menu_target":
 			place.performs[child.props["opens"]] = ui.menu_place
 			if ui.context_menu != null:
-				lifting.append(ui.context_menu)
+				lifting.append([ui.context_menu, null])
 			for offered: StringName in child.props["actions"]:
 				if not place.performs.has(offered):
 					place.performs[offered] = &""
@@ -144,4 +160,5 @@ static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Arra
 			var cursor: Dictionary = child.props["cursor"]
 			for action: StringName in cursor["keys"].map(func(key: Array) -> StringName: return key[2]) + cursor["anywhere"].map(func(key: Array) -> StringName: return key[1]) + [cursor["presses"], cursor["twice"]]:
 				place.performs[action] = &""
-		declare(ui, child, place, lifting)
+		# what is inside a themed piece described inside its look, and inside anything else in this one
+		declare(ui, child, place, lifting, child.props["theme"] if child.kind == &"themed" else look)

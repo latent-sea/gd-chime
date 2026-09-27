@@ -35,6 +35,7 @@ var _showing_a: bool
 var _shown: Control = null
 var _kept: Array = [null, null]  # both sides built once, when kept
 var _in_place: Node  # the place this was built in, for building again later
+var _in_look: Theme  # the look this was built under, for building again later - either side may hold a place lifting pop-ups
 var _asked: StringName  # the transition asked for where this was described, or none
 var _begun: bool = false  # whether it has shown anything yet: the first is simply there
 
@@ -48,6 +49,7 @@ func _init(ui: RefCounted, bound: Bound, a: RefCounted, b: RefCounted, in_region
 	_keeps = keeps
 	_asked = asked
 	_in_place = ui.current_place()
+	_in_look = ui.current_look()
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_showing_a = _chosen()
@@ -104,7 +106,7 @@ func _show_kept() -> void:
 	for side: int in [0, 1]:
 		var desc: RefCounted = _a if side == 0 else _b
 		if _kept[side] == null and desc != null:
-			_kept[side] = _ui.build(desc, self, _in_place)
+			_kept[side] = _ui.build(desc, self, _in_place, _in_look)
 		if _kept[side] != null:
 			_kept[side].visible = (side == 0) == _showing_a
 	_shown = _kept[0] if _showing_a else _kept[1]
@@ -148,7 +150,7 @@ func _show() -> void:
 		_shown = null
 	var desc: RefCounted = _a if _showing_a else _b
 	if desc != null:
-		_shown = _ui.build(desc, self, _in_place)
+		_shown = _ui.build(desc, self, _in_place, _in_look)
 	_seen()
 	_arrive()
 	update_minimum_size()

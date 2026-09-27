@@ -19,6 +19,10 @@ extends "stack.gd"
 ## root's defaults under its own passes a Theme built that way. Merging here
 ## would make the look on the root part of what this draws, and a look
 ## picked afterwards would change it.
+##
+## A POP-UP DESCRIBED INSIDE ONE WEARS ITS LOOK, though it stands beside the
+## app, out of this subtree: the builder carries the look to it as it is
+## lifted (built_within.gd, place_builder.gd).
 
 
 func _init(look: Theme) -> void:

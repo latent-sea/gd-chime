@@ -37,7 +37,8 @@ const Sheet := preload("sheet.gd")
 ## it: a basket's total and its way on. The foot is the caller's, or none.
 ## HOW WIDE it is is the look's share of the window, one for a window on
 ## its side and one for a window on its end, where a drawer is most of the
-## width; read from the look on the window as it is described.
+## width; read from the look its pop-up wears - a themed piece's it was
+## described inside, or the app's - as its content is made (describe_places.gd).
 ##
 ## FROM THE FOOT it is a bottom sheet: edge to edge on a PHONE'S WINDOW
 ## (shape.gd), and on a desktop's centred at the look's most share of the
@@ -87,7 +88,7 @@ static func over(ui: Ui, title: Variant, content: Callable, options: Dictionary 
 static func _drawn(ui: Ui, title: Variant, content: Desc, foot: Desc, from: StringName) -> Desc:
 	var head := ui.row([ui.text(title, Themes.WORDS).grow(), ui.pressable(ui.CLOSES, {}, [ui.text("✕", Themes.FACE)], CLOSE).goes_to(Driver.BACK)], HEAD)
 	var sheet := ui.surface(SHEET, [ui.column([head, content.grow()] + ([foot] if foot != null else []), COLUMN)])
-	var look: Node = ui.root
+	var look: Node = ui.current_place()
 	var wide: float = look.get_theme_constant(&"wide", SHEET) / 1000.0
 	var narrow: float = look.get_theme_constant(&"narrow", SHEET) / 1000.0
 	var down := from == FROM_BOTTOM

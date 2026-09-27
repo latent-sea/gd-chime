@@ -60,8 +60,9 @@ static func short(ui: Ui, action: StringName, opens: StringName, options: Dictio
 ## own, so a sheet only as tall as what it holds would show none of them:
 ## this sheet is as tall as the look's share of the window (TALL, under
 ## COMBO), stood in the middle of it, the options taking what the title and
-## the line leave. The share is read from the look on the window as the
-## overlay is described.
+## the line leave. The share is read from the look the overlay wears - a
+## themed piece's it was described inside, or the app's - as its content is
+## made (describe_places.gd).
 ## Its options: narrowing, the model the type-ahead narrows; types, the
 ## action a keystroke in it goes to; title, the words over the list;
 ## payload, what a pick carries beside its value; and style.
@@ -71,7 +72,6 @@ static func long(ui: Ui, action: StringName, opens: StringName, shown: Bound, op
 	Options.checked("a long combo", options, LONG_OPTIONS)
 	var title: Variant = options["title"]
 	var picker := TypeAhead.make(ui, options["narrowing"], options["types"], action, {then = Driver.BACK, payload = options.get(Options.PAYLOAD, {})})
-	var tall: float = ui.root.get_theme_constant(Fields.TALL, Fields.COMBO) / 1000.0
-	# the sheet the look's share of the window tall, as wide as a sheet is
-	var overlay := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, [ui.text(title, Themes.FACE), picker.grow()], Setting.SHEET, {wide = Sheet.SHARE, high = tall}))
+	# the sheet as tall a share of the window as the look on its own place says, as wide as a sheet is
+	var overlay := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, [ui.text(title, Themes.FACE), picker.grow()], Setting.SHEET, {wide = Sheet.SHARE, high = ui.current_place().get_theme_constant(Fields.TALL, Fields.COMBO) / 1000.0}))
 	return ui.pressable(opens, {}, [ui.text(shown, Themes.FACE)], options.get(Options.STYLE, Fields.COMBO)).opens(overlay)

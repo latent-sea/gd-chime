@@ -23,8 +23,8 @@ const RowEdits := preload("../../row_edits.gd")
 ## data_grid.gd's whole, over models (table_models.gd) answering from
 ## anywhere, their rows looked at as it fills and let go as it empties,
 ## as a screen of a grid does. The sheet takes the look's shares of the
-## window (Sheet.tall), read from the window's look as the pop-up is
-## described, so the rows have the room a table needs.
+## window (Sheet.tall), read from the look its pop-up wears as its content
+## is made (describe_places.gd), so the rows have the room a table needs.
 ##
 ## Answered as the one pop-up: the grid's own travel on its buttons, and
 ## the builder lifts them all beside the app.
@@ -48,8 +48,8 @@ static func declare(register: Actions) -> void:
 ## grid; the grid's own pop-ups travel on its buttons.
 static func make(ui: Ui, drills: Drills, models: TableModels, style: StringName = Setting.SHEET) -> Desc:
 	var content := [ui.text(ui.bound(drills.get_title), Themes.FACE), DataGrid.grid(ui, models, []).grow(), Sheet.close(ui)]
-	var look: Node = ui.root
-	var up := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, content, style, {wide = look.get_theme_constant(&"wide", DRILL) / 1000.0, high = look.get_theme_constant(&"high", DRILL) / 1000.0}), models.all())
+	# the sheet the shares of the window the look on its own place says
+	var up := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, content, style, {wide = ui.current_place().get_theme_constant(&"wide", DRILL) / 1000.0, high = ui.current_place().get_theme_constant(&"high", DRILL) / 1000.0}), models.all())
 	# the rows looked at as the pop-up fills and let go as it empties, said on its description as a grid's grouping names its handler
 	up.props["on_fill"] = models.long.look
 	up.props["on_empty"] = models.long.drop

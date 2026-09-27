@@ -1,4 +1,4 @@
-extends "built_names.gd"
+extends "built_within.gd"
 
 const Commands := preload("../../commands.gd")
 const Prompts := preload("../../prompts.gd")
@@ -41,7 +41,9 @@ const FLOOR: Dictionary = preload("floor_kinds.gd").KINDS
 ## once, under the root beside the app, the first time a place holding it
 ## is declared or it is met being built (place_builder.gd); met again, it is
 ## the one already standing. So the app's pop-ups stand from startup
-## wherever they were described, and nothing carries them to the root.
+## wherever they were described, and nothing carries them to the root. One
+## described inside a themed piece wears that piece's look, and its content
+## is made as it is lifted, in its own place, so it sizes by that look too.
 ##
 ## start(description) builds top-down, so a place exists before its
 ## contents, adds everything to the tree, sets the app, and, once the tree
@@ -55,8 +57,6 @@ var commands: Commands
 var prompts: Prompts
 
 var _builders: Dictionary = {}  # kind -> the primitive's script
-var _place: Node = null  # the place being built into
-var _pressable: Node = null  # the pressable being built into
 var _lifted: Dictionary = {}  # a pop-up's name -> its place, built beside the app
 var _on_broken: Callable  # told the faults of a broken tree, when given: the app's, or a test's
 
@@ -116,33 +116,20 @@ func also(node: Node) -> void:
 	root.add_child(node)
 
 
-## The place being built into now, for a piece that will build again later.
-func current_place() -> Node:
-	return _place
-
-
-## The pressable being built into now, whose answers its content may read.
-func current_pressable() -> Node:
-	return _pressable
-
-
-## The region what is built now belongs to: the place's name.
-func region() -> StringName:
-	return _place.name if _place != null else Chimes.GLOBAL
-
-
 ## This description as nodes under this parent, top-down: the node made by
 ## its kind's primitive, then its contents built into it. A piece rebuilding
 ## later - a when swapping, an each on its bell - says the place it was
-## built in; a place built into by hand, as the console is, is the place
-## itself.
-func build(desc: Desc, parent: Node, in_place: Node = null) -> Control:
+## built in, and a when the look it was built under (built_within.gd); a
+## place built into by hand, as the console is, is the place itself.
+func build(desc: Desc, parent: Node, in_place: Node = null, in_look: Theme = null) -> Control:
 	if desc.kind == POP_UP:
-		return lift(desc)
+		return lift(desc, in_look if in_place != null else _look)
 	var place_before := _place
 	var pressable_before := _pressable
+	var look_before := _look
 	if in_place != null:
 		_place = in_place
+		_look = in_look
 	elif _place == null and parent is Place:
 		_place = parent
 	var made: Control = (_builders[desc.kind] as GDScript).build(self, desc, parent)
@@ -150,27 +137,33 @@ func build(desc: Desc, parent: Node, in_place: Node = null) -> Control:
 		name_piece(desc.props["id"], made)
 	if desc.props.has("arrives"):
 		_place.arriving.append([made, desc.props["arrives"]])
-	# a place or a pressable made is the one being built into, for what it holds
+	# a place or a pressable made is the one being built into, and a piece wearing its own look the look built under, for what it holds
 	if made is Place:
 		_place = made
 	if made is Pressable:
 		_pressable = made
+	if made.theme != null:
+		_look = made.theme
 	build_into(desc, (made as View).viewport if made is View else made)
 	_place = place_before
 	_pressable = pressable_before
+	_look = look_before
 	return made
 
 
-## A pop-up standing beside the app: built under the root the first time,
-## in no place and no pressable, and the one standing every time after.
-func lift(overlay: Desc) -> Control:
+## A pop-up standing beside the app, wearing this look - the one it was
+## described inside, or none and the root's: built under the root the first
+## time, in no place and no pressable, and the one standing every time after.
+func lift(overlay: Desc, look: Theme) -> Control:
 	var named := overlay.get_place()
 	if _lifted.has(named):
 		return _lifted[named]
 	var place_before := _place
 	var pressable_before := _pressable
+	var look_before := _look
 	_place = null
 	_pressable = null
+	_look = look
 	# said lifted before it is built, so a press inside it opening it again finds it standing
 	_lifted[named] = null
 	_lifted[named] = (_builders[POP_UP] as GDScript).build(self, overlay, root)
@@ -180,7 +173,16 @@ func lift(overlay: Desc) -> Control:
 	build_into(overlay, _lifted[named])
 	_place = place_before
 	_pressable = pressable_before
+	_look = look_before
 	return _lifted[named]
+
+
+## A pop-up's content, made as it is lifted in the place it will stand in,
+## which is the place being built into from here: what the content reads of
+## the look is that place's.
+func made_in(place: Control, overlay: Desc) -> Desc:
+	_place = place
+	return overlay.props["content"].call(parameter(overlay.get_place()))
 
 
 ## The description's contents built into this node.
@@ -206,18 +208,6 @@ func attach(made: Control, parent: Node, facts: Dictionary) -> void:
 ## what was described.
 func build_template(template: Callable, handle: Bound, parent: Node, in_place: Node = null) -> Control:
 	return build(describe_with(template, handle), parent, in_place)
-
-
-## What a template describes for a handle, the handle guarded meanwhile.
-func describe_with(template: Callable, handle: Bound) -> Desc:
-	handle.set_template_running(true)
-	_templates_running += 1
-	var desc: Desc = template.call(handle)
-	_templates_running -= 1
-	handle.set_template_running(false)
-	if desc == null:
-		push_error("a template described nothing for %s; a template must cope with an empty handle" % [handle.read()])
-	return desc
 
 
 ## The tree has entered: the context menu's description let go - the tree is

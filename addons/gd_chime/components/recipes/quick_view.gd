@@ -34,7 +34,7 @@ const Flex := preload("../primitives/flex.gd")
 ##
 ## THE SHEET stands tall in the middle of the window over the shade
 ## (sheet.gd), the look's share of the window across and down - "wide" and
-## "high" under QuickView - read from the look as it is described.
+## "high" under QuickView - read from the look its pop-up wears, as its content is made.
 ##
 ## Deliberately absent: swiping between items.
 
@@ -58,22 +58,19 @@ static func make(ui: Ui, content: Callable, back: StringName, options: Dictionar
 	Options.checked("a quick view", options, OPTIONS)
 	var on: StringName = options["on"]
 	var neighbours: Callable = options["neighbours"]
-	var steps: Array = []
-	var made := ui.pop_up(KIND, func(item: Bound) -> Desc: return _stepped(ui, item, content.call(item), back, on, neighbours, steps))
-	# each step a move to this same pop-up, as the item before or after: where it goes, never a pop-up to lift, since this one is standing by then
-	for step: Desc in steps:
-		step.props["goes_to"] = made.get_place()
-	return made
+	return ui.pop_up(KIND, func(item: Bound) -> Desc: return _stepped(ui, item, content.call(item), back, on, neighbours))
 
 
-## The steps either side of what the sheet holds, kept in steps for the pop-up to be opened by.
-static func _stepped(ui: Ui, item: Bound, content: Array, back: StringName, on: StringName, neighbours: Callable, steps: Array) -> Desc:
+## The steps either side of what the sheet holds, made as the pop-up is
+## lifted, in its own place: each a move to that same place, as the item
+## before or after - where it goes, never a pop-up to lift, since this one is
+## standing by then - and the sheet as the look that place wears says.
+static func _stepped(ui: Ui, item: Bound, content: Array, back: StringName, on: StringName, neighbours: Callable) -> Desc:
 	var to := func(side: int) -> Bound: return item.map(func(id: Variant) -> Dictionary: return {} if id == null else {"parameter": neighbours.call(id)[side]})
-	var before: Desc = ui.pressable(back, to.call(0), [ui.text("‹", Themes.FACE)], STEP)
-	var after: Desc = ui.pressable(on, to.call(1), [ui.text("›", Themes.FACE)], STEP)
-	steps.append_array([before, after])
+	var place: Node = ui.current_place()
+	var before: Desc = ui.pressable(back, to.call(0), [ui.text("‹", Themes.FACE)], STEP).goes_to(place.name)
+	var after: Desc = ui.pressable(on, to.call(1), [ui.text("›", Themes.FACE)], STEP).goes_to(place.name)
 	# the steps stood in the middle of the sheet's height, either side of what it holds
-	for step: Desc in steps:
+	for step: Desc in [before, after]:
 		step.facts["align"] = Flex.CENTER
-	var look: Node = ui.root
-	return Sheet.tall(ui, [ui.row([before, ui.column(content).grow(), after], BODY).grow()], SHEET, {wide = look.get_theme_constant(&"wide", SHEET) / 1000.0, high = look.get_theme_constant(&"high", SHEET) / 1000.0})
+	return Sheet.tall(ui, [ui.row([before, ui.column(content).grow(), after], BODY).grow()], SHEET, {wide = place.get_theme_constant(&"wide", SHEET) / 1000.0, high = place.get_theme_constant(&"high", SHEET) / 1000.0})

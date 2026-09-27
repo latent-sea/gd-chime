@@ -6,7 +6,7 @@ extends "describe_loads.gd"
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## The builder (ui.gd) extends this; the descriptions it extends in turn are
+## The builder (ui.gd) extends this, through built_within.gd; the descriptions it extends in turn are
 ## describe.gd's and the layers between. It stands apart because what it
 ## holds outlives what it names, and must never grow with a session:
 ##

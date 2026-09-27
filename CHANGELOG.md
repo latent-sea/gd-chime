@@ -165,6 +165,19 @@ The hosting round. Nothing grows over a session.
   goes through the record's one arrival - accepted as the price of a
   follow keeping the work handed last.
 
+The hosting round. A pop-up wears the look it is described in.
+
+- A POP-UP DESCRIBED INSIDE `ui.themed(look, ...)` WEARS THAT LOOK and sizes
+  by it, as does one lifted from a place standing inside a themed piece; one
+  described outside wears the app's, as before. What breaks: A POP-UP'S
+  CONTENT FUNCTION RUNS AS THE POP-UP IS LIFTED, not as `ui.pop_up()` is
+  called - a caller that read something its content made straight after
+  describing it (as `QuickView` pointed its steps at the pop-up) reads it
+  in the content instead, where `ui.current_place()` is the pop-up's own
+  place and reads the look it wears; a share of the window a content reads
+  from `ui.root` is the app's, not the pop-up's. `ui.lift(overlay)` is
+  `ui.lift(overlay, look)`, the look it wears or null for the root's.
+
 ## 1.0.0 - 2026-09-20
 
 The first public shape: gd-chime is an addon a project installs, rather than

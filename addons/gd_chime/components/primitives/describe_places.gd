@@ -23,7 +23,11 @@ const Pressables := preload("../../theme_pressables.gd")
 ## that kind were described before it, so two of one kind never collide and
 ## no application names one. ITS CONTENT IS A FUNCTION of which one of its
 ## kind it is entered as - its parameter, handed in as a bound value - so
-## nothing reads the driver by hand to know. EVERY POP-UP OWNS ITS WAY OUT:
+## nothing reads the driver by hand to know; it is CALLED AS THE POP-UP IS
+## LIFTED, not as it is described, in the pop-up's own place wearing the
+## look it was described inside (place_builder.gd), so what the content
+## reads of the look - a share of the window - is that place's (current_place()).
+## EVERY POP-UP OWNS ITS WAY OUT:
 ## CLOSES, declared by the builder once with its words and its inputs, and
 ## declared by every pop-up's place going back (place_builder.gd). One
 ## described inside a template would be described again for every item, and
@@ -89,7 +93,20 @@ func pop_up(kind: StringName, content: Callable, handled_by: Variant = null) -> 
 	_issued[kind] = _issued.get(kind, 0) + 1
 	# its name: the kind, and how many of that kind were described before it, so two of one kind never collide
 	var named := StringName("%s %d" % [kind, _issued[kind]])
-	return Desc.new(POP_UP, {"name": named, "handled_by": handled_by, "blocks": true}, [content.call(parameter(named))])
+	return Desc.new(POP_UP, {"name": named, "handled_by": handled_by, "blocks": true, "content": content})
+
+
+## What a template describes for a handle, the handle guarded meanwhile and
+## the template counted running, so a pop-up described inside it is refused.
+func describe_with(template: Callable, handle: Bound) -> Desc:
+	handle.set_template_running(true)
+	_templates_running += 1
+	var desc: Desc = template.call(handle)
+	_templates_running -= 1
+	handle.set_template_running(false)
+	if desc == null:
+		push_error("a template described nothing for %s; a template must cope with an empty handle" % [handle.read()])
+	return desc
 
 
 ## THE COMMON BUTTON: a press of this action, saying the register's words
