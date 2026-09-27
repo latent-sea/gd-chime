@@ -136,6 +136,17 @@ func _init(root: Node, declared: Dictionary = {}) -> void:
 		root.add_child(node)
 
 
+## A model answering these actions from anywhere, beside the root and freed
+## with the rest: for a test whose presses must reach some model and whose
+## property is not about which - a place tells a model only what it answers.
+func answer(actions: Array[StringName]) -> Model:
+	var answering := Model.new(chimes)
+	answering.answering = actions
+	commands.stand(Chimes.GLOBAL, answering)
+	ui.root.add_child(answering)
+	return answering
+
+
 func done() -> void:
 	# everything under the root, newest first, so what was built over a model goes before the model it tells
 	var children := ui.root.get_children()

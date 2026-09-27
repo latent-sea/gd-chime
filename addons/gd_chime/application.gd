@@ -14,6 +14,7 @@ const Prompts := preload("prompts.gd")
 const Inputs := preload("input_map.gd")
 const Notifications := preload("notifications.gd")
 const Sounds := preload("sounds.gd")
+const SoundBus := preload("sound_bus.gd")
 const FrameBudget := preload("frame_budget.gd")
 const Jobs := preload("jobs.gd")
 const Ui := preload("components/primitives/ui.gd")
@@ -57,6 +58,7 @@ var actions: Actions
 var prompts: Prompts
 var inputs: Inputs
 var notifications: Notifications
+var sound_bus: SoundBus
 var sounds: Sounds
 var budget: FrameBudget
 var jobs: Jobs
@@ -81,6 +83,7 @@ func wired(node: ChimeApp) -> void:
 	prompts = node.prompts
 	inputs = node.inputs
 	notifications = node.notifications
+	sound_bus = node.sound_bus
 	sounds = node.sounds
 	budget = node.budget
 	jobs = node.jobs
@@ -116,6 +119,13 @@ func describe() -> Desc:
 ## The walk that stands in for a reader: none unless the application says.
 func probe() -> RefCounted:
 	return app.probe()
+
+
+## The description's tree is broken, each fault said out loud already: a
+## demo or a probe run this way ends there, failing, so a broken tree is
+## never walked. This main loop alone quits; an app node never does.
+func broken(_faults: Array) -> void:
+	quit(1)
 
 
 ## The settings file asked for at launch, else the application's own - or,

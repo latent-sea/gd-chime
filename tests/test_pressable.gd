@@ -246,7 +246,7 @@ func _one_described_current_while_a_value_holds_is_current_then_and_only_then_wh
 	var ui := made.ui
 	var model := Fixture.Model.new(made.chimes, &"app")
 	model.set_value(&"flag", false)
-	made.commands.register(&"app", &"fronts", model)
+	made.commands.register(&"here", &"fronts", model)
 	ui.start(ui.app(&"app", [ui.screen(&"here", [ui.row([
 		ui.pressable(&"fronts", {}, [ui.text("front")], Navigation.TAB).current_while(model.of(&"flag")).named(&"nowhere").basis(0.4),
 		ui.pressable(&"stays", {}, [ui.text("here")], &"Pressable").goes_to(&"here").current_while(model.of(&"flag")).named(&"here_too").basis(0.4),
@@ -300,6 +300,7 @@ func _a_press_inside_a_press_keeps_its_own_ink() -> void:
 	root.theme.set_color(&"font_color_normal", Pressables.BUTTON, Color.RED)
 	var inner := ui.pressable(&"enters", {}, [ui.text(Phrase.of("put it on the stall"))], Pressables.BUTTON).named(&"inner")
 	var outer := ui.pressable(&"opens", {}, [ui.column([ui.text(Phrase.of("a crate of pears")).named(&"its own"), inner])], Themes.PRESSABLE).named(&"outer")
+	made.answer([&"opens", &"enters"])
 	ui.start(ui.app(&"app", [outer]))
 	await _a_frame_passes()
 	var held: Label = (ui.node_named(&"inner") as Pressable).find_children("*", "Label", true, false)[0]

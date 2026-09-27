@@ -2,6 +2,7 @@ extends "controller.gd"
 
 const Look := preload("look.gd")
 const Reads := preload("reads.gd")
+const Catalogues := preload("catalogues.gd")
 
 ## The language words are said in: which one is on, the one bell a change of
 ## it rings, and the lookups a text makes as it draws.
@@ -23,15 +24,15 @@ const Reads := preload("reads.gd")
 ## nothing holds words finished in a language that is no longer on. The
 ## lookups below are the text's, and nothing else calls them.
 ##
-## A CATALOGUE IS A FILE, one per language (words/fr.po), in the gettext form
-## the engine reads itself: load() makes it a Translation, the plural rule
-## taken from its own header, and it is registered with the engine's
-## TranslationServer, so a tr() anywhere reads the same words. A file that
-## cannot be read is said out loud, and nothing it held is offered.
+## THE WORDS ARE CATALOGUES, files read off disk (catalogues.gd): the floor's
+## as this is made, an application's own beside them.
 ##
-## THE LANGUAGE IS THE ENGINE'S, and there is one: this sets the
-## TranslationServer's locale and rings LANGUAGE_CHANGED, a global bell, and
-## every lookup reads the engine's.
+## THE LANGUAGE IS THE GAME'S: the engine's locale, which this reads and never
+## sets of its own accord - made, entering or leaving. Whoever sets it - the
+## game, another app, a player's choice told here - the engine tells every
+## node; this hears it and, where the language on moved, rings
+## LANGUAGE_CHANGED, a global bell, so every text follows. The language on is
+## the one with words nearest the locale: French for fr_FR, English for en_GB.
 ##
 ## A WORD THE CATALOGUE ON LACKS is said out loud in a developer's build,
 ## once, naming the word and the language, and the reader is shown the
@@ -50,7 +51,7 @@ const Reads := preload("reads.gd")
 ## number's marks, a date's order (formats.gd) - its catalogue says too, each
 ## an entry under a context, so a language is one file and nothing here knows
 ## one. A change into a language written in another script dresses the look
-## on the window in the font the look gives that script (look.gd): fonts are
+## this stands under in the font it gives that script (look.gd): fonts are
 ## the look's, and a language names only the script it is written in.
 ##
 ## THE PSEUDO-LOCALE is English put through the engine's pseudolocalization,
@@ -80,45 +81,18 @@ const NAMES := "the name of a key or button"
 const MISSING := &"words_said_missing"
 
 var _under: Node  # what this stands under, whose look is dressed for the script on
+var _heard: StringName  # the language on when this last heard the locale move
+var _telling: bool = false  # whether a choice told here is setting the engine now, heard once it is set
 
 
 func _init(chimes: Chimes, under: Node) -> void:
 	super(chimes, [], Chimes.GLOBAL)
 	register_bell(LANGUAGE_CHANGED)
 	_under = under
-	TranslationServer.pseudolocalization_enabled = false
-	TranslationServer.set_locale(SOURCE)
 	TranslationServer.set_meta(MISSING, {})
 	# the catalogues beside this script, wherever the addon was installed: nothing here knows where it sits
-	read((get_script() as Script).resource_path.get_base_dir().path_join(FLOOR_CATALOGUES))
-
-
-## Every catalogue in this folder read and registered with the engine: an
-## application's own words, beside the floor's.
-func read(folder: String) -> void:
-	# every catalogue file in the folder
-	for file: String in DirAccess.get_files_at(folder):
-		if file.get_extension() != "po":
-			continue
-		var catalogue: Translation = load(folder.path_join(file)) if _reads_as_catalogue(folder.path_join(file)) else null
-		if catalogue == null:
-			push_error("the catalogue %s could not be read, and nothing in it is offered" % folder.path_join(file))
-			continue
-		TranslationServer.add_translation(catalogue)
-
-
-## Whether a file off disk reads as a catalogue before the engine is asked:
-## every line blank, a comment, or a keyword or more words, each in closed
-## quotes. A file that is not one is then said here, in these words, and
-## never in the engine's own complaints.
-static func _reads_as_catalogue(path: String) -> bool:
-	var line_of := RegEx.create_from_string("^(msgctxt|msgid|msgid_plural|msgstr(\\[\\d+\\])?)?\\s*\"([^\"\\\\]|\\\\.)*\"$")
-	# every line of the file, for one that is none of those
-	for line: String in FileAccess.get_file_as_string(path).split("\n"):
-		var bare := line.strip_edges()
-		if bare != "" and not bare.begins_with("#") and line_of.search(bare) == null:
-			return false
-	return true
+	Catalogues.read((get_script() as Script).resource_path.get_base_dir().path_join(FLOOR_CATALOGUES))
+	_heard = current()
 
 
 ## The language on: English, a catalogue's, or the pseudo-locale - read, so
@@ -145,27 +119,55 @@ func would(_action: StringName, payload: Dictionary) -> Phrase:
 	return null
 
 
-## Another language on: the engine's locale and pseudolocalization set, the
-## look dressed for its script, and the bell rung - unless it was on already.
+## A player's choice of language: the game's locale and pseudolocalization
+## set - the one truth - and heard once, both set.
 func told(_action: StringName, payload: Dictionary) -> Phrase:
 	var language: StringName = payload["value"]
-	if language == current():
-		return null
+	_telling = true
 	TranslationServer.pseudolocalization_enabled = language == PSEUDO
 	TranslationServer.set_locale(SOURCE if language == PSEUDO else language)
+	_telling = false
+	_moved()
+	return null
+
+
+## The engine saying its locale moved, whoever moved it: heard, unless a
+## choice told here is half way through setting it.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and not _telling:
+		_moved()
+
+
+## The locale heard: where the language on moved, the look dressed for its
+## script and the bell rung; where it did not - the engine says so on entering
+## the tree as well - nothing.
+func _moved() -> void:
+	if current() == _heard:
+		return
+	_heard = current()
 	var look := Look.worn_by(_under)
 	# nothing wearing a look of its own has no fonts to change
 	if look != null:
 		Look.dress(look, written_in())
 	strike(region, LANGUAGE_CHANGED)
-	return null
 
 
 ## --- the text's lookups ---
 
-## The language on, as the engine holds it.
+## The language on: the pseudo-locale, else the language with words nearest
+## the engine's locale, else the locale as it is - words for it there are none.
 static func current() -> StringName:
-	return PSEUDO if TranslationServer.pseudolocalization_enabled else StringName(TranslationServer.get_locale())
+	if TranslationServer.pseudolocalization_enabled:
+		return PSEUDO
+	var locale := TranslationServer.get_locale()
+	var nearest := StringName(locale)
+	var closest := 0
+	# English and every language a catalogue is held for, for the one nearest the locale
+	for language: String in [String(SOURCE)] + Array(TranslationServer.get_loaded_locales()):
+		if TranslationServer.compare_locales(locale, language) > closest:
+			closest = TranslationServer.compare_locales(locale, language)
+			nearest = StringName(language)
+	return nearest
 
 
 ## The language on as a bound value, read again whenever it changes: for what
@@ -208,10 +210,11 @@ static func written_in() -> String:
 
 ## --- the catalogues ---
 
-## The catalogues the engine holds for the language on: none for English,
-## whose words are their keys, and none for the pseudo-locale, which is English.
+## The catalogues the engine holds for the language on - a French one for
+## fr_FR as for fr: none for English, whose words are their keys, and none
+## for the pseudo-locale, which is English.
 static func _catalogues() -> Array[Translation]:
-	return TranslationServer.find_translations(TranslationServer.get_locale(), true)
+	return TranslationServer.find_translations(TranslationServer.get_locale(), false)
 
 
 ## A key in the catalogues of the language on - for a count, its form for

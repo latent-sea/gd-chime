@@ -7,6 +7,7 @@ const ActionControl := preload("action_control.gd")
 const LookSounds := preload("look_sounds.gd")
 const Look := preload("look.gd")
 const Notifications := preload("notifications.gd")
+const SoundBus := preload("sound_bus.gd")
 
 ## The interface's sounds: a look's sound for each moment, played by hearing
 ## the bells that already ring.
@@ -50,16 +51,14 @@ const Notifications := preload("notifications.gd")
 ## A NOTIFICATION ARRIVING is a moment of its own, NOTIFIED, heard on the bell
 ## of the notifications (notifications.gd), which are built before this.
 ##
-## Volume and mute are the two commands, so a settings toggle and a slider drive
-## them knowing nothing of audio, and each is a value (value.gd) for
-## whatever shows them. Muted is the bus muted AND nothing asked to play: either alone leaves
-## sounds to arrive the moment they are turned back on.
+## THEY PLAY ON THE GAME'S BUS, the one the project names (sound_bus.gd), whose
+## volume and mute are the game's and a player's choice. Muted is the bus
+## muted AND nothing asked to play: either alone leaves sounds to arrive the
+## moment they are turned back on.
 ##
 ## Deliberately absent: music, a sound carried across a move, ducking, and a
 ## sound per control rather than per style.
 
-## The bus every one of these plays on, made at startup if the project has none.
-const BUS := &"UI"
 ## How many can sound at once: a press over a move over a glow, and room to spare.
 const VOICES := 6
 const KEPT := 64  # how many asked-for sounds are kept for reading back
@@ -75,12 +74,8 @@ const LOWERED := &"lowered"
 const MOVED := &"moved"
 const NOTIFIED := &"notified"
 
-## The two commands: the volume {"value": 0 to 1}, a choice's payload, and mute {"on"}.
-const SETS_VOLUME := &"sets_volume"
-const MUTES_SOUND := &"mutes_sound"
-const COMMANDS: Array[StringName] = [SETS_VOLUME, MUTES_SOUND]
-
 var _driver: Driver
+var _bus: SoundBus
 var _prompts: Prompts
 var _root: Node  # where the look is: the Theme on it, read again every time
 var _voices: Array[AudioStreamPlayer] = []
@@ -93,15 +88,14 @@ var _path: Array = []  # the app's path when the driver last moved
 var _moving: bool = false  # whether this frame's moves are waiting to be heard as one
 var _raised: bool = false
 var _arrived: bool = false  # whether the reader has been moved at all yet: until then nothing sounds, not even the focus it opens on
-var _volume := value(1.0)
-var _muted := value(false)
 
 
-func _init(chimes: Chimes, driver: Driver, prompts: Prompts, under: Node) -> void:
+func _init(chimes: Chimes, driver: Driver, prompts: Prompts, under: Node, bus: SoundBus) -> void:
 	super(chimes, [], Chimes.GLOBAL)
 	_driver = driver
 	_prompts = prompts
 	_root = under
+	_bus = bus
 	# the moments of a person's hand, hung here because the faces that ring them cannot
 	for moment: StringName in [HOVERED, FOCUS_MOVED, PRESSED]:
 		register_bell(moment)
@@ -109,10 +103,9 @@ func _init(chimes: Chimes, driver: Driver, prompts: Prompts, under: Node) -> voi
 	# a voice for each sound that may overlap, built here so nothing is connected and nothing is found by name
 	for voice: int in VOICES:
 		var player := AudioStreamPlayer.new()
-		player.bus = BUS
+		player.bus = bus.named
 		_voices.append(player)
 		add_child(player)
-	_apply()
 
 
 ## A bell rang: the moment it means, read from whoever rang it.
@@ -124,24 +117,6 @@ func heard(what: StringName) -> void:
 		Driver.NAVIGATED: _moved()
 		Prompts.PROMPT_MOVED: _glowed()
 		Notifications.ARRIVED: _play(NOTIFIED, &"")
-
-
-## The volume, 0 to 1, or the mute, dispatched from a settings control.
-func told(action: StringName, payload: Dictionary) -> Phrase:
-	if action == SETS_VOLUME:
-		_volume.set_value(clampf(payload["value"], 0.0, 1.0))
-	else:
-		_muted.set_value(payload["on"])
-	_apply()
-	return null
-
-
-func get_volume() -> float:
-	return _volume.read()
-
-
-func get_muted() -> bool:
-	return _muted.read()
 
 
 ## Every sound it asked for, as [moment, style], newest last.
@@ -198,7 +173,7 @@ func _glowed() -> void:
 ## moment, and nothing where the look has none for it.
 func _play(moment: StringName, style: StringName) -> void:
 	var frame := Engine.get_process_frames()
-	if _muted.read() or _sounded.get(moment) == frame:
+	if _bus.muted.read() or _sounded.get(moment) == frame:
 		return
 	var found := LookSounds.get_sound(Look.worn_by(_root), moment, style)
 	if found.is_empty():
@@ -228,15 +203,3 @@ func _notification(what: int) -> void:
 		for voice: AudioStreamPlayer in _voices:
 			voice.stop()
 			voice.stream = null
-
-
-## The volume and the mute put on the bus, so a sound already sounding stops.
-func _apply() -> void:
-	var at := AudioServer.get_bus_index(BUS)
-	# the bus made if the project has none, which is the usual case: a bus is project state, and no consumer's project is shipped here
-	if at == -1:
-		AudioServer.add_bus()
-		at = AudioServer.get_bus_count() - 1
-		AudioServer.set_bus_name(at, BUS)
-	AudioServer.set_bus_mute(at, _muted.read())
-	AudioServer.set_bus_volume_db(at, -80.0 if _volume.read() <= 0.0 else linear_to_db(_volume.read()))

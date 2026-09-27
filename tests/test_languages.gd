@@ -9,7 +9,8 @@ const Actions := preload("res://addons/gd_chime/actions.gd")
 ## where it matches a catalogue word; a reason is words, its pattern
 ## translated and a name in it kept as it is; a refusal with a number in it
 ## leaves nothing behind that grows; two patterns that read the same in
-## English stay apart in every language; a change rings one bell; a count
+## English stay apart in every language; a change rings one bell, whoever
+## made it - the locale is the game's, read and never set; a count
 ## of none says its own words where it has them, and one and many are the
 ## catalogue's plural, in each language by its own rule; a number, money and
 ## a date are written as the language writes them; a word the catalogue lacks is said out loud once and
@@ -37,6 +38,7 @@ const Pressable := preload("res://addons/gd_chime/components/primitives/pressabl
 const Field := preload("res://addons/gd_chime/components/primitives/field.gd")
 const Inputs := preload("res://addons/gd_chime/input_map.gd")
 const Language := preload("res://addons/gd_chime/language.gd")
+const Catalogues := preload("res://addons/gd_chime/catalogues.gd")
 const Phrase := preload("res://addons/gd_chime/phrase.gd")
 const Formats := preload("res://addons/gd_chime/formats.gd")
 const Look := preload("res://addons/gd_chime/look.gd")
@@ -136,6 +138,7 @@ func _init() -> void:
 	await _verdict.states(_every_word_the_floor_s_recipes_show_is_in_its_french_catalogue)
 	await _verdict.states(_the_grid_s_and_the_shell_s_words_are_in_the_french_catalogue_too)
 	await _verdict.states(_a_change_rings_language_changed_once_and_only_when_the_language_moves)
+	await _verdict.states(_the_language_is_the_game_s_locale_read_never_set_and_followed_whoever_sets_it)
 	await _verdict.states(_a_count_of_none_says_its_own_words_and_one_and_many_are_the_catalogue_s_plural_in_each_language)
 	await _verdict.states(_numbers_money_and_dates_are_written_as_the_language_writes_them)
 	await _verdict.states(_a_word_the_catalogue_lacks_is_said_out_loud_once_and_shown_in_english)
@@ -213,6 +216,7 @@ func _built(made: Fixture, model: Shown) -> void:
 	model.set_value(&"takings", 18400)
 	var nothing := func(_item: Bound) -> Desc: return ui.text("")
 	var by_id := func(item: Variant) -> Variant: return item
+	made.answer([&"saves", &"leaves", &"turns"])
 	ui.start(ui.app(&"app", [ui.column([
 		ui.text(Phrase.of("This group is empty")).named(&"word"),
 		ui.button(&"saves").named(&"button"),
@@ -228,6 +232,7 @@ func _a_button_s_words_and_a_word_written_for_a_recipe_follow_every_change_of_la
 	var made := Fixture.new(root, {&"saves": "save", &"names": "name"})
 	var model := Shown.new(made.chimes)
 	model.set_value(&"holds", "the stall")
+	made.answer([&"saves", &"names"])
 	made.ui.start(made.ui.app(&"app", [made.ui.column([made.ui.button(&"saves").named(&"button"), TextField.make(made.ui, &"names", Phrase.of("a crate's name"), {holds = Bound.new(model.get_holds)}).named(&"field")])]))
 	await _a_frame_passes()
 	var app: Node = made.driver.index.app
@@ -346,6 +351,7 @@ func _every_word_the_floor_s_recipes_show_is_in_its_french_catalogue() -> void:
 	model.set_value(&"asking", false)
 	model.set_value(&"progress", {"count": 1, "ceiling": 3})
 	var by_id := func(item: Dictionary) -> Variant: return item["id"]
+	made.answer([&"enters", &"compares", &"sorts", &"names", &"binds", &"cancels", &"saves", &"mutes"])
 	ui.start(ui.app(&"app", [ui.column([
 		Bracket.make(ui, Bound.new(model.get_rounds), &"opens", {goes_to = &"entrant"}),
 		Card.empty(ui, [ui.text("")], Bound.new(model.get_reserved)),
@@ -443,6 +449,29 @@ func _a_change_rings_language_changed_once_and_only_when_the_language_moves() ->
 	made.done()
 
 
+## The locale is the game's: made and started in the game's own form of
+## French, the language sets nothing and speaks French; the game setting the
+## locale itself is heard as a change like any other; and a choice through
+## the pseudo-locale, two settings of the engine's, is heard once.
+func _the_language_is_the_game_s_locale_read_never_set_and_followed_whoever_sets_it() -> void:
+	TranslationServer.set_locale("fr_FR")
+	var made := Fixture.new(root)
+	var ears := Ears.new(made.chimes, [Language.HEARD])
+	made.ui.start(made.ui.app(&"app", [made.ui.text(Phrase.of("save")).named(&"word")]))
+	await _a_frame_passes()
+	var word: Text = made.ui.node_named(&"word")
+	_verdict.check(TranslationServer.get_locale() == "fr_FR" and made.ui.language.get_language() == &"fr" and word.get_text() == "enregistrer", "made and started under the game's fr_FR, the language set nothing, is French, and says it: %s %s %s" % [TranslationServer.get_locale(), made.ui.language.get_language(), word.get_text()])
+	TranslationServer.set_locale("en_GB")
+	await _a_frame_passes()
+	_verdict.check(ears.rang == 1 and made.ui.language.get_language() == Language.SOURCE and word.get_text() == "save", "the game setting its locale itself, the bell rang once, the language on is English and the words followed: %d %s %s" % [ears.rang, made.ui.language.get_language(), word.get_text()])
+	await _change(made, Language.PSEUDO)
+	await _change(made, &"fr")
+	_verdict.check(ears.rang == 3 and TranslationServer.get_locale() == "fr" and not TranslationServer.pseudolocalization_enabled, "a choice into the pseudo-locale and out of it into French - two settings of the engine's each - rang once each: %d" % ears.rang)
+	await _change(made, Language.SOURCE)
+	ears.free()
+	made.done()
+
+
 func _a_count_of_none_says_its_own_words_and_one_and_many_are_the_catalogue_s_plural_in_each_language() -> void:
 	var made := Fixture.new(root, {&"types": "type", &"picks": "pick"})
 	var ui := made.ui
@@ -450,6 +479,7 @@ func _a_count_of_none_says_its_own_words_and_one_and_many_are_the_catalogue_s_pl
 	source.set_value(&"items", [])
 	var narrowing := Narrowing.new(made.chimes, source.of(&"items"), 3)
 	made.commands.register(&"app", &"types", narrowing)
+	made.commands.register(&"app", &"picks", source)
 	ui.start(ui.app(&"app", [TypeAhead.make(ui, narrowing, &"types", &"picks").named(&"picker")]))
 	await _a_frame_passes()
 	# the picker's first words that are not the reason standing under its line
@@ -582,7 +612,7 @@ func _a_catalogue_that_cannot_be_read_is_said_out_loud_and_offers_nothing() -> v
 	file.store_string("msgid \"\"\nmsgstr \"\"\n\"Language: de\\n\"\n\nmsgid \"won\nmsgstr gewonnen\n")
 	file.close()
 	var before := _hearing.said.size()
-	made.ui.language.read("user://unreadable")
+	Catalogues.read("user://unreadable")
 	var said: Array = _hearing.said.slice(before).filter(func(one: String) -> bool: return one.contains("could not be read"))
 	_verdict.check(said.size() == 1 and said[0].contains("user://unreadable/de.po"), "a catalogue that cannot be read is said out loud, by its file: %s" % [said])
 	_verdict.check(not made.ui.language.get_languages().has(&"de"), "and nothing in it is offered: %s" % [made.ui.language.get_languages()])

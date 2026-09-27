@@ -8,7 +8,8 @@ const Index := preload("index.gd")
 const Places := preload("components/primitives/describe_places.gd")
 
 ## Whether the built tree stands: every declared action registered, every
-## declared destination a place, every registered action declared somewhere,
+## declared destination a place, every action going nowhere answered by a
+## model, every registered action declared somewhere,
 ## every place named once and never after a reserved region.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
@@ -24,6 +25,10 @@ const Places := preload("components/primitives/describe_places.gd")
 ##   nothing, in silence. BACK is where the reader came from, and always
 ##   stands; ONWARD is where they were going, carried by the question that
 ##   stopped them (leave_guard.gd).
+## - A declared action going nowhere that no model answers, in the place or
+##   from anywhere: a press of it would be refused out loud as it landed. A
+##   place's models answer what each says it does (place_builder.gd), so an
+##   action one forgot to say is found here rather than at the press.
 ## - A place asking before it is left whose question is no pop-up, or with
 ##   no model to say when it asks: the leaving would be stopped and nothing
 ##   raised, or the guard would ask nobody.
@@ -51,7 +56,7 @@ const Places := preload("components/primitives/describe_places.gd")
 static func broken(index: Index, actions: Actions) -> Array[String]:
 	var found: Array[String] = []
 	var declared: Dictionary = {}  # every action some place declares, used as a set
-	# every place, its declaration: each action registered and no command, each goes_to a place
+	# every place, its declaration: each action registered and no command, each goes_to a place, each going nowhere answered
 	for place: Node in index.places():
 		for action: StringName in place.performs:
 			declared[action] = true
@@ -62,6 +67,8 @@ static func broken(index: Index, actions: Actions) -> Array[String]:
 			var goes_to: StringName = place.performs[action]
 			if goes_to != &"" and goes_to != Driver.BACK and goes_to != Driver.ONWARD and not index.has_place(goes_to):
 				found.append("%s sends %s to %s, which is no place" % [place.name, action, goes_to])
+			if goes_to == &"" and not place.driver.door.handles(place.name, action):
+				found.append("nothing answers %s in %s" % [action, place.name])
 	# every place asking before it is left: its question a pop-up, and a model to say when
 	for place: Node in index.places():
 		if place.asks_before_leaving != &"" and index.chart()["kind"].get(place.asks_before_leaving) != Chart.OVERLAY:

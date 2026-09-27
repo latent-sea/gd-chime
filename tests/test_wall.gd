@@ -53,6 +53,7 @@ func _one_item_changing_draws_one_mark_and_places_nothing() -> void:
 	var tile := func(key: int) -> RefCounted: return Wall.tile(ui, INSPECTS, {"unit": key}, items.item(key).field("state").map(func(state: Variant) -> Variant: return null if state == null else STATES[state]), {name = "U-%03d" % key}).named(StringName("tile %d" % key))
 	var counted := func(state: String) -> Callable: return func(many: int) -> Phrase: return Phrase.with("%d " + state, [many])
 	var legend := Wall.legend(ui, items, &"state", ["up", "slow", "down"].map(func(state: String) -> Dictionary: return {"value": state, "state": STATES[state], "counted": counted.call(state)})).named(&"legend")
+	made.answer([INSPECTS])
 	ui.start(ui.app(&"app", [ui.screen(&"units", [ui.column([legend, Wall.make(ui, items, tile).grow()])])]))
 	# frames for the tiles to be placed and the legend's first count
 	for frame: int in 4:

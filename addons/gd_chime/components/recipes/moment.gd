@@ -17,10 +17,10 @@ const Keyframes := preload("../primitives/keyframes.gd")
 ##
 ## IT GOES THROUGH THE CHART like everything standing over the screen: a
 ## pop-up PRESENTED while the model's fact holds (place_builder.gd), raised
-## by the driver at the end of the command that made the fact hold and
-## lowered at the end of the one that stopped it (driver.gd: settle) - so it
-## blocks what is beneath, takes the focus and gives it back as any pop-up
-## does. ITS WAY OUT IS ITS MODEL'S: the dismissing press. It declares no
+## by the driver at the end of the frame the fact came to hold in and
+## lowered at the end of the one it stopped in, whoever moved it - a press,
+## the game's tick, a job landing (driver.gd) - so it blocks what is
+## beneath, takes the focus and gives it back as any pop-up does. ITS WAY OUT IS ITS MODEL'S: the dismissing press. It declares no
 ## other and its shade is ground, not a press, since going back alone would
 ## leave the fact holding and the moment raised again at once.
 ##
@@ -55,6 +55,6 @@ static func make(ui: Ui, presented: Bound, content: Array, dismisses: StringName
 	var standing: Desc = ui.keyframes([ui.column(lines)], SETTLES, &"slow", {easing = Motion.EMPHASIS})
 	var over: Desc = ui.keyframes([Sheet.over(ui, [standing], style, ui.surface(Sheet.SHADE))], ARRIVES, &"normal", {easing = Motion.ENTER})
 	var made := ui.pop_up(KIND, func(_which: Bound) -> Desc: return over)
-	# up while the fact holds, raised and lowered by the driver as the door settles
+	# up while the fact holds, raised and lowered by the driver as the fact moves
 	made.props["presented"] = presented
 	return made

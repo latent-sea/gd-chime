@@ -42,11 +42,15 @@ const Paths := preload("paths.gd")
 ## and its question raised instead, a press going ONWARD from the question
 ## goes on with the move, and routing treats the place as refused to leave.
 ##
-## A MOMENT GOES THROUGH THE CHART like everything standing over the screen:
-## a pop-up PRESENTED while a fact of a model holds (moment.gd) is raised as
-## the fact comes to hold and lowered as it stops, by settle(), which the door
-## calls at the end of every dispatch - so the move is made inside the
-## command that moved the fact, never by anything hearing it move.
+## A MOMENT FOLLOWS ITS VALUE, through the chart like everything standing
+## over the screen: a pop-up PRESENTED while a fact of a model holds
+## (moment.gd) is raised as the fact comes to hold and lowered as it stops,
+## whoever moved it - a press, the game's tick, a job landing. This follows
+## what the facts and the reader's place read, as a control follows what it
+## drew; a ring there is a settling due, and the settling is done in this
+## node's own step of the next frame, where a control draws - never in the
+## ring, so nothing moves the reader from inside heard(). A fact that held
+## and let go again before that step raises nothing.
 ##
 ## A place leaving the tree while the path names it is emptied and its
 ## token cancelled as it goes, and one entering while the path names it - a
@@ -67,6 +71,8 @@ const ONWARD := &"where_they_were_going"
 ## What a place asking before it is left asks the model answering for it,
 ## would(LEAVES, {}): the words of its question, or nothing while it may go.
 const LEAVES := &"leave_the_place"
+## The key what a settling reads is followed under: every presented fact, and where the reader is.
+const SETTLES := &"settles"
 
 ## The door, which tells this it is the mover as it is built; asked for the
 ## game's refusals.
@@ -80,6 +86,7 @@ var motion: Motion = null:
 		_applier.motion = given
 var _guard: LeaveGuard  # made with this, as this is made
 var _presented: Dictionary = {}  # a presented pop-up's name -> the bound fact it is up while
+var _due: bool = false  # whether a presented fact or the reader's place moved since the last settling
 
 
 func _init(chimes: Chimes) -> void:
@@ -169,22 +176,47 @@ func left(place: Node) -> void:
 
 
 ## A pop-up up while this bound fact holds - something rather than nothing
-## or false - raised and lowered as the door settles.
+## or false - raised and lowered as the fact moves, whoever moves it.
 func present(place: StringName, fact: Bound) -> void:
 	_presented[place] = fact
+	_chimes.follow(self, SETTLES, _read_presented, _settling_due)
 
 
-## Every presented pop-up brought in line with its fact, as the door's last
-## step: raised where the fact holds and it is down, lowered where the fact
-## has stopped and it is up. A lowering refused - another pop-up over it -
-## waits for the next command.
-func settle() -> void:
-	# every presented pop-up, moved where its fact and the state disagree
+## Entering the tree switches processing on for a script with _process, so
+## whether a settling is due is said again here.
+func _ready() -> void:
+	set_process(_due)
+
+
+## Something the facts or the reader's place read moved: a settling is due,
+## done in this node's step of the frame, where a control draws.
+func _settling_due() -> void:
+	_due = true
+	set_process(true)
+
+
+## Processing is given up at the start of a frame with nothing due, never
+## at the end of one that settled, as a control's is (presentation.gd).
+func _process(_delta: float) -> void:
+	if not _due:
+		set_process(false)
+		return
+	_due = false
+	# every presented pop-up, moved where its fact and the state disagree; a lowering refused - another pop-up over it - waits for the reader's next move
 	for place: StringName in _presented:
 		var fact: Variant = _presented[place].read()
 		var holds: bool = fact != null and fact != false
 		if holds != Paths.is_up(_state, place):
 			_run(Events.Event.go(place) if holds else Events.Event.lower(place))
+	_chimes.follow(self, SETTLES, _read_presented, _settling_due)
+
+
+## What a settling reads: every presented fact, and where the reader is.
+func _read_presented() -> void:
+	# every presented fact, read so a move of it is a settling due
+	for place: StringName in _presented:
+		_presented[place].read()
+	where()
 
 
 ## The move one of the four means.

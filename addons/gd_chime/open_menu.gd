@@ -34,8 +34,8 @@ const Relay := preload("relay.gd")
 ## The press that opens a menu over its target, {"parameter"}; a pick of an item, {"item"}.
 const OPENS := &"opens_the_menu"
 const PICKS := &"picks_from_the_menu"
-## The one action this is told: a pick is the offered action, dispatched by the relay.
-const COMMANDS: Array[StringName] = [OPENS]
+## The two actions this is told: an opening with nothing to open, refused; and a pick, which the relay sends on as the offered action.
+const COMMANDS: Array[StringName] = [OPENS, PICKS]
 
 var _door: Object
 var _actions: Actions

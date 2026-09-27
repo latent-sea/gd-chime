@@ -29,6 +29,7 @@ func _turned_on_a_toggle_needs_the_room_it_needed_off() -> void:
 	var made := Fixture.new(root, {TURNS: "turn it"})
 	var model := Fixture.Model.new(made.chimes)
 	root.add_child(model)
+	made.commands.register(Fixture.Chimes.GLOBAL, TURNS, model)
 	model.set_value(&"flag", false)
 	var ui := made.ui
 	var worn: RefCounted = model.of(&"flag").map(func(on: Variant) -> StringName: return Pressables.TOGGLE_ON if on else Pressables.TOGGLE_OFF)

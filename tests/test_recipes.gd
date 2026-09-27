@@ -134,6 +134,7 @@ func _a_card_is_one_pressable_carrying_its_thing_and_an_empty_one_shows_its_ways
 	var telling := Card.tile(ui, &"opens", thing, [ui.text(thing.field("name")), Card.more(ui, ui.text("picked on tuesday"))], {goes_to = &"detail"}).named(&"telling")
 	var empty := Card.empty(ui, [ui.pressable(&"fills")], model.of(&"flag")).named(&"empty")
 	var waiting := Card.loading(ui, 3, {above = ui.text("its picture")}).named(&"waiting")
+	made.commands.register(&"app", &"fills", model)
 	ui.start(ui.app(&"app", [ui.column([card, telling, empty, waiting, ui.screen(&"detail", [])])]))
 	await _a_frame_passes()
 	var pressed: Pressable = ui.node_named(&"card")
@@ -362,6 +363,7 @@ func _the_readouts_state_what_is_in_the_unit_s_mark_and_never_a_currency() -> vo
 	var model := Fixture.Model.new(made.chimes)
 	model.set_value(&"items", {"won": 18400, "kind": "sprinter", "recent": [3, 5, 2, 8], "marks": 4, "strength": 0.42})
 	var thing: Bound = model.of(&"items")
+	made.commands.register(Chimes.GLOBAL, &"compares", model)
 	ui.start(ui.app(&"app", [ui.column([CellReadout.quantity(ui, thing.field("won"), "c"), CellReadout.bar(ui, thing.field("won"), 1000000.0), CellReadout.label(ui, thing.field("kind")), CellReadout.trace(ui, thing.field("recent")), CellReadout.mark(ui, thing.field("marks"), &"diamond"), CellReadout.relative(ui, &"compares", thing.field("strength"), "closeness")]).named(&"cell")]))
 	var cell: Node = ui.node_named(&"cell")
 	await _a_frame_passes()
@@ -436,6 +438,7 @@ func _the_instruction_bar_says_the_ask_the_progress_and_the_way_out_and_the_prom
 	act.set_value(&"asking", false)
 	act.set_value(&"progress", null)
 	made.commands.register(&"app", &"cancels", act)
+	made.commands.register(&"app", &"saves", act)
 	ui.start(ui.app(&"app", [ui.column([InstructionBar.make(ui, act, &"cancels").named(&"bar"), ui.pressable(&"saves")])]))
 	await _a_frame_passes()
 	var bar: Node = ui.node_named(&"bar")
@@ -462,6 +465,7 @@ func _the_instruction_bar_says_the_ask_the_progress_and_the_way_out_and_the_prom
 func _a_bubble_attaches_to_the_control_the_prompts_name_and_pulses() -> void:
 	var made := Fixture.new(root, {&"saves": "save the day", &"waves": "wave"})
 	var ui := made.ui
+	made.answer([&"saves", &"waves"])
 	ui.start(ui.app(&"app", [ui.stack([ui.row([ui.pressable(&"saves").named(&"save"), ui.pressable(&"waves")]), Attention.bubble(ui, &"save", &"saves").named(&"bubble")])]))
 	await _a_frame_passes()
 	var bubble: When = ui.node_named(&"bubble")
@@ -485,6 +489,7 @@ func _a_bubble_attaches_to_the_control_the_prompts_name_and_pulses() -> void:
 func _a_fading_bubble_says_its_own_actions_words() -> void:
 	var made := Fixture.new(root, {&"saves": "save the day", &"waves": "wave"})
 	var ui := made.ui
+	made.answer([&"saves", &"waves"])
 	ui.start(ui.app(&"app", [ui.stack([ui.row([ui.pressable(&"saves").named(&"save"), ui.pressable(&"waves")]), Attention.bubble(ui, &"save", &"saves").named(&"bubble")])]))
 	made.prompts.raise(&"guide", &"saves")
 	await _a_frame_passes()

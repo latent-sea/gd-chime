@@ -25,7 +25,10 @@ const Carried := preload("../../carried.gd")
 ## reader sees it travel under their hand.
 ##
 ## The targets are found by their mark, the engine's own group, in the layer
-## - the app or a pop-up - the carry began in: nothing is held.
+## the carry began in: nothing is held. A layer is a child of the root the
+## builder builds under, where the carry itself stands (ui.gd) - the app, or
+## a pop-up - so a carry never walks into another app, whose root is a canvas
+## of its own, nor under a pop-up, which is a layer of its own.
 
 ## The mark every drop target wears, a list target's too; and the mark on the draggable being carried.
 const TARGET := &"drop target"
@@ -48,7 +51,7 @@ static func walked(from: Control, event: InputEvent, carried: Carried) -> bool:
 	for named: StringName in SIDES:
 		if event.is_action_pressed(named):
 			var neighbour := from.find_valid_focus_neighbor(SIDES[named])
-			var next: Control = neighbour if neighbour != null and neighbour.is_in_group(TARGET) else nearest(from, SIDES[named], func(_target: Control) -> bool: return true)
+			var next: Control = neighbour if neighbour != null and neighbour.is_in_group(TARGET) else nearest(from, SIDES[named], carried, func(_target: Control) -> bool: return true)
 			if next != null:
 				next.grab_focus()
 			return true
@@ -63,7 +66,7 @@ static func stepped(from: Control, event: InputEvent, carried: Carried) -> bool:
 		carried.put_back()
 		return true
 	var over := carried.get_over()
-	var here := list_target(from, over["into"])
+	var here := list_target(from, over["into"], carried)
 	if event.is_action_pressed(&"ui_accept"):
 		here.drop()
 		return true
@@ -77,7 +80,7 @@ static func stepped(from: Control, event: InputEvent, carried: Carried) -> bool:
 			var step := 1 if side == SIDE_RIGHT or side == SIDE_BOTTOM else -1
 			carried.move_over(over["into"], clampi(over["at"] + step, 0, here.count_shown()))
 		else:
-			var next := nearest(here, side, func(target: Control) -> bool: return target.is_list())
+			var next := nearest(here, side, carried, func(target: Control) -> bool: return target.is_list())
 			if next != null:
 				carried.move_over(next.get_into(), mini(over["at"], next.count_shown()))
 		return true
@@ -85,9 +88,9 @@ static func stepped(from: Control, event: InputEvent, carried: Carried) -> bool:
 
 
 ## The list target standing for this list, in the layer this control stands in.
-static func list_target(from: Control, into: Variant) -> Control:
+static func list_target(from: Control, into: Variant, carried: Carried) -> Control:
 	# every target in the layer, for the list's own
-	for target: Node in _in_layer(from):
+	for target: Node in _in_layer(from, carried):
 		if target.is_list() and target.get_into() == into:
 			return target
 	return null
@@ -95,12 +98,12 @@ static func list_target(from: Control, into: Variant) -> Control:
 
 ## The nearest target in the layer, of those this takes, whose centre lies
 ## more that way than across from this control's - none, if none does.
-static func nearest(from: Control, side: Side, takes: Callable) -> Control:
+static func nearest(from: Control, side: Side, carried: Carried, takes: Callable) -> Control:
 	var way: Vector2 = WAYS[side]
 	var centre := from.get_global_rect().get_center()
 	var found: Control = null
 	# every target standing in the layer, for the nearest lying that way
-	for target: Control in _in_layer(from):
+	for target: Control in _in_layer(from, carried):
 		if target == from or not target.is_visible_in_tree() or not takes.call(target):
 			continue
 		var off: Vector2 = target.get_global_rect().get_center() - centre
@@ -111,10 +114,11 @@ static func nearest(from: Control, side: Side, takes: Callable) -> Control:
 
 
 ## Every target marked in the layer this control stands in: under the same
-## child of the root - the app, or a pop-up - whose targets alone are reachable.
-static func _in_layer(from: Control) -> Array:
+## child of the builder's root - the app, or a pop-up - whose targets alone
+## are reachable. The carry stands under that root, so its parent is it.
+static func _in_layer(from: Control, carried: Carried) -> Array:
 	var layer: Node = from
-	# up to the child of the root this stands in
-	while layer.get_parent() != from.get_tree().root:
+	# up to the child of the builder's root this stands in
+	while layer.get_parent() != carried.get_parent():
 		layer = layer.get_parent()
 	return from.get_tree().get_nodes_in_group(TARGET).filter(func(target: Node) -> bool: return layer.is_ancestor_of(target))

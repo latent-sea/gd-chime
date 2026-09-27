@@ -21,7 +21,9 @@ extends RefCounted
 ## wants the whole window run the framework's way, which is what the demos'
 ## main loop does (application.gd). It writes the settings AND puts them on the
 ## running window and input map, so a call at start takes effect at start;
-## it never saves project.godot, which is the editor's to write.
+## it never saves project.godot, which is the editor's to write. An app reads
+## the base as it enters the tree (easel.gd), so a host's own _ready may call
+## it and then add the app, with no autoload.
 ##
 ## Deliberately absent: a check of the renderer or the audio buses, which
 ## the framework does without; and the input map's other actions, which
@@ -61,7 +63,7 @@ static func report() -> void:
 	for sentence: String in missing():
 		if not said.has(sentence):
 			said[sentence] = true
-			push_warning("gd-chime: %s; GdChime.apply_project_settings() sets it" % sentence)
+			push_warning("gd-chime: %s; GdChime.apply_project_settings(get_window()), called in the host's _ready before it adds the app, sets it" % sentence)
 	InputMap.set_meta(SAID, said)
 
 

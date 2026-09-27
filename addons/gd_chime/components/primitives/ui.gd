@@ -1,4 +1,4 @@
-extends "describe_loads.gd"
+extends "built_names.gd"
 
 const Commands := preload("../../commands.gd")
 const Prompts := preload("../../prompts.gd")
@@ -46,9 +46,9 @@ const FLOOR: Dictionary = preload("floor_kinds.gd").KINDS
 ## start(description) builds top-down, so a place exists before its
 ## contents, adds everything to the tree, sets the app, and, once the tree
 ## has entered on the first frame and the index has filled, runs the startup
-## check - a broken tree is said and the application quits - and makes the
-## first move, into the app. The description is not kept: the nodes are the
-## truth.
+## check - a broken tree is said out loud, whoever asked is told, and the app
+## stands empty; nothing here ever quits the game - and makes the first
+## move, into the app. The description is not kept: the nodes are the truth.
 
 var root: Node
 var commands: Commands
@@ -57,9 +57,8 @@ var prompts: Prompts
 var _builders: Dictionary = {}  # kind -> the primitive's script
 var _place: Node = null  # the place being built into
 var _pressable: Node = null  # the pressable being built into
-var _named: Dictionary = {}  # id -> the node built under that name
 var _lifted: Dictionary = {}  # a pop-up's name -> its place, built beside the app
-var _on_broken: Callable  # told the faults instead of quitting, when given: a test's
+var _on_broken: Callable  # told the faults of a broken tree, when given: the app's, or a test's
 
 
 func _init(under: Node, bells: Chimes, door: Commands, moves: Driver, prompting: Prompts, register: Actions) -> void:
@@ -132,11 +131,6 @@ func region() -> StringName:
 	return _place.name if _place != null else Chimes.GLOBAL
 
 
-## The node this name was built under, for an anchored piece and for a test.
-func node_named(id: StringName) -> Node:
-	return _named.get(id)
-
-
 ## This description as nodes under this parent, top-down: the node made by
 ## its kind's primitive, then its contents built into it. A piece rebuilding
 ## later - a when swapping, an each on its bell - says the place it was
@@ -153,7 +147,7 @@ func build(desc: Desc, parent: Node, in_place: Node = null) -> Control:
 		_place = parent
 	var made: Control = (_builders[desc.kind] as GDScript).build(self, desc, parent)
 	if desc.props.has("id"):
-		_named[desc.props["id"]] = made
+		name_piece(desc.props["id"], made)
 	if desc.props.has("arrives"):
 		_place.arriving.append([made, desc.props["arrives"]])
 	# a place or a pressable made is the one being built into, for what it holds
@@ -235,11 +229,10 @@ func _started() -> void:
 	var wrong := StartupCheck.broken(driver.index, actions)
 	for sentence: String in wrong:
 		push_error(sentence)
+	# a broken tree said, whoever asked told, and no first move made: every place stays hidden, and the app stands empty
 	if not wrong.is_empty():
 		if _on_broken.is_valid():
 			_on_broken.call(wrong)
-		else:
-			root.get_tree().quit(1)
 		return
 	# the default inputs asked about now the places stand: two actions on one input, reachable at once, are said out loud
 	if inputs != null:

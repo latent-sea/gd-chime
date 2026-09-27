@@ -17,9 +17,11 @@ MIT licensed; see `addons/gd_chime/LICENCE` (and the copy at this folder's root)
    no autoload and no editor UI; enabling it is what puts the two names below
    in your project.
 3. Set the three project settings the framework needs, or let it set them:
-   `GdChime.apply_project_settings(get_window())`, called once at start, sets
-   all three. An app node entering a project that lacks one says so once, in
-   the output, naming the setting and the value it wants.
+   `GdChime.apply_project_settings(get_window())`, called in your scene's own
+   `_ready` before it adds an app, sets all three - an app reads them as it
+   enters the tree, not when it is made, so no autoload is needed. An app
+   node entering a project that lacks one says so once, in the output,
+   naming the setting, the value it wants and that call.
 
 | Setting | Value | Why |
 | --- | --- | --- |
@@ -76,6 +78,48 @@ The five questions an app answers, each with a default: `look()`, the Theme
 its canvas wears; `sources()`, the prompts' sources; `declare(register)`, its
 actions and their words, in one table; `describe()`, the app's description,
 its models made on the way; `probe()`, the walk that stands in for a reader.
+A sixth, `broken(faults)`, is told when the description's tree is broken,
+each fault already said in the output; by default it does nothing more.
+
+## Beside a game
+
+The game owns what is global; an app owns its rectangle and its drawing. An
+app reads the game's settings and never writes them of its own accord - not
+as it enters, builds or leaves.
+
+- **The language is the engine's locale.** An app speaks whatever language
+  the game set, `TranslationServer.set_locale("fr")`, before or after the app
+  was added, and follows every change whoever makes it. A language picker in
+  an app is a player's choice: it sets the engine's locale, and the game and
+  every other app follow. Your own catalogues - a folder of `.po` files, one
+  per language - go beside the floor's with `GdChime.Catalogues.read(folder)`.
+- **Sound plays on the game's bus**: the one named in the project setting
+  `gd_chime/sounds/bus`, else a bus called `UI` if the project has one, else
+  `Master`. An app never adds a bus, mutes one or sets its volume by itself;
+  a volume slider or a mute toggle in an app is a player's choice, set on
+  that bus, and every app on it says so (`sound_bus.volume`,
+  `sound_bus.muted`).
+- **The settings are read as an app enters the tree**, so a scene with no
+  autoload applies them first and adds its app after:
+
+```gdscript
+const Stall := preload("stall.tscn")
+
+func _ready() -> void:
+	GdChime.apply_project_settings(get_window())
+	add_child(Stall.instantiate())
+```
+
+- **An app's life is the node's.** It is built as it enters the tree and
+  taken down as it leaves - its models, its pop-ups, its jobs - so taking it
+  out and putting it back, or moving it under another parent, builds it
+  afresh, once. A description with a fault in it is reported in the output
+  and the app stands empty; an app never quits your game.
+- **A key the app takes is the app's.** Keys and pad buttons go to the app
+  holding the window's focus; one it takes never reaches your scene's
+  `_unhandled_input`, one it leaves does, as in any Godot scene, and a
+  second app never hears it. A carry by the keys or the pad stays in the
+  app, and in the pop-up it began in.
 
 ## The demos
 

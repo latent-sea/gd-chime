@@ -139,7 +139,8 @@ func _a_collection_lays_the_model_s_members_out_as_rows_or_tiles_kept_by_key_wit
 	var key := func(member: Dictionary) -> int: return member["id"]
 	var rows := Collection.make(ui, model.of(&"items"), template, {key = key, shape = Collection.ROWS, controls = [ui.pressable(&"sorts")]}).named(&"rows")
 	var tiles := Collection.make(ui, model.of(&"items"), template, {key = key, shape = Collection.TILES}).named(&"tiles")
-	ui.start(ui.app(&"app", [ui.column([rows, tiles])], ))
+	model.answering = [&"sorts", &"opens"]
+	ui.start(ui.app(&"app", [ui.column([rows, tiles])], model))
 	await _a_frame_passes()
 	var laid := _each_under(ui.node_named(&"rows"))
 	var first: Node = laid.piece_for(2)

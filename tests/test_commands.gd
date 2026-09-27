@@ -323,10 +323,6 @@ class Mover extends RefCounted:
 		moved.append(goes_to)
 		return null
 
-	## Nothing presented to bring in line: the door's last step, a no-op here.
-	func settle() -> void:
-		pass
-
 
 ## Would refuse every command asked of it, and counts the times it is told.
 class Refusing extends RefCounted:

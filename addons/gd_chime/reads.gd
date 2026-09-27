@@ -54,6 +54,13 @@ static var _addresses: Dictionary = {}  # region -> name -> the one StringName t
 static var _moves: Dictionary = {}  # address -> how often what the bell there rings for has moved
 
 
+## Whether the caller is on the main thread: a value is set from nowhere
+## else (value.gd), since what moved is counted here and a ring is due
+## from the thread that moved it.
+static func is_main_thread() -> bool:
+	return OS.get_thread_caller_id() == _main_thread
+
+
 ## Work is beginning: what it reads is noted for it.
 static func begin() -> void:
 	_open.append({})
@@ -130,6 +137,15 @@ static func forget(region: StringName) -> void:
 	for at: StringName in _addresses.get(region, {}).values():
 		_moves.erase(at)
 	_addresses.erase(region)
+
+
+## One bell is gone: what moved there is forgotten, and so is the name of its
+## address, and its region's with its last.
+static func forget_bell(region: StringName, bell: StringName) -> void:
+	_moves.erase(_addresses[region][bell])
+	_addresses[region].erase(bell)
+	if _addresses[region].is_empty():
+		_addresses.erase(region)
 
 
 ## Work done apart from the work around it: what it reads is noted for

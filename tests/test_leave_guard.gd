@@ -127,8 +127,10 @@ func _built() -> void:
 	_counts.clear()
 	_drafts = Counting.new(_made.chimes, &"drafts")
 	_drafts.refuse(Driver.LEAVES, Phrase.of(WORDS))
+	_drafts.answering = [WRITES, FILES]
 	_sketches = Counting.new(_made.chimes, &"sketches")
 	_sketches.refuse(Driver.LEAVES, Phrase.of(WORDS))
+	_sketches.answering = [SCRIBBLES]
 	var question := Confirm.for_leaving(ui, LEAVES_ANYWAY)
 	_leaving = question.get_place()
 	var strip := ui.row([ui.button(GOES_BACK, {goes_to = Driver.BACK}), ui.button(OPENS, {payload = {"parameter": 7}, goes_to = LEDGER})])

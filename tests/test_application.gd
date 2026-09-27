@@ -34,9 +34,14 @@ const JOTS := &"jots_a_note"
 ## A model that says what it answers and counts what it was told.
 class Counter extends Controller:
 	var told_of: Array[StringName] = []
+	var answering: Array[StringName] = [COUNTS]
+
+	func _init(chimes: Chimes, also: Array[StringName] = []) -> void:
+		super(chimes)
+		answering.append_array(also)
 
 	func answers() -> Array[StringName]:
-		return [COUNTS]
+		return answering
 
 	func told(action: StringName, _payload: Dictionary) -> Phrase:
 		told_of.append(action)
@@ -71,8 +76,8 @@ func declare(register: Actions) -> void:
 ## and three models: one of the application, and one on each of two screens.
 func describe() -> Desc:
 	_zoom = ui.pop_up(&"zoom", func(_which: Bound) -> Desc: return ui.column([ui.pressable(COUNTS), ui.pressable(ui.CLOSES, {}, [], &"Pressable").goes_to(Driver.BACK)]))
-	_of_the_app = model(Counter.new(chimes)) as Counter
-	_here = Counter.new(chimes)
+	_of_the_app = model(Counter.new(chimes, [&"saves"])) as Counter
+	_here = Counter.new(chimes, [JOTS])
 	_there = Counter.new(chimes)
 	var here := ui.screen(&"here", [ui.pressable(COUNTS), ui.pressable(JOTS)], _here)
 	var there := ui.screen(&"there", [ui.pressable(COUNTS)], _there)
@@ -109,7 +114,7 @@ func _a_model_stands_itself_up_where_it_was_handed_in_and_nowhere_else() -> void
 	commands.dispatch(&"here", COUNTS, {})
 	_verdict.check(_here.told_of == [COUNTS] and _there.told_of.is_empty(), "and the press lands on that screen's model alone, not the other screen's of the same action: here %s, there %s" % [_here.told_of, _there.told_of])
 	commands.dispatch(&"here", JOTS, {})
-	_verdict.check(_here.told_of == [COUNTS, JOTS], "a screen of ONE model also tells it what the screen declares and nothing else answers: %s" % [_here.told_of])
+	_verdict.check(_here.told_of == [COUNTS, JOTS] and not commands.handles(&"there", JOTS), "a screen's model is told each thing it says it answers, and a screen whose model does not answer a thing has no handler of it: %s" % [_here.told_of])
 	_verdict.check(commands.handles(&"zoom 1", COUNTS) and _of_the_app.told_of.is_empty(), "the application's own is reached from a place that has no model of its own: the pop-up")
 	commands.dispatch(&"zoom 1", COUNTS, {})
 	_verdict.check(_of_the_app.told_of == [COUNTS], "and it is the one told there: %s" % [_of_the_app.told_of])

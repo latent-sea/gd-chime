@@ -144,8 +144,8 @@ func _two_lanes() -> Array:
 		ui.also(lane)
 	var card := func(item: Bound) -> Desc: return ui.draggable(item, [ui.text(item.field("words"))], Collections.BOARD_CARD)
 	var headings: Array = lanes.map(func(lane: Lane) -> Desc: return Lanes.heading(ui, Phrase.with("lane %s", [lane.get_into()]), lane))
-	await _start([Lanes.make(ui, lanes, headings, {template = card, key = key, moves = &"moves_it", empty = Phrase.of("nothing here")}).named(&"board")])
 	_made.commands.register(&"app", &"moves_it", _model)
+	await _start([Lanes.make(ui, lanes, headings, {template = card, key = key, moves = &"moves_it", empty = Phrase.of("nothing here")}).named(&"board")])
 	await _a_frame_passes()
 	return lanes
 

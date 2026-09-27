@@ -16,6 +16,10 @@ const OwnBell := preload("own_bell.gd")
 ## frame however many of the model's values were set in it: the bell still
 ## carries nothing, and whoever hears it reads the model again.
 ##
+## SET ONLY FROM THE MAIN THREAD, SAID OUT LOUD, as a read is (reads.gd): a
+## job in the background hands what it made to the main thread, and a set
+## from the job itself is refused and moves nothing.
+##
 ## Setting rings whether or not the value is different: a value holding an
 ## array or a dictionary may have been changed in place and set again as
 ## the same one, and a set that rang nothing then would leave a reader
@@ -46,7 +50,11 @@ func read() -> Variant:
 	return _held
 
 
-## The value from now on, its model's bell asked to ring.
+## The value from now on, its model's bell asked to ring - from the main
+## thread; set from any other, it is refused out loud and does not move.
 func set_value(to: Variant) -> void:
+	if not Reads.is_main_thread():
+		push_error("%s was set off the main thread: set it where the job's answer lands, on the main thread - a value set from a job would move with no reader told, and count its move in what the main thread is reading" % _at)
+		return
 	_held = to
 	_bell.moved()

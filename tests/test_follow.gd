@@ -11,7 +11,9 @@ extends SceneTree
 ## draw of every control goes through this, so what it costs is a property as
 ## much as what it does: a work that read the same addresses as last time must
 ## leave its wires alone - neither cut nor made - and one whose reads moved
-## must end wired to the new set and nothing else.
+## must end wired to the new set and nothing else. Following again with new
+## work runs the new work; an address read before its bell hangs is kept, and
+## heard once the bell is hung.
 ##
 ## What a bell is, what a strike reaches and what a dropped region takes are
 ## proved in test_belfry.gd and test_chimes.gd. Nothing here is a controller:
@@ -55,6 +57,8 @@ func _init() -> void:
 	await _verdict.states(_a_work_that_reads_nothing_is_wired_to_nothing)
 	await _verdict.states(_an_address_nobody_hung_is_passed_over)
 	await _verdict.states(_one_name_in_two_regions_is_two_addresses)
+	await _verdict.states(_following_again_under_the_same_key_with_new_work_runs_the_new_work)
+	await _verdict.states(_an_address_read_before_its_bell_hangs_is_kept_and_heard_once_it_does)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -178,3 +182,54 @@ func _one_name_in_two_regions_is_two_addresses() -> void:
 	_verdict.check(reader.arrivals == 0, "so the other region's bell of that name reaches nobody here: %d" % reader.arrivals)
 	chimes.strike(&"my_screen", &"rows")
 	_verdict.check(reader.arrivals == 1, "and the one that was read does: %d" % reader.arrivals)
+
+
+## Followed under one key by one work, then again by another reading the
+## same - and then by a third reading one more address: a ring runs the work
+## handed last, never the first, and never a mix of the two.
+func _following_again_under_the_same_key_with_new_work_runs_the_new_work() -> void:
+	var chimes := _hung([[&"purse", &"coins"], [&"stall", &"open"]])
+	var ran: Array[String] = []
+	var reader := Reader.new()
+	var work := func(named: String, also_open: bool) -> Callable:
+		return func() -> void:
+			ran.append(named)
+			Reads.note(&"purse", &"coins")
+			if also_open:
+				Reads.note(&"stall", &"open")
+	chimes.follow(reader, KEY, work.call("first", false))
+	chimes.follow(reader, KEY, work.call("second", false))
+	ran.clear()
+	chimes.strike(&"purse", &"coins")
+	_verdict.check(ran == ["second"], "a ring runs the work handed last, the reads the same: %s" % [ran])
+	chimes.follow(reader, KEY, work.call("third", true))
+	ran.clear()
+	chimes.strike(&"purse", &"coins")
+	chimes.strike(&"stall", &"open")
+	_verdict.check(ran == ["third", "third"], "the reads grown by one, a ring at the old address and one at the new each run the one work handed last: %s" % [ran])
+	var other := Reader.new()
+	var said: Array[String] = []
+	var reads_coins := func() -> void: Reads.note(&"purse", &"coins")
+	chimes.follow(other, KEY, reads_coins, func() -> void: said.append("first moved"))
+	chimes.follow(other, KEY, reads_coins, func() -> void: said.append("second moved"))
+	chimes.strike(&"purse", &"coins")
+	_verdict.check(said == ["second moved"], "the same work handed with a new moved, a ring runs the new moved: %s" % [said])
+
+
+## A work reading an address nobody has hung yet: drawn again reading the
+## same, what is kept is what it read, so nothing is wired again; and once a
+## bell is hung there, its ring reaches the reader.
+func _an_address_read_before_its_bell_hangs_is_kept_and_heard_once_it_does() -> void:
+	var chimes := Chimes.new(Belfry.new())
+	chimes.register(&"purse", &"coins")
+	var reader := Reader.new()
+	reader.reads = [[&"purse", &"coins"], [&"a_screen", &"later"]]
+	chimes.follow(reader, KEY, reader.work, reader.moved)
+	var kept: Dictionary = chimes._wires.under(reader, KEY)
+	chimes.follow(reader, KEY, reader.work, reader.moved)
+	var read: Array = [Reads.hung(&"purse", &"coins"), Reads.hung(&"a_screen", &"later")]
+	_verdict.check(chimes._wires.under(reader, KEY).keys() == read and is_same(chimes._wires.under(reader, KEY), kept), "drawn again reading the same, what is kept under the key is what it read, the very record left standing: %s" % [chimes._wires.under(reader, KEY).keys()])
+	chimes.register(&"a_screen", &"later")
+	reader.arrivals = 0
+	chimes.strike(&"a_screen", &"later")
+	_verdict.check(reader.arrivals == 1, "a bell hung there afterwards reaches the reader on its first ring: %d" % reader.arrivals)

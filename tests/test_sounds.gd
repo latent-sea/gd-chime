@@ -24,7 +24,8 @@ extends SceneTree
 ## hand made; the pointer arriving and focus moving each play theirs, the
 ## style's where it has one and the look's default where it has not; a move, a
 ## pop-up raised and a pop-up lowered each play theirs, the first move
-## excepted; a glow starting plays once and not again while it stays; muted,
+## excepted; a glow starting plays once and not again while it stays; the
+## bus is the game's, read as it stands and followed whoever moves it; muted,
 ## nothing plays and the bus is muted, and the volume is set on the bus; ten
 ## presses in one frame are one sound; the volume takes the payload a
 ## settings choice carries, so a choice of levels sets it through the door;
@@ -37,6 +38,7 @@ const Driver := preload("res://addons/gd_chime/driver.gd")
 const Prompts := preload("res://addons/gd_chime/prompts.gd")
 const Themes := preload("res://addons/gd_chime/theme.gd")
 const Sounds := preload("res://addons/gd_chime/sounds.gd")
+const SoundBus := preload("res://addons/gd_chime/sound_bus.gd")
 const Notifications := preload("res://addons/gd_chime/notifications.gd")
 const NotificationTray := preload("res://addons/gd_chime/components/recipes/notification_tray.gd")
 const LookSounds := preload("res://addons/gd_chime/look_sounds.gd")
@@ -84,6 +86,7 @@ func _init() -> void:
 	await _verdict.states(_the_pointer_and_the_focus_play_theirs_under_the_style_that_has_one)
 	await _verdict.states(_a_move_and_a_pop_up_raised_and_lowered_each_play_theirs)
 	await _verdict.states(_a_glow_starting_plays_once_and_not_again_while_it_stays)
+	await _verdict.states(_the_sounds_play_on_the_game_s_bus_read_as_it_stands_and_follow_it_whoever_moves_it)
 	await _verdict.states(_muted_nothing_plays_and_the_bus_is_muted_and_the_volume_is_set_on_it)
 	await _verdict.states(_ten_presses_in_one_frame_are_one_sound)
 	await _verdict.states(_a_choice_of_volume_levels_sets_the_volume_through_the_door)
@@ -142,11 +145,14 @@ func _heard(declared: Dictionary) -> Dictionary:
 	# the notifications first, as an application builds them: the sounds hear one arrive; out of the tree, so they outlive a tray the fixture frees
 	var notifications := Notifications.new(made.chimes, made.commands, root)
 	made.commands.register(Chimes.GLOBAL, Notifications.DISMISSES, notifications)
-	var sounds := Sounds.new(made.chimes, made.driver, made.prompts, root)
-	for action: StringName in Sounds.COMMANDS:
-		made.commands.register(Chimes.GLOBAL, action, sounds)
+	# the game's bus, answering a player's volume and mute from anywhere, and the sounds playing on it
+	var bus := SoundBus.new(made.chimes)
+	for action: StringName in SoundBus.COMMANDS:
+		made.commands.register(Chimes.GLOBAL, action, bus)
+	root.add_child(bus)
+	var sounds := Sounds.new(made.chimes, made.driver, made.prompts, root, bus)
 	root.add_child(sounds)
-	return {"made": made, "model": model, "sounds": sounds, "notifications": notifications, "look": dressed["look"], "streams": dressed["streams"]}
+	return {"made": made, "model": model, "sounds": sounds, "bus": bus, "notifications": notifications, "look": dressed["look"], "streams": dressed["streams"]}
 
 
 func _done(heard: Dictionary) -> void:
@@ -352,6 +358,37 @@ func _a_glow_starting_plays_once_and_not_again_while_it_stays() -> void:
 	_done(heard)
 
 
+## The bus is the game's: where the project names none and has one called UI,
+## the sounds play on UI; made, nothing is added or set, and the volume and
+## the mute are the bus's as the game left it; the game moving its bus
+## itself is followed within the frame; and a bus the project names is the
+## one played on.
+func _the_sounds_play_on_the_game_s_bus_read_as_it_stands_and_follow_it_whoever_moves_it() -> void:
+	AudioServer.add_bus()
+	var at := AudioServer.get_bus_count() - 1
+	AudioServer.set_bus_name(at, SoundBus.UI)
+	AudioServer.set_bus_volume_db(at, -6.0)
+	AudioServer.set_bus_mute(at, true)
+	var heard := _heard({PRESS: "presses it"})
+	var sound_bus: SoundBus = heard["bus"]
+	var voices: Array = (heard["sounds"] as Sounds).get_children().map(func(voice: Node) -> StringName: return (voice as AudioStreamPlayer).bus)
+	await _a_frame_passes()
+	_verdict.check(sound_bus.named == SoundBus.UI and not voices.is_empty() and voices.all(func(named: StringName) -> bool: return named == SoundBus.UI), "a project naming no bus but having one called UI, the sounds play on UI: %s %s" % [sound_bus.named, voices])
+	_verdict.check(AudioServer.bus_count == at + 1 and AudioServer.is_bus_mute(at) and AudioServer.get_bus_volume_db(at) == -6.0, "made and a frame on, the bus is as the game left it - no bus added, muted, at -6 dB: %d %s %f" % [AudioServer.bus_count, AudioServer.is_bus_mute(at), AudioServer.get_bus_volume_db(at)])
+	_verdict.check(sound_bus.muted.read() and is_equal_approx(sound_bus.volume.read(), db_to_linear(-6.0)), "and the values read it as it stands: %s %f" % [sound_bus.muted.read(), sound_bus.volume.read()])
+	AudioServer.set_bus_mute(at, false)
+	AudioServer.set_bus_volume_db(at, linear_to_db(0.25))
+	await _a_frame_passes()
+	_verdict.check(not sound_bus.muted.read() and is_equal_approx(sound_bus.volume.read(), 0.25), "the game moving its bus itself, the values follow within the frame: %s %f" % [sound_bus.muted.read(), sound_bus.volume.read()])
+	ProjectSettings.set_setting(SoundBus.SETTING, "Master")
+	var named := SoundBus.new((heard["made"] as Fixture).chimes)
+	_verdict.check(named.named == &"Master", "a bus the project names is the one, over a bus called UI: %s" % named.named)
+	named.free()
+	ProjectSettings.set_setting(SoundBus.SETTING, null)
+	_done(heard)
+	AudioServer.remove_bus(at)
+
+
 ## Muted is the bus muted AND nothing asked to play; the volume is the bus's
 ## volume, and both arrive as ordinary commands.
 func _muted_nothing_plays_and_the_bus_is_muted_and_the_volume_is_set_on_it() -> void:
@@ -360,23 +397,24 @@ func _muted_nothing_plays_and_the_bus_is_muted_and_the_volume_is_set_on_it() -> 
 	ui.start(ui.app(&"app", [ui.pressable(PRESS, {}, [ui.text("go")])]))
 	await _a_frame_passes()
 	var commands: Variant = (heard["made"] as Fixture).commands
-	var bus := AudioServer.get_bus_index(Sounds.BUS)
+	var sound_bus: SoundBus = heard["bus"]
+	var bus := AudioServer.get_bus_index(sound_bus.named)
 
-	commands.dispatch(Chimes.GLOBAL, Sounds.SETS_VOLUME, {"value": 0.5})
+	commands.dispatch(Chimes.GLOBAL, SoundBus.SETS_VOLUME, {"value": 0.5})
 	await _a_frame_passes()
-	_verdict.check((heard["sounds"] as Sounds).get_volume() == 0.5 and is_equal_approx(AudioServer.get_bus_volume_db(bus), linear_to_db(0.5)), "the volume command sets the volume on the bus: %f" % AudioServer.get_bus_volume_db(bus))
+	_verdict.check(sound_bus.volume.read() == 0.5 and is_equal_approx(AudioServer.get_bus_volume_db(bus), linear_to_db(0.5)), "the volume command sets the volume on the bus, and the volume keeps the figure it was told: %f %f" % [sound_bus.volume.read(), AudioServer.get_bus_volume_db(bus)])
 
-	commands.dispatch(Chimes.GLOBAL, Sounds.MUTES_SOUND, {"on": true})
+	commands.dispatch(Chimes.GLOBAL, SoundBus.MUTES_SOUND, {"on": true})
 	await _a_frame_passes()
 	var mark := _how_many(heard)
 	_button(PRESS).grab_focus()
 	await _a_frame_passes()
 	_accept()
 	await _a_frame_passes()
-	_verdict.check(AudioServer.is_bus_mute(bus) and (heard["sounds"] as Sounds).get_muted(), "the mute command mutes the bus: %s" % AudioServer.is_bus_mute(bus))
+	_verdict.check(AudioServer.is_bus_mute(bus) and sound_bus.muted.read(), "the mute command mutes the bus: %s" % AudioServer.is_bus_mute(bus))
 	_verdict.check(_since(heard, mark) == [], "and muted, a focus and a press ask for nothing at all: %s" % [_since(heard, mark)])
 
-	commands.dispatch(Chimes.GLOBAL, Sounds.MUTES_SOUND, {"on": false})
+	commands.dispatch(Chimes.GLOBAL, SoundBus.MUTES_SOUND, {"on": false})
 	await _a_frame_passes()
 	mark = _how_many(heard)
 	_accept()
@@ -495,16 +533,17 @@ func _a_choice_of_volume_levels_sets_the_volume_through_the_door() -> void:
 	var heard := _heard({&"opens_the_levels": "how loud"})
 	var made: Fixture = heard["made"]
 	var ui: Variant = made.ui
-	made.actions.declare_all({Sounds.SETS_VOLUME: ["set the volume"]})
+	var sound_bus: SoundBus = heard["bus"]
+	made.actions.declare_all({SoundBus.SETS_VOLUME: ["set the volume"]})
 	var levels := [{"value": 1.0, "words": "full"}, {"value": 0.5, "words": "half"}, {"value": 0.0, "words": "silent"}]
-	var control := Setting.choice(ui, Sounds.SETS_VOLUME, &"opens_the_levels", {offers = Bound.new(func() -> Array: return levels), chosen = Bound.new((heard["sounds"] as Sounds).get_volume), title = "how loud"})
+	var control := Setting.choice(ui, SoundBus.SETS_VOLUME, &"opens_the_levels", {offers = Bound.new(func() -> Array: return levels), chosen = sound_bus.volume, title = "how loud"})
 	ui.start(ui.app(&"app", [control]))
 	await _a_frame_passes()
 	_button(&"opens_the_levels").pressed()
 	await _a_frame_passes()
-	var half: Pressable = root.find_children("*", "Control", true, false).filter(func(part: Node) -> bool: return part is Pressable and (part as Pressable).action == Sounds.SETS_VOLUME)[1]
+	var half: Pressable = root.find_children("*", "Control", true, false).filter(func(part: Node) -> bool: return part is Pressable and (part as Pressable).action == SoundBus.SETS_VOLUME)[1]
 	half.pressed()
 	await _a_frame_passes()
-	_verdict.check((heard["sounds"] as Sounds).get_volume() == 0.5 and made.commands.get_last()["payload"] == {"value": 0.5}, "the half level pressed, the volume is a half, carried as the choice carries it: %s %s" % [(heard["sounds"] as Sounds).get_volume(), made.commands.get_last()["payload"]])
-	_verdict.check(is_equal_approx(AudioServer.get_bus_volume_db(AudioServer.get_bus_index(Sounds.BUS)), linear_to_db(0.5)) and not made.driver.is_raised(), "on the bus, and the levels lowered by the picking")
+	_verdict.check(sound_bus.volume.read() == 0.5 and made.commands.get_last()["payload"] == {"value": 0.5}, "the half level pressed, the volume is a half, carried as the choice carries it: %s %s" % [sound_bus.volume.read(), made.commands.get_last()["payload"]])
+	_verdict.check(is_equal_approx(AudioServer.get_bus_volume_db(AudioServer.get_bus_index(sound_bus.named)), linear_to_db(0.5)) and not made.driver.is_raised(), "on the bus, and the levels lowered by the picking")
 	_done(heard)

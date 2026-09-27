@@ -48,10 +48,14 @@ const Wires := preload("wires.gd")
 ## IS ALMOST ALWAYS WHAT IT READ LAST TIME - every draw of every control
 ## comes through here - so the set read is compared against the addresses
 ## already wired, and an unchanged one is left exactly as it is: nothing
-## cut, nothing made, no arrival built. Only a difference is wired or cut.
-## A ring there arrives where the follower said, or runs the work again,
-## which follows again; heard() is not told, so a followed bell takes no
-## name from the listener and needs none.
+## cut, nothing made, no arrival built - only the work handed is written
+## over, so a ring runs whichever work was handed last. Only a difference is
+## wired or cut. A ring there arrives where the follower said, or runs the
+## work again, which follows again; heard() is not told, so a followed bell
+## takes no name from the listener and needs none. An address read where no
+## bell hangs yet is kept with the rest and wired as a bell is hung there.
+##
+## A bell may be taken down alone, with its wires: a keyed list's key gone.
 ##
 ## Nothing else in this folder connects anything but a part it builds itself.
 ## A text field hearing its own LineEdit is freed with it, so that connection
@@ -65,7 +69,9 @@ const RESERVED: Array[StringName] = [GLOBAL]
 
 ## What the wires a listener merely listens with are kept under: a listen
 ## follows no work, so it has no key of its own.
-const LISTENED := &""
+const LISTENED := Wires.LISTENED
+## What a work that has followed nothing yet stands against: no address.
+const NOTHING: Dictionary = {}
 
 var _belfry: Belfry
 var _wires: Wires
@@ -76,9 +82,12 @@ func _init(belfry: Belfry) -> void:
 	_wires = Wires.new(belfry)
 
 
-## Hang a bell at an address. The belfry does it; this is the door.
+## Hang a bell at an address - the belfry does it; this is the door - and
+## wire to it whatever followed a read of the address before it hung.
 func register(region: StringName, name: StringName) -> void:
-	_belfry.register(region, name)
+	var bell := _belfry.register(region, name)
+	if bell != null:
+		_wires.hung(bell)
 
 
 ## Sound the bell at an address, counting what it rings for as moved, so
@@ -107,39 +116,51 @@ func listen(listener: Object, region: StringName, name: StringName) -> void:
 		push_error("nothing is hung at %s/%s to listen to" % [region, name])
 		return
 	# the name is tied to the listener's end of the wire: the bell sends nothing, and bind() adds it on the way in
-	_wires.make(listener, _belfry.at(region, name), listener.heard.bind(name), LISTENED)
+	_wires.make(listener, _belfry.at(region, name).at, listener.heard.bind(name), LISTENED)
 
 
 ## Run the work, and wire the listener to exactly what it read, under this
 ## key: a ring there calls moved - or, given none, runs the work again, which
-## follows again. Having read what it read last time, it is left alone. An
-## address whose region has gone is read from nothing that can ring, and is
-## passed over.
+## follows again - whichever work and moved were handed LAST, kept with the
+## key (wires.gd). Having read what it read last time, nothing is wired or
+## cut: only that record is written. An address read where no bell hangs yet
+## is kept all the same, and heard once a bell is hung there.
 func follow(listener: Object, key: StringName, work: Callable, moved: Callable = Callable()) -> void:
 	var read: Dictionary = Reads.tracked(work)
-	var standing: Dictionary = _wires.under(listener, key)
+	var record: Wires.Follow = _wires.followed(listener, key)
+	var standing: Dictionary = NOTHING if record == null else record.at
 	var wired: bool = read.size() == standing.size()
-	# every address read, against what is wired under this key: one that is not there and the two sets differ
+	# every address read, against what is kept under this key: one that is not there and the two sets differ
 	for at: StringName in read:
 		if not standing.has(at):
 			wired = false
 			break
-	# it read what it read last time, which is almost every draw: nothing cut, nothing made, no arrival built
+	# it read what it read last time, which is almost every draw: nothing cut, nothing made, and the work and moved written over only where they are new - a write costs a draw more than a comparison, and a control hands the same two every time
 	if wired:
+		if record != null and (record.work != work or record.moved != moved):
+			record.work = work
+			record.moved = moved
 		return
-	# a function of its own for each follow, never follow.bind(): the engine counts two binds of one method equal whatever they carry - measured - so a second follower's would not connect
-	var arrival: Callable = func() -> void: follow(listener, key, work)
-	if moved.is_valid():
-		arrival = func() -> void: moved.call()
-	# every address read and not wired already, wired, unless nothing is hung there
+	if record == null:
+		record = Wires.Follow.new(listener, key, _follow_again.bind(listener, key))
+		_wires.keep_follow(record)
+		standing = record.at
+	record.work = work
+	record.moved = moved
+	# every address read and not kept already, kept - wired where a bell hangs, waiting where none does yet
 	for at: StringName in read:
-		var bell := _belfry.bell_at(at)
-		if not standing.has(at) and bell != null:
-			_wires.make(listener, bell, arrival, key)
-	# every address wired under this key and no longer read, cut; the addresses are taken first, because cutting erases them
+		if not standing.has(at):
+			_wires.make(listener, at, record.arrive, key)
+	# every address kept under this key and no longer read, cut; the addresses are taken first, because cutting erases them
 	for at: StringName in standing.keys():
 		if not read.has(at):
 			_wires.cut(listener, key, at)
+
+
+## A ring at something a follower read that said nothing to run on a move:
+## its work again, which follows again.
+func _follow_again(work: Callable, listener: Object, key: StringName) -> void:
+	follow(listener, key, work)
 
 
 ## Stop one listener hearing what arrives under that name.
@@ -176,6 +197,13 @@ func drop_region(region: StringName) -> void:
 	Reads.forget(region)
 
 
+## Take down one bell: every wire at it, the bell, and what moved there.
+func drop_bell(region: StringName, name: StringName) -> void:
+	_wires.cut_at(_belfry.at(region, name).at)
+	_belfry.drop_bell(region, name)
+	Reads.forget_bell(region, name)
+
+
 ## What reaches this listener, as the names it was given. The question a
 ## surface has to answer about itself, and the one to ask when a wake turns up
 ## somewhere surprising.
@@ -187,13 +215,15 @@ func heard_by(listener: Object) -> Array[StringName]:
 	return names
 
 
-## The addresses a listener follows under this key: what its work last read.
+## The addresses a listener follows under this key where a bell hangs: what
+## its work last read that can ring.
 func followed_by(listener: Object, key: StringName) -> Array:
 	var addresses: Array = []
-	# every address wired under that key, as the region and the name it hangs at
+	# every address kept under that key, as the region and the name of the bell hung there, if one is
 	for at: StringName in _wires.under(listener, key):
 		var bell := _belfry.bell_at(at)
-		addresses.append([bell.region, bell.name])
+		if bell != null:
+			addresses.append([bell.region, bell.name])
 	return addresses
 
 

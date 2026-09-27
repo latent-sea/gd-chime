@@ -21,7 +21,9 @@ const Reads := preload("../../reads.gd")
 ## item moved is moved, and the rest are left alone, so the focus, a kept
 ## when side, a typed field and a scroll all survive a sort, a filter and a
 ## removal. Given no key, the index is the key, and any change to the array
-## rebuilds every piece.
+## rebuilds every piece. A KEY GONE TAKES ITS BELL AND ITS NAME WITH IT: the
+## handle's bell is taken down and the piece's name let go (built_names.gd),
+## so a list whose keys come and go holds only what its keys now are.
 ##
 ## THE ARRAY MOVING IS SEEN TO MOVE. A piece built for a new item enters
 ## and one whose item has gone exits (transition.gd) - the transition
@@ -54,7 +56,7 @@ var _indexed: Variant = null  # the items array the lookup by key was made for
 var _by_key: Dictionary = {}  # key -> its item in that array
 var _region: StringName  # where the bells of its pieces' handles hang, its own
 var _was: Dictionary = {}  # key -> a copy of its item as last settled
-var _hung: Dictionary = {}  # the bells hung for its handles, used as a set
+var _hung: Dictionary = {}  # key -> the bell hung for its piece's handle, while the key stands
 
 
 func _init(ui: RefCounted, items: Bound, template: Callable, key: Callable, direction: int, style: StringName, prefix: StringName, asked: StringName = &"") -> void:
@@ -148,7 +150,7 @@ func _settle() -> void:
 		for piece: Node in _pieces.values():
 			piece.free()
 		_pieces.clear()
-	# every piece whose item is gone, freed - its focus handed on first
+	# every piece whose item is gone, freed - its focus handed on first - and its handle's bell taken down and its name let go with it
 	for key: Variant in _pieces.keys():
 		if not keys.has(key):
 			_let_go(_pieces[key])
@@ -157,6 +159,10 @@ func _settle() -> void:
 			_arriving.erase(key)
 			_changed = true
 			_going = true
+			_ui.chimes.drop_bell(_region, _hung[key])
+			_hung.erase(key)
+			if _prefix != &"":
+				_ui.forget_named(StringName(_prefix + str(key)))
 	# every item, its piece built if new, and moved to the item's place in the order
 	for index: int in range(keys.size()):
 		var key: Variant = keys[index]
@@ -191,11 +197,10 @@ func _ring_changed(keys: Array) -> void:
 
 ## The bell of one piece's handle, hung the first time it is asked for.
 func _bell_for(key: Variant) -> StringName:
-	var bell := StringName("%s %s" % [_region, key])
-	if not _hung.has(bell):
-		_hung[bell] = true
-		_ui.chimes.register(_region, bell)
-	return bell
+	if not _hung.has(key):
+		_hung[key] = StringName("%s %s" % [_region, key])
+		_ui.chimes.register(_region, _hung[key])
+	return _hung[key]
 
 
 ## A piece freed, the focus it holds handed to the next control that takes it.

@@ -17,12 +17,10 @@ const ValueSlider := preload("res://addons/gd_chime/components/primitives/slider
 const Text := preload("res://addons/gd_chime/components/primitives/text.gd")
 const Verdict := preload("res://tests/verdict.gd")
 const Phrase := preload("res://addons/gd_chime/phrase.gd")
-const Sounds := preload("res://addons/gd_chime/sounds.gd")
-const Notifications := preload("res://addons/gd_chime/notifications.gd")
+const SoundBus := preload("res://addons/gd_chime/sound_bus.gd")
 const Setting := preload("res://addons/gd_chime/components/recipes/setting.gd")
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
 const Desc := preload("res://addons/gd_chime/components/primitives/desc.gd")
-const Bound := preload("res://addons/gd_chime/components/primitives/bound.gd")
 const Fields := preload("res://addons/gd_chime/theme_fields.gd")
 
 const OUTSIDE := Vector2(390, 390)
@@ -345,16 +343,14 @@ func _it_wears_its_style_s_track_fill_and_handle_and_is_inert_while_its_value_is
 	made.done()
 
 
-## The settings row of the volume, a slider over the sounds' own volume, 0 to 1 by tenths, and the sounds answering it from anywhere.
+## The settings row of the volume, a slider over the game's bus's volume, 0 to 1 by tenths, and the bus answering it from anywhere.
 func _its_first_use_the_settings_volume_sets_the_sounds_volume_through_the_door() -> void:
-	var made := Fixture.new(root, {Sounds.SETS_VOLUME: "set the volume"})
+	var made := Fixture.new(root, {SoundBus.SETS_VOLUME: "set the volume"})
 	var ui := made.ui
-	# the notifications before the sounds, as an application builds them: the sounds hear one arrive on their bell
-	var notifications := Notifications.new(made.chimes, made.commands, root)
-	var sounds := Sounds.new(made.chimes, made.driver, made.prompts, root)
-	made.commands.register(Chimes.GLOBAL, Sounds.SETS_VOLUME, sounds)
-	root.add_child(sounds)
-	var volume := ui.slider(Sounds.SETS_VOLUME, Bound.new(sounds.get_volume), {minimum = 0.0, maximum = 1.0, step = 0.1}).named(&"volume")
+	var sound_bus := SoundBus.new(made.chimes)
+	made.commands.register(Chimes.GLOBAL, SoundBus.SETS_VOLUME, sound_bus)
+	root.add_child(sound_bus)
+	var volume := ui.slider(SoundBus.SETS_VOLUME, sound_bus.volume, {minimum = 0.0, maximum = 1.0, step = 0.1}).named(&"volume")
 	ui.start(ui.app(&"app", [Setting.row(ui, Phrase.of("volume"), Phrase.of("how loud the sounds are"), volume.grow())]))
 	await _a_frame_passes()
 	var slider: ValueSlider = ui.node_named(&"volume")
@@ -362,8 +358,7 @@ func _its_first_use_the_settings_volume_sets_the_sounds_volume_through_the_door(
 	_pad(JOY_BUTTON_DPAD_LEFT)
 	_pad(JOY_BUTTON_DPAD_LEFT)
 	await _a_frame_passes()
-	var bus := AudioServer.get_bus_index(Sounds.BUS)
-	_verdict.check(is_equal_approx(sounds.get_volume(), 0.8) and is_equal_approx(AudioServer.get_bus_volume_db(bus), linear_to_db(0.8)) and _words(slider).get_text() == "0.8", "two steps down on the pad, the sounds' volume is 0.8, on the bus, and the slider says so: %s" % _words(slider).get_text())
-	sounds.told(Sounds.SETS_VOLUME, {"value": 1.0})
+	var bus := AudioServer.get_bus_index(sound_bus.named)
+	_verdict.check(is_equal_approx(sound_bus.volume.read(), 0.8) and is_equal_approx(AudioServer.get_bus_volume_db(bus), linear_to_db(0.8)) and _words(slider).get_text() == "0.8", "two steps down on the pad, the volume is 0.8, on the game's bus, and the slider says so: %s" % _words(slider).get_text())
+	sound_bus.told(SoundBus.SETS_VOLUME, {"value": 1.0})
 	made.done()
-	notifications.free()

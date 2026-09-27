@@ -412,11 +412,11 @@ func _lists() -> Lists:
 	var ui := _made.ui
 	var card := func(item: Bound) -> Desc: return ui.draggable(item, [ui.text(item.map(func(one: Variant) -> String: return "" if one == null else "card %d" % one["id"]))], &"Pressable", &"opens_it")
 	var list := func(into: String, named: StringName) -> Desc: return ui.drop_target(&"moves_it", [ui.each(lists.of(named), card, func(one: Dictionary) -> int: return one["id"]).pieces_named(&"card ")], &"Pressable", into).named(StringName(into))
-	ui.start(ui.app(&"app", [ui.row([list.call("a", &"items").grow(), list.call("b", &"words").grow()])]))
-	await _a_frame_passes()
 	# both commands of the lists, answered by their model
 	for action: StringName in [&"moves_it", &"opens_it"]:
 		_made.commands.register(&"app", action, lists)
+	ui.start(ui.app(&"app", [ui.row([list.call("a", &"items").grow(), list.call("b", &"words").grow()])]))
+	await _a_frame_passes()
 	await _a_frame_passes()
 	return lists
 
@@ -636,9 +636,9 @@ func _board() -> Board:
 	for lane: Lane in lanes:
 		ui.also(lane)
 	var list := func(lane: Lane) -> Desc: return ui.drop_target(&"moves_it", [ui.each(Bound.new(lane.get_items), card, key)], &"Pressable", lane.get_into()).named(StringName(lane.get_into()))
+	_made.commands.register(&"app", &"moves_it", board)
 	ui.start(ui.app(&"app", [ui.row([list.call(lanes[0]).grow(), list.call(lanes[1]).grow()])]))
 	await _a_frame_passes()
-	_made.commands.register(&"app", &"moves_it", board)
 	await _a_frame_passes()
 	return board
 

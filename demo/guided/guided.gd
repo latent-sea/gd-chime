@@ -62,6 +62,10 @@ class Deeds extends Controller:
 		_last.set_value(Phrase.with("%s, done", [action]))
 		return null
 
+	## Every action this is told: the home screen's two deeds.
+	func answers() -> Array[StringName]:
+		return [Declared.SAVES, Declared.WAVES]
+
 
 func look() -> Theme:
 	return DemoTheme.new()

@@ -324,7 +324,8 @@ func _the_moments_entrance_staggers_in_ends_whole_and_draws_nothing_over_anythin
 	_verdict.check(crossed.is_empty(), "and at no step on the way was any line drawn over another: %s" % [crossed.slice(0, 3)])
 	var early: Array = []
 	_made.commands.dispatch(Chimes.GLOBAL, &"dismisses", {})
-	# the moment seen out before it is presented again: a pop-up lowered is still there while it goes
+	# the moment seen out before it is presented again - lowered at the end of the frame its fact stopped in, and still there while it goes
+	await _a_frame_passes()
 	await _step(1.0)
 	await _a_frame_passes()
 	_made.commands.dispatch(Chimes.GLOBAL, &"presents", {})

@@ -3,13 +3,16 @@
 gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 
 The project is checks/installed/ - its own project.godot, the README's first
-screen (stall.gd) and check.gd, which stands the screen up, presses its button
-and reads the words. This copies that project to a temporary directory, copies
-addons/gd_chime/ in beside it and NOTHING ELSE of this folder, imports the copy
-- GdChime and ChimeApp are global names, which the engine registers only when
-its scan writes the global class cache - and runs check.gd headless. The check
-passes when the run exits zero, says INSTALLED OK, and the engine complained of
-no script.
+screen (stall.gd) in a scene whose root is that ChimeApp (stall.tscn), as the
+README tells an author to make it, and check.gd, which adds the scene to its
+window, presses its button, reads the words and switches the language once.
+This copies that project to a temporary directory, copies addons/gd_chime/ in
+beside it and NOTHING ELSE of this folder, imports the copy - GdChime and
+ChimeApp are global names, which the engine registers only when its scan
+writes the global class cache - and runs check.gd headless. The check passes
+when the run exits zero, says INSTALLED OK, and the engine said no error at
+all: any ERROR: line fails it, since an error the addon provokes in a game's
+project is one the game's author reads.
 
 Before any of that it reads every file under the copied addon and refuses one
 that mentions an absolute resource path, demo/, tests/ or checks/: the addon
@@ -42,7 +45,7 @@ FORBIDDEN = ("res:" + "//", "demo/", "tests/", "checks/")
 NOT_COPIED = shutil.ignore_patterns(".godot", "*.import", "__pycache__")
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 RUN_AT_MOST = 1800
-FAILURE_MARKS = ("SCRIPT ERROR", "Parse Error", "Failed to load", "Cannot open file")
+FAILURE_MARKS = ("ERROR:", "Parse Error", "Failed to load", "Cannot open file")
 
 
 def mentions(addon: Path) -> list[str]:

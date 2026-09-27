@@ -30,8 +30,8 @@ class_name GdChime
 ##   dress one; and its families of types - Pressables, Fields, Tables,
 ##   Overlays, Charts, Feedback, Collections, Navigation; MotionTokens.
 ## - The floor: Chimes, Belfry, Commands, Driver, Controller, Actions,
-##   Inputs, Prompts, Language, Phrase, Formats, Dates, Motion, Shape,
-##   Sounds, Notifications, Reads, Question, Guide, Console, DevCommands,
+##   Inputs, Prompts, Language, Catalogues, Phrase, Formats, Dates, Motion, Shape,
+##   Sounds, SoundBus, Notifications, Reads, Question, Guide, Console, DevCommands,
 ##   DebugLog, Touch, Token, Stretch.
 ## - The models an application is made of: Form, FormActions, Calendar,
 ##   CommandSearch, Narrowing, Filters, RowQuery, RowFilters, RowSelection,

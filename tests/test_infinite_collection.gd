@@ -90,6 +90,11 @@ func _collection(count: int) -> Array:
 	var list := GrowingList.new(made.chimes, source.fetch, PAGE, source.rows)
 	made.commands.stand(REGION, list)
 	root.add_child(list)
+	# a card's opening, answered where the rows are
+	var opener := Fixture.Model.new(made.chimes)
+	opener.answering = [OPENS]
+	made.commands.stand(REGION, opener)
+	root.add_child(opener)
 	var card := func(row: Bound) -> Desc: return ui.pressable(OPENS, {}, [ui.surface(&"Tall", [ui.text(row.map(func(one: Variant) -> String: return "coming" if one == null else one["name"]))])])
 	var says := {"more": Phrase.of("show more"), "everything": Phrase.of("that is everything"), "failed": Phrase.of("these could not come"), "again": Phrase.of("try again"), "empty": Phrase.of("nothing here")}
 	var collection := InfiniteCollection.make(ui, list, card, says)

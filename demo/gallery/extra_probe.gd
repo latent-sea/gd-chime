@@ -5,7 +5,7 @@ const Chimes := preload("res://addons/gd_chime/chimes.gd")
 const Driver := preload("res://addons/gd_chime/driver.gd")
 const Motion := preload("res://addons/gd_chime/motion.gd")
 const Language := preload("res://addons/gd_chime/language.gd")
-const Sounds := preload("res://addons/gd_chime/sounds.gd")
+const SoundBus := preload("res://addons/gd_chime/sound_bus.gd")
 const Inputs := preload("res://addons/gd_chime/input_map.gd")
 const Extra := preload("res://demo/gallery/extra_models.gd")
 const ExtraPieces := preload("res://demo/gallery/extra_pieces.gd")
@@ -138,7 +138,7 @@ func _motion() -> void:
 
 func _options() -> void:
 	var ui: RefCounted = _stall.ui
-	var sounds: Sounds = _stall.sounds
+	var bus: SoundBus = _stall.sound_bus
 	_go(ExtraPieces.OPTIONS)
 	await _frames()
 	_go(_stall.driver.goes_to(ExtraPieces.OPTIONS, ExtraPieces.OPENS_LANGUAGES))
@@ -158,13 +158,13 @@ func _options() -> void:
 		await _hands.key(KEY_LEFT)
 	await _hands.pad(JOY_BUTTON_DPAD_LEFT)
 	await _hands.pad(JOY_BUTTON_DPAD_LEFT)
-	var halved: bool = is_equal_approx(sounds.get_volume(), 0.5) and _texts(ExtraPieces.OPTIONS).has("0.5")
+	var halved: bool = is_equal_approx(bus.volume.read(), 0.5) and _texts(ExtraPieces.OPTIONS).has("0.5")
 	ui.node_named(&"mutes").pressed()
 	await _frames()
-	var muted: bool = sounds.get_muted()
+	var muted: bool = bus.muted.read()
 	ui.node_named(&"mutes").pressed()
-	_stall.commands.dispatch(Chimes.GLOBAL, Sounds.SETS_VOLUME, {"value": 1.0})
-	_said["volume_and_mute"] = halved and muted and not sounds.get_muted()
+	_stall.commands.dispatch(Chimes.GLOBAL, SoundBus.SETS_VOLUME, {"value": 1.0})
+	_said["volume_and_mute"] = halved and muted and not bus.muted.read()
 	await keys()
 
 

@@ -31,19 +31,26 @@ const Phrase := preload("phrase.gd")
 ##
 ## Every wake arrives at heard(), with the name from that address.
 ##
-## It does NOT wait for a frame. What it produces can be read the instant an
-## input changes, so deferring the work would hand a reader the old answer - a
-## hazard drawing does not have, because nobody reads a screen synchronously.
-## Where the work is genuinely expensive the answer is to put it in the
-## background, not to make it one frame late as well as slow.
+## WHAT IT FOLLOWS REACHES IT AT THE END OF THE FRAME, never the instant: a
+## value's bell rings once the frame's work is done (own_bell.gd), and a
+## model's heard() or followed work runs in that ring. So a model that keeps
+## its own copy of another's value holds the old one until then. What must
+## be current the instant an input changes is not copied but WORKED OUT AS
+## IT IS READ - a function over the values (ui.bound), or one kept with what
+## it read (reads.gd, worked), which lets itself go the moment a value it read
+## is set - so a reader asking straight after a set gets the new answer.
+## Ringing at once would undo the once-a-frame ring every draw relies on;
+## where the work is genuinely expensive the answer is to put it in the
+## background, not to ring sooner.
 ##
 ## A bell it hangs is hung in its own region, so it goes when the region does.
 ## A bell has to be hung before anything listens to it, so a model hangs its
 ## bells as it is built and whatever listens to it is built after.
 ##
 ## Freed, it stops listening: the chimes cut its wires as the engine tells it
-## it is about to go, so nothing built per data row needs a call at the call
-## site to clean up after it.
+## it is about to go - and a region of its own goes too (own_region) - so
+## nothing built per data row needs a call at the call site to clean up
+## after it.
 
 ## The region its connections belong to, so a screen and everything under it
 ## can be dropped together. Given as this is built, because connections are
@@ -52,6 +59,7 @@ const Phrase := preload("phrase.gd")
 var region: StringName = Chimes.GLOBAL
 
 static var _regions: int = 0  # how many regions of their own have been handed out
+static var _owned: Dictionary = {}  # the regions of their own handed out whose model stands, used as a set
 
 var _chimes: Chimes
 var _values := OwnBell.new("values")  # the one bell every value of this model rings, made before the members that declare them
@@ -67,10 +75,13 @@ func _init(chimes: Chimes, listening: Array = [], in_region: StringName = Chimes
 ## A region of its own, at an address nothing else has, for a model that
 ## hangs bells and may be made more than once - two long lists, two sets of
 ## image loads - so its bells never collide and nobody outside has to name
-## one. Whatever listens reads the model's region.
+## one. Whatever listens reads the model's region. Freed, the model takes the
+## region down with it, so a list made and freed a thousand times holds none.
 static func own_region(kind: String) -> StringName:
 	_regions += 1
-	return StringName("%s_%d" % [kind, _regions])
+	var own := StringName("%s_%d" % [kind, _regions])
+	_owned[own] = true
+	return own
 
 
 ## Hang a bell under this name in this controller's own region.
@@ -110,10 +121,14 @@ func listening_to() -> Array[StringName]:
 	return _chimes.heard_by(self)
 
 
-## About to be freed: cut loose from the chimes.
+## About to be freed: cut loose from the chimes, and a region of its own
+## taken down with every bell hung there.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		_chimes.stop_all(self)
+		if _owned.has(region):
+			_owned.erase(region)
+			_chimes.drop_region(region)
 
 
 ## Every action this model is told. Whoever stands the model up registers it

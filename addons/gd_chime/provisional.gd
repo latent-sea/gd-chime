@@ -29,11 +29,12 @@ const Notifications := preload("notifications.gd")
 ## for the thing to say why on itself - until the thing is changed again,
 ## and said in the application's notifications with the words it is known by.
 ##
-## NOTHING ENDS SILENTLY DIFFERENT FROM THE FAR SIDE. The later changes a
-## no undid were sent already, and the far side may yet keep one: so a
-## thing whose later changes were undone is in doubt, and once no request
-## of it is on its way - every answer in, a yes to an undone change among
-## them - its true state is read back through the far side, reads(key,
+## NOTHING ENDS SILENTLY DIFFERENT FROM THE FAR SIDE. Every change of the
+## thing sent after the one refused was made on top of it, and the far side
+## may keep one or have kept it already - answered before the refusal came:
+## so a thing with any later change, undone or answered, is in doubt, and
+## once no request of it is on its way - every answer in, a yes to an undone
+## change among them - its true state is read back through the far side, reads(key,
 ## answer), and the model settles on it, settles(key, state): what the far
 ## side says wins over whatever the screen held. A read overtaken by a new
 ## change of the thing is let go, and the thing read again once that change
@@ -51,7 +52,7 @@ var _reads: Callable  # the far side's record read back: reads(key, answer), ans
 var _settles: Callable  # the model put where the far side says: settles(key, state)
 var _sends: Callable  # the far side: sends(request, answer), answer(refusal) called later
 var _notices: Notifications
-var _open: Array[Dictionary] = []  # every change not yet answered, {ticket, key, words, undo}, oldest first
+var _open: Array[Dictionary] = []  # every change not yet answered, {ticket, key, words, undo, and overtaken once a later change of its thing is answered}, oldest first
 var _refused: Dictionary = {}  # key -> why the far side refused its last change, until it is changed again
 var _let_go: Dictionary = {}  # ticket -> key, of every change undone whose answer has not come
 var _doubted: Dictionary = {}  # key -> the words it is known by, for every thing that may differ from the far side
@@ -117,6 +118,10 @@ func _answered(refusal: Variant, ticket: int) -> void:
 		return
 	var at := _open.find_custom(func(change: Dictionary) -> bool: return change["ticket"] == ticket)
 	var key: Variant = _open[at]["key"]
+	# every earlier change of the thing still unanswered: this one was made on top of it, so undoing it later would undo this too
+	for earlier: Dictionary in _open.slice(0, at):
+		if earlier["key"] == key:
+			earlier["overtaken"] = true
 	if refusal == null:
 		_open.remove_at(at)
 		_moved()
@@ -131,6 +136,9 @@ func _answered(refusal: Variant, ticket: int) -> void:
 		if change["ticket"] != ticket:
 			_let_go[change["ticket"]] = key
 			_doubted[key] = change["words"]
+	# a later change of the thing answered already stood on the one refused, and the far side may have kept it
+	if undone.back().get("overtaken", false):
+		_doubted[key] = undone.back()["words"]
 	_refused[key] = refusal
 	_moved()
 	# said by the words of the change refused: the oldest undone, last now they run newest first

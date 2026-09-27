@@ -72,6 +72,7 @@ func _a_second_of_nothing_shows_nothing_and_the_focus_is_handed_on() -> void:
 	model.set_value(&"flag", true)
 	# a place holding the when, with a pressable inside it that takes the focus, and one outside
 	var app := ui.app(&"app", [ui.column([ui.when(model.of(&"flag"), ui.pressable(&"goes")).named(&"the_when"), ui.pressable(&"stays").named(&"other")])])
+	made.answer([&"goes", &"stays"])
 	ui.start(app)
 	await _a_frame_passes()
 	var when: When = ui.node_named(&"the_when")

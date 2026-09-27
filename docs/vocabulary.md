@@ -246,6 +246,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 
 - `Belfry` - The belfry: every bell there is, each hung at an address.
 - `Carried` - What is being carried: the one thing a reader has picked up to drop somewhere else, what it carries, and where it would land now.
+- `Catalogues` - The catalogues: files of words, one per language, read off disk and handed to the engine beside whatever catalogues the game has of its own.
 - `Commands` - The one door every command goes through: a control says what it wants done, the model registered for that action does it, and the answer comes back on the same call.
 - `Console` - The developer's console: what the app and the engine have said with a line to type commands into, and the path the reader has walked.
 - `Dates` - Days as a reader types them and reads them back: a day written as a typed line in the language's order, a typed line read back as a day, and the sums a calendar needs - how long a month is, which day of the week it starts on.
@@ -270,6 +271,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 - `SaveShape` - The shape a save must have, declared once, and what makes plain data read back not that shape, in words - for every model that keeps itself between runs (settings_file.gd): the panels, the documents open, the key bindings, an application's own.
 - `Shape` - The window's shape, as two values anything may bind to: which way round it is, and how much room it has across.
 - `Sounds` - The interface's sounds: a look's sound for each moment, played by hearing the bells that already ring.
+- `SoundBus` - The bus the interface's sounds play on - the game's, named by the project - with its volume and its mute read as values, and set only by a player's choice told here.
 - `Stretch` - The stretch of time a filters' date column stands in (filters.gd): the preset a reader picked out of the ones handed in as data, or the days they set by hand, and the stretch as long just before it.
 - `TableColumns` - The columns a table shows: which of them, in their order, and how wide each is as a share of the table - moved by command, so a drag, a key and the pad resize alike, and a column hidden is one pressed away.
 - `Taken` - Which of the interface's actions the player has ever taken, and which of them are worth asking about.

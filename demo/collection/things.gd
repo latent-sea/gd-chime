@@ -75,3 +75,8 @@ func told(action: StringName, payload: Dictionary) -> Phrase:
 	# the things, changed in place, set again for whatever reads them
 	_things.set_value(_things.read())
 	return null
+
+
+## Every action this is told: going back to the list is the place's move, told to nobody.
+func answers() -> Array[StringName]:
+	return [ADDS, SORTS, SHOWS_ONLY_FLIPPED, FLIPS, OPENS]

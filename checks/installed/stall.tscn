@@ -1,0 +1,19 @@
+; gd-chime. MIT licensed; see the LICENCE file at the root of the gd-chime folder.
+;
+; The README's first screen as a scene, made as the README tells an author to:
+; a scene whose root is a ChimeApp - its native base the easel's
+; SubViewportContainer - anchored across the whole window, the first screen's
+; script attached. check.gd instantiates it and adds it to its window, as a
+; game adds an app to a scene of its own.
+
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="stall.gd" id="1"]
+
+[node name="Stall" type="SubViewportContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")

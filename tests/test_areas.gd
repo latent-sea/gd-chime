@@ -51,7 +51,9 @@ func _built(a_says: String = "a") -> Array:
 	var ui := made.ui
 	var part := func(named: String, words: String) -> Desc: return ui.pressable(PRESSES, {}, [ui.text(words, Themes.FACE)]).named(StringName(named))
 	var laid := ui.areas({&"a": part.call("a", a_says), &"b": part.call("b", "b"), &"c": part.call("c", "c"), &"d": part.call("d", "d")}, LAYOUTS).named(&"areas")
-	ui.start(ui.app(&"app", [ui.column([laid.grow()])]))
+	var presser := Fixture.Model.new(made.chimes)
+	presser.answering = [PRESSES]
+	ui.start(ui.app(&"app", [ui.column([laid.grow()])], presser))
 	await _frames(3)
 	return [made, ui.node_named(&"areas")]
 

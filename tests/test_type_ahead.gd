@@ -89,6 +89,7 @@ func _typing_narrows_the_options_and_the_count_to_what_the_source_holds() -> voi
 	source.set_value(&"items", _entries(WORDS))
 	var narrowing := Narrowing.new(made.chimes, source.of(&"items"), 3)
 	made.commands.register(&"app", &"types", narrowing)
+	made.commands.register(&"app", &"picks", source)
 	ui.start(ui.app(&"app", [TypeAhead.make(ui, narrowing, &"types", &"picks").named(&"picker")]))
 	await _a_frame_passes()
 	var picker: Node = ui.node_named(&"picker")

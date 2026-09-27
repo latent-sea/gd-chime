@@ -15,6 +15,145 @@ This file must never become a second copy of the history. What was added or
 fixed, and why, is kept by the commits; only what breaks a caller is listed
 here, because that is the one thing a caller has to act on.
 
+## 2.0.0 - 2026-09-27
+
+The hosting round: the game owns what is global, and an app owns its
+rectangle and its drawing.
+
+- THE LANGUAGE IS THE GAME'S LOCALE (`language.gd`). Made, entering or
+  leaving, the language model never sets the engine's locale or its
+  pseudolocalization: it reads them, hears the engine say the locale moved
+  whoever moved it, and rings `LANGUAGE_CHANGED` then. What breaks: an app
+  no longer starts in English whatever the game set - it starts in the
+  game's locale; a game or a test that wants English first sets
+  `TranslationServer.set_locale("en")` itself. `Language.current()` and
+  `get_language()` answer the language with words nearest the locale -
+  `&"fr"` for `fr_FR`, `&"en"` for `en_GB` - where they answered the
+  locale as it was. `CHANGES_LANGUAGE` is still the player's choice, and
+  still sets the engine's locale.
+- `Language.read(folder)` is gone: reading a folder of catalogues is
+  `Catalogues.read(folder)` (`catalogues.gd`, `GdChime.Catalogues`), a
+  static call, since reading words off disk is no language's.
+- THE SOUND IS THE GAME'S BUS (`sound_bus.gd`, `GdChime.SoundBus`, an app's
+  `sound_bus`). Nothing adds a bus, mutes one or sets its volume of its own
+  accord: the sounds play on the bus the project names in the setting
+  `gd_chime/sounds/bus`, else on a bus called UI where the project has one,
+  else on Master - a project that relied on the floor making a UI bus hears
+  its sounds on Master. The bus's volume and mute are the values
+  `sound_bus.volume` and `sound_bus.muted`, read off the bus once a frame, so
+  the game moving its own bus is followed. What breaks: `Sounds.BUS` is gone;
+  `Sounds.SETS_VOLUME`, `Sounds.MUTES_SOUND` and `Sounds.COMMANDS` are
+  `SoundBus.SETS_VOLUME`, `SoundBus.MUTES_SOUND` and `SoundBus.COMMANDS`,
+  answered by the app's `sound_bus`; `sounds.get_volume()` and
+  `sounds.get_muted()` are `sound_bus.volume` and `sound_bus.muted` - values,
+  handed to a slider or a toggle as they are, `.read()` for the figure; and
+  `Sounds.new(chimes, driver, prompts, under)` takes the bus it plays on,
+  `Sounds.new(chimes, driver, prompts, under, sound_bus)`. Sounds are told
+  nothing now.
+- THE BASE IS READ AS AN APP ENTERS THE TREE (`easel.gd`), not as it is
+  made, so `GdChime.apply_project_settings(get_window())` in a host's own
+  `_ready`, before it adds the app, is the base the app draws at. What
+  breaks: `get_base()` on an app never yet in the tree answers `(0, 0)`. A
+  rect of no width or no height fits nothing and leaves the canvas as it
+  was, where it wrote a canvas of no size out of a scale of nothing.
+- AN APP'S LIFE IS THE NODE'S (`chime_app.gd`). It is built as it enters the
+  tree - in `_notification`, so an application's own `_enter_tree` no longer
+  replaces the build - and leaving the tree takes down everything it built:
+  the job pool's tasks waited out (`jobs.stop()`) and everything under its
+  canvas freed, models, places, pop-ups and bells. Coming back, or moved
+  under another parent, it is built afresh, once, where it was built a
+  second time over the first. What breaks: a game that held an app's
+  models, its `ui` or its door across the app leaving the tree holds freed
+  nodes - `ui` and `chimes` are null until it enters again - and an app
+  moved under another parent starts again from its description.
+- NOTHING QUITS THE GAME. A description whose tree is broken is said out
+  loud and the app stands empty, nothing arrived at; `ui.start(desc)` given
+  no `on_broken` no longer quits. The app is told `broken(faults)`, a sixth
+  question with a default that does nothing; `application.gd`, the demos'
+  and probes' main loop, answers it by quitting, as a probe of a broken tree
+  should.
+- KEYS AND CARRYING STAY INSIDE THE APP (`easel.gd`, `carry_walk.gd`). A key
+  or a pad button goes on to an app only while a control of that app holds
+  the window's one focus - or, while nothing in the window holds it, while a
+  control of that app held it last: one the app takes never reaches the game, one it
+  leaves goes on to the game, and another app never hears it. The easel
+  takes no focus itself, so a click on an app's bare ground leaves the focus
+  where it was. What breaks: an app whose shortcuts answered keys while
+  the game's own control held the focus, or another app's, no longer hears
+  them; give a control of the app the focus. A
+  keyboard or pad carry walks the drop targets of its own layer - the app,
+  or the pop-up it began in - and never another app's.
+
+The hosting round. To gd-chime the game is models: a fact follows its value,
+whoever set it.
+
+- A MOMENT FOLLOWS ITS VALUE. A pop-up presented while a fact holds is raised
+  and lowered in the driver's own step of the frame after the fact moved,
+  where a control draws, whoever moved it - a press, the game's tick, a job
+  landing - and a fact that held and let go again within one frame raises
+  nothing. `Driver.settle()` is gone, and the door no longer calls its
+  mover's settling at the end of a dispatch: a mover given to `Commands`
+  answers no `settle()`. What breaks: a test or probe that read a moment
+  raised or lowered straight after the dispatch that moved its fact reads
+  it a frame later, after awaiting the frame.
+- A PLACE TELLS EACH MODEL ONLY WHAT IT ANSWERS. A place handed ONE model no
+  longer registers it for every action the place declares that nothing else
+  answers: a model is told exactly what its `answers()` lists, however many
+  a place is handed, and a press that only moves the reader - an opener, a
+  way back - reaches the mover and no model. A model that relied on being
+  its place's only one lists every action it is told in `answers()`. The
+  startup check now reports, as `nothing answers <action> in <place>`, an
+  action going nowhere that no model answers in its place or from anywhere,
+  and the application does not start. `OpenMenu.COMMANDS` holds the pick as
+  well as the opening, and `CommandSearch` answers its three.
+- A FREED MODEL ANSWERS NOTHING. The door lets go of a model freed, or
+  waiting at the end of the frame to be freed, as it looks for a handler:
+  `handles()` says no, a press is refused as nothing handling it, and
+  registering a model at its address replaces it without a word.
+- `Fetched` is told only to ask again, and an answer to its latest asking
+  landing after the reader left clears `loading` (the data still lands on
+  nothing).
+- A refused optimistic change doubts its thing when ANY later change of the
+  same thing was sent after it - answered already or not - and reads it back.
+- A model's value set off the main thread is refused out loud and does not
+  move, as a read off it already was: set it where the job's answer lands.
+  `Reads.is_main_thread()` is new.
+- The controller's header no longer says a model does not wait for a frame:
+  what a model follows reaches it as the bell rings, at the end of the frame;
+  a reading that must be current the instant is worked out as it is read.
+
+The hosting round. Nothing grows over a session.
+
+- FOLLOWING AGAIN RUNS THE WORK HANDED LAST. A follow keeps its work and
+  what a ring runs instead with its key, and every wire of the key arrives
+  through one arrival that looks them up: `follow()` again under the same
+  key with new work runs the new work, where it kept the first. A caller
+  that relied on the first work surviving a second follow must keep it.
+- An address a work read where no bell hangs yet is kept with the rest,
+  so drawing again reading the same wires nothing again, and a bell hung
+  there later reaches the reader on its first ring. `Chimes.followed_by()`
+  lists only the addresses a bell hangs at.
+- A model with a region of its own (`Controller.own_region`) takes the
+  region down as it is freed: whatever listened into it hears nothing more.
+- THE BUILDER'S NAMES LET GO OF FREED PIECES (`built_names.gd`, which
+  `ui.gd` now extends): `ui.node_named()` of a freed piece answers nothing
+  rather than the freed instance, a keyed list lets go of a piece's name as
+  its key goes (`ui.forget_named()`), and every freed piece's name is swept
+  as the names held double. A caller that read a name after freeing its
+  piece gets null.
+- A keyed list takes down a key's bell as the key goes. `Chimes.drop_bell()`
+  takes one bell down with its wires; `Reads.forget_bell()` forgets what
+  moved there.
+- Who is wired at a bell is read from the bell's own connections, and
+  listeners are kept by region, so taking a region down costs the wires it
+  cuts. Anything reading the private `chimes._wires` finds `_follows`
+  (a `Wires.Follow` record per followed key, its addresses in `.at`),
+  `_members` and `_waiting` beside `_held`; `Wires.make()` takes the
+  address where it took the bell. A draw costs about 4% more than before
+  this round's part 6 - each draw reads its follow's record, and each ring
+  goes through the record's one arrival - accepted as the price of a
+  follow keeping the work handed last.
+
 ## 1.0.0 - 2026-09-20
 
 The first public shape: gd-chime is an addon a project installs, rather than

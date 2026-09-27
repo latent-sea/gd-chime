@@ -9,12 +9,12 @@ const GdChime := preload("res://addons/gd_chime/gd_chime.gd")
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
 ## THE ROUTE LOADS AS ITS SCREEN IS FIRST SHOWN (fills): what the screen
-## fills with asks the depot, and until it lands the screen's actions are
-## refused "Still loading" (fetched.gd). Asking again after that - pulled,
-## pressed - is the same asking under a token of its own, and brings the
-## depot's route: new stops join, and every stop's address, name and note
-## are the depot's, while what the driver has done at each stays the
-## driver's. A failed asking loses nothing.
+## fills with asks the depot, the one model of that screen, told only to ask
+## again (fetched.gd); until it lands no stop stands to press. Asking again
+## after that - pulled, pressed - is the same asking under a token of its
+## own, and brings the depot's route: new stops join, and every stop's
+## address, name and note are the depot's, while what the driver has done at
+## each stays the driver's. A failed asking loses nothing.
 ##
 ## A CHANGE IS ONE COMMAND ABOUT ONE STOP, {id}: DELIVERS, REPORTS {why} -
 ## one of PROBLEMS, nobody home when a swipe gives none - and UNDOES, back to

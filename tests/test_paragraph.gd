@@ -77,7 +77,7 @@ func _built() -> Dictionary:
 	var model := Fixture.Model.new(made.chimes, &"app")
 	model.set_value(&"items", 8)
 	model.set_value(&"words", "won")
-	made.commands.register(&"app", STAYS, model)
+	made.commands.register(&"home", STAYS, model)
 	var spans := [Phrase.of("a crate of pears was sold by "), ui.link(OPENS, 7, "ann").goes_to(&"crate").named(&"first"), Phrase.of(" to "), ui.link(OPENS, model.of(&"items"), Phrase.of("the plum stall")).goes_to(&"crate").named(&"second"), Phrase.of(" this morning; it says "), model.of(&"words")]
 	var home := ui.row([ui.paragraph(spans).named(&"paragraph").grow(), ui.pressable(STAYS, {}, [ui.text(ui.words(STAYS))]).named(&"beside")])
 	# under it, a paragraph with no link in it, whose words nothing else lays again

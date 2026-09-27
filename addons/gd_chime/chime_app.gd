@@ -14,6 +14,7 @@ const Look := preload("look.gd")
 const Shortcuts := preload("shortcuts.gd")
 const Notifications := preload("notifications.gd")
 const Sounds := preload("sounds.gd")
+const SoundBus := preload("sound_bus.gd")
 const FrameBudget := preload("frame_budget.gd")
 const Jobs := preload("jobs.gd")
 const Ui := preload("components/primitives/ui.gd")
@@ -54,16 +55,22 @@ const NeededSettings := preload("needed_settings.gd")
 ## missing (needed_settings.gd), and GdChime.apply_project_settings() is the
 ## one explicit way to set them. So a game hosts one beside its own scenes,
 ## and two in one window have nothing to fight over - each on its own
-## easel, in its own shape, wearing its own look. Leaving the tree takes
-## everything with it, since everything is under it; nothing outside was
-## touched, so nothing outside is undone.
+## easel, in its own shape, wearing its own look.
+##
+## ITS LIFE IS THE NODE'S. It is built as it enters the tree, and leaving
+## the tree takes down everything it built - the job pool's tasks waited
+## out, and everything under the canvas freed; nothing outside was touched,
+## so nothing outside is undone. Coming back, or moved under another
+## parent, it is built afresh, once. A broken description is said out loud
+## and the app stands empty: it never quits the game.
 ##
 ## THE QUESTIONS MAY BE ANSWERED BY ANOTHER: `asked` is whoever answers the
 ## five, this node unless something stands in - the demos' main loop
 ## (application.gd), a SceneTree whose script is the application, so that
 ## one implementation serves an app node in a scene and a script run with
 ## --script alike. Whoever stands in is told wired() as the pieces come
-## up, before each question that needs them.
+## up, before each question that needs them, and broken(faults) where the
+## description's tree is broken.
 ##
 ## WHAT EVERY APPLICATION HAD A COPY OF IS A DEFAULT HERE: the frame's
 ## budget, measured against the display's own rate (frame_budget.gd); one
@@ -94,6 +101,7 @@ var actions: Actions
 var prompts: Prompts
 var inputs: Inputs
 var notifications: Notifications
+var sound_bus: SoundBus
 var sounds: Sounds
 var budget: FrameBudget
 var jobs: Jobs
@@ -101,7 +109,27 @@ var ui: Ui
 var _probe: RefCounted  # held while it walks: a walk waiting on a frame is dropped with whatever was holding it
 
 
-func _enter_tree() -> void:
+## Entering the tree, the whole application built under the canvas; leaving
+## it, all of it taken down. In _notification, which every script in the
+## chain is called for, where an application's own _enter_tree would
+## replace the build. Nothing built here stands outside the canvas, so
+## freeing what stands under it takes the models and their registrations
+## with the door, the places and the pop-ups, and the bells with the chimes.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE:
+		# the pool's tasks waited out first, since a task done and never waited brings the game down at its end
+		jobs.stop()
+		var built := canvas.get_children()
+		built.reverse()
+		# everything built, newest first, so what was built over a model goes before the model it tells
+		for node: Node in built:
+			node.free()
+		_probe = null
+		ui = null
+		chimes = null
+		return
+	if what != NOTIFICATION_ENTER_TREE:
+		return
 	NeededSettings.report()
 	canvas.theme = asked.look()
 	chimes = Chimes.new(Belfry.new())
@@ -123,11 +151,12 @@ func _enter_tree() -> void:
 	# the map of inputs answers its own two commands from anywhere
 	for action: StringName in Inputs.COMMANDS:
 		commands.register(Chimes.GLOBAL, action, inputs)
+	# the game's bus answers a player's volume and muting from anywhere
+	sound_bus = SoundBus.new(chimes)
+	for action: StringName in SoundBus.COMMANDS:
+		commands.register(Chimes.GLOBAL, action, sound_bus)
 	# the sounds after the notifications, whose arriving rings the look's sound
-	sounds = Sounds.new(chimes, driver, prompts, canvas)
-	# the sounds answer their own volume and muting from anywhere
-	for action: StringName in Sounds.COMMANDS:
-		commands.register(Chimes.GLOBAL, action, sounds)
+	sounds = Sounds.new(chimes, driver, prompts, canvas, sound_bus)
 	ui.inputs = inputs
 	# the look put on dressed for the language on, now there is one: its font for that language's script
 	Look.dress(canvas.theme, Language.written_in())
@@ -139,10 +168,10 @@ func _enter_tree() -> void:
 	# the frame measured against the display's own rate, or sixty where it does not say - headless, and some virtual displays
 	budget = FrameBudget.new(chimes, 1000.0 / (rate if rate > 0.0 else FRAME_RATE), FRAME_SHARE, FRAME_RUN)
 	jobs = Jobs.new(chimes, budget, JOBS_AT_ONCE, JOBS_WAITING, false)
-	for node: Node in [driver, commands, prompts, inputs, notifications, sounds, budget, jobs, Shortcuts.new(inputs, driver, commands)]:
+	for node: Node in [driver, commands, prompts, inputs, notifications, sound_bus, sounds, budget, jobs, Shortcuts.new(inputs, driver, commands)]:
 		ui.also(node)
 	asked.wired(self)
-	ui.start(asked.describe())
+	ui.start(asked.describe(), asked.broken)
 	# the walk begun once everything stands; it waits its own frames, so it is simply begun
 	if OS.get_cmdline_user_args().has(PROBE_SWITCH):
 		_probe = asked.probe()
@@ -192,3 +221,10 @@ func describe() -> Desc:
 ## begun where --probe was asked for: none unless the application says.
 func probe() -> RefCounted:
 	return null
+
+
+## The description's tree is broken, each fault said out loud already: the
+## app stands empty, and nothing more unless whoever stands in says - the
+## demos' main loop quits (application.gd). An app never quits the game.
+func broken(_faults: Array) -> void:
+	pass

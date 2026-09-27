@@ -12,8 +12,9 @@ const Notifications := preload("notifications.gd")
 ## STRUCTURE EXISTS FROM STARTUP; DATA LOADS WHEN SHOWN (place.gd). So a
 ## place's controls stand before what they act on has arrived, and while it
 ## has not, THE PLACE'S ACTIONS ARE REFUSED: would() answers "Still
-## loading", a refusal like any other, so a button is inert with the reason
-## on its face and a press dispatches nothing.
+## loading" for any action but asking again, a refusal like any other, which
+## the model answering the place's actions asks of this first - so a button
+## is inert with the reason on its face and a press dispatches nothing.
 ##
 ## THE SOURCE IS HANDED IN, as fetches(answer): it answers LATER, on the main
 ## thread and never within the call that asked - the contract a provisional
@@ -23,11 +24,15 @@ const Notifications := preload("notifications.gd")
 ## IT IS THE PLACE'S on_fill: ui.screen(named, content, models, {on_fill = fetched.fill})
 ## hands it the token of the stay as the reader arrives (place.gd), and an
 ## answer under any other token - a stay the reader has left, or one begun
-## again since - changes nothing, so what was asked for late never lands on
-## a place the reader has moved on from. Asked for within one stay it holds
-## what it has: the reader sees the last data while the next is on its way.
+## again since - lands nothing, so what was asked for late never lands on a
+## place the reader has moved on from; the latest asking answered after the
+## reader left is no longer loading all the same, since nothing is on its
+## way. Asked for within one stay it holds what it has: the reader sees the
+## last data while the next is on its way.
 ##
-## ASKING AGAIN IS THE SAME THING AS REFRESHING, so there is one of it:
+## ASKING AGAIN IS THE SAME THING AS REFRESHING, so there is one of it, and
+## it is the one action this answers and is told - handed to a place, alone
+## or beside others, it is told nothing else the place declares:
 ## ASKS_AGAIN is dispatched from wherever a reader asks - a pull (pull.gd), a
 ## button, a key, a way to try again - it is refused "Asking already" while
 ## one is out, an answer to an asking no longer the latest is let go, and a
@@ -81,15 +86,17 @@ func fill(stay: Token) -> void:
 	_ask()
 
 
-## Asked again within the same stay, under a token of its own, so what the
-## asking before it brings lands on nothing.
+## Told to ask again - the one action it answers - within the same stay,
+## under a token of its own, so what the asking before it brings lands on
+## nothing.
 func told(_action: StringName, _payload: Dictionary) -> Phrase:
 	_stay = Token.new(_stay)
 	_ask()
 	return null
 
 
-## Every action of the place refused while nothing has landed.
+## Asking again refused while an asking is out; any other action - asked by
+## the place's own model - refused while nothing has landed.
 func would(action: StringName, _payload: Dictionary) -> Phrase:
 	if action == ASKS_AGAIN:
 		return Phrase.of("Asking already") if loading.read() else null
@@ -110,11 +117,14 @@ func _ask() -> void:
 
 ## The source's answer: landed, the data set out; failed, the reason kept on
 ## the thing, said in a notification, and what was shown left as it was. An
-## answer under any other token is let go.
+## answer to an asking no longer the latest is let go; one to the latest
+## after the reader left lands nothing, but nothing is on its way any more.
 func _answered(landed: Variant, why: Phrase, under: Token) -> void:
-	if under != _asked or not under.is_live():
+	if under != _asked:
 		return
 	loading.set_value(false)
+	if not under.is_live():
+		return
 	failure.set_value(why)
 	if why == null:
 		data.set_value(landed)

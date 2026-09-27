@@ -3,7 +3,7 @@ extends "res://demo/gallery/boxes.gd"
 const Bound := preload("res://addons/gd_chime/components/primitives/bound.gd")
 const Motion := preload("res://addons/gd_chime/motion.gd")
 const Language := preload("res://addons/gd_chime/language.gd")
-const Sounds := preload("res://addons/gd_chime/sounds.gd")
+const SoundBus := preload("res://addons/gd_chime/sound_bus.gd")
 const Inputs := preload("res://addons/gd_chime/input_map.gd")
 const NavControl := preload("res://addons/gd_chime/components/recipes/nav_control.gd")
 const CellReadout := preload("res://addons/gd_chime/components/recipes/cell_readout.gd")
@@ -112,8 +112,8 @@ func _options() -> Desc:
 	var names := {Language.SOURCE: "English", &"fr": "Français", Language.PSEUDO: TranslationServer.pseudolocalize("English")}
 	var languages: Array = names.keys().map(func(language: StringName) -> Dictionary: return {"value": language, "words": names[language]})
 	var language := Setting.choice(ui, Language.CHANGES_LANGUAGE, OPENS_LANGUAGES, {offers = Bound.new(func() -> Array: return languages), chosen = ui.bound(ui.language.get_language), title = Phrase.of("The language words are said in")})
-	var volume: Desc = ui.slider(Sounds.SETS_VOLUME, ui.bound(_stall.sounds.get_volume), {minimum = 0.0, maximum = 1.0, step = 0.1}).named(&"volume").grow()
-	var sound: Desc = ui.column([Setting.row(ui, Phrase.of("Volume"), Phrase.of("How loud the stall's sounds are: drag it, or left and right"), volume), Setting.row(ui, Phrase.of("Mute"), Phrase.of("On, nothing sounds at all"), Setting.toggle(ui, Sounds.MUTES_SOUND, ui.bound(_stall.sounds.get_muted)).named(&"mutes"))], DemoTheme.TIGHT)
+	var volume: Desc = ui.slider(SoundBus.SETS_VOLUME, _stall.sound_bus.volume, {minimum = 0.0, maximum = 1.0, step = 0.1}).named(&"volume").grow()
+	var sound: Desc = ui.column([Setting.row(ui, Phrase.of("Volume"), Phrase.of("How loud the stall's sounds are: drag it, or left and right"), volume), Setting.row(ui, Phrase.of("Mute"), Phrase.of("On, nothing sounds at all"), Setting.toggle(ui, SoundBus.MUTES_SOUND, _stall.sound_bus.muted).named(&"mutes"))], DemoTheme.TIGHT)
 	var rows: Array = []
 	# every action a key presses, a binding that writes the map
 	for action: StringName in Extra.Shelf.KEYED:

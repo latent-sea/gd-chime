@@ -76,6 +76,8 @@ static var Belfry: GDScript:
 	get: return _at("belfry.gd")
 static var Carried: GDScript:
 	get: return _at("carried.gd")
+static var Catalogues: GDScript:
+	get: return _at("catalogues.gd")
 static var Commands: GDScript:
 	get: return _at("commands.gd")
 static var Console: GDScript:
@@ -124,6 +126,8 @@ static var Shape: GDScript:
 	get: return _at("shape.gd")
 static var Sounds: GDScript:
 	get: return _at("sounds.gd")
+static var SoundBus: GDScript:
+	get: return _at("sound_bus.gd")
 static var Stretch: GDScript:
 	get: return _at("stretch.gd")
 static var TableColumns: GDScript:

@@ -1,6 +1,7 @@
 extends "res://demo/gallery/stall.gd"
 
 const Shape := preload("res://addons/gd_chime/shape.gd")
+const Catalogues := preload("res://addons/gd_chime/catalogues.gd")
 const Extra := preload("res://demo/gallery/extra_models.gd")
 const ExtraPieces := preload("res://demo/gallery/extra_pieces.gd")
 const ExtraProbe := preload("res://demo/gallery/extra_probe.gd")
@@ -57,7 +58,7 @@ const WORDS_FOLDER := "res://demo/words"
 ## The gallery's own actions: each one's words, and for the shelf's three the
 ## key and pad button it is on to begin with.
 static func extra_actions() -> Dictionary:
-	return {ExtraPieces.SHOWS_MOTION: ["Motion"], ExtraPieces.SHOWS_OPTIONS: ["Language, sound, keys"], ExtraPieces.SHOWS_CARRYING: ["Drag and drop"], ExtraPieces.SHOWS_FRONT: ["To the front of the stall"], ExtraPieces.SHOWS_BACK_ROOM: ["To the back room"], ExtraPieces.OPENS_LANGUAGES: ["Choose a language"], Language.CHANGES_LANGUAGE: ["This language"], Sounds.SETS_VOLUME: ["Set the volume"], Sounds.MUTES_SOUND: ["Mute"], Motion.REDUCES: ["Reduce motion"], Inputs.BINDS: ["Bind"], Inputs.RESTORES_DEFAULTS: ["Restore the defaults"], Extra.Keys.SAVES: ["Save the keys"], Extra.Keys.LOADS: ["Load the keys"], Extra.Shelf.PUTS_ON_SHELF: ["Put a crate on", Actions.keys(KEY_N), Actions.pad(JOY_BUTTON_X)], Extra.Shelf.TAKES: ["Take one off", Actions.keys(KEY_R), Actions.pad(JOY_BUTTON_Y)], Extra.Shelf.TURNS: ["Turn the shelf round", Actions.keys(KEY_T), Actions.pad(JOY_BUTTON_RIGHT_SHOULDER)], Extra.Shelf.RIPENS: ["Ripen"], Extra.Shelf.FILLS: ["Fill"], Extra.Baskets.PUTS_IN: ["Put in the basket"], Extra.Baskets.PUTS_IN_FIGS: ["Put in the fig basket"], Extra.Baskets.EMPTIES: ["Empty the baskets"]}
+	return {ExtraPieces.SHOWS_MOTION: ["Motion"], ExtraPieces.SHOWS_OPTIONS: ["Language, sound, keys"], ExtraPieces.SHOWS_CARRYING: ["Drag and drop"], ExtraPieces.SHOWS_FRONT: ["To the front of the stall"], ExtraPieces.SHOWS_BACK_ROOM: ["To the back room"], ExtraPieces.OPENS_LANGUAGES: ["Choose a language"], Language.CHANGES_LANGUAGE: ["This language"], SoundBus.SETS_VOLUME: ["Set the volume"], SoundBus.MUTES_SOUND: ["Mute"], Motion.REDUCES: ["Reduce motion"], Inputs.BINDS: ["Bind"], Inputs.RESTORES_DEFAULTS: ["Restore the defaults"], Extra.Keys.SAVES: ["Save the keys"], Extra.Keys.LOADS: ["Load the keys"], Extra.Shelf.PUTS_ON_SHELF: ["Put a crate on", Actions.keys(KEY_N), Actions.pad(JOY_BUTTON_X)], Extra.Shelf.TAKES: ["Take one off", Actions.keys(KEY_R), Actions.pad(JOY_BUTTON_Y)], Extra.Shelf.TURNS: ["Turn the shelf round", Actions.keys(KEY_T), Actions.pad(JOY_BUTTON_RIGHT_SHOULDER)], Extra.Shelf.RIPENS: ["Ripen"], Extra.Shelf.FILLS: ["Fill"], Extra.Baskets.PUTS_IN: ["Put in the basket"], Extra.Baskets.PUTS_IN_FIGS: ["Put in the fig basket"], Extra.Baskets.EMPTIES: ["Empty the baskets"]}
 
 var shelf: Extra.Shelf
 var keys: Extra.Keys
@@ -86,7 +87,7 @@ func declare(register: Actions) -> void:
 ## The gallery's own models made, answering their actions from anywhere,
 ## and the demos' words read; then the stall's.
 func describe() -> Desc:
-	ui.language.read(WORDS_FOLDER)
+	Catalogues.read(WORDS_FOLDER)
 	shelf = Extra.Shelf.new(chimes)
 	keys = Extra.Keys.new(chimes, inputs)
 	baskets = Extra.Baskets.new(chimes)

@@ -317,13 +317,16 @@ func _in_every_list_that_runs_down_the_focused_row_is_shown_whole() -> void:
 	_made = Fixture.new(root, {&"opens": "open", &"sorts": "sort", &"types": "type", &"picks": "pick"})
 	var ui := _made.ui
 	_model = Lists.new(_made.chimes, &"list")
-	_made.commands.register(Chimes.GLOBAL, &"opens", _model)
+	# the list's every press answered by its model: opening a row, sorting the table, and the type-ahead's picking
+	for action: StringName in [&"opens", &"sorts", &"picks"]:
+		_made.commands.register(Chimes.GLOBAL, action, _model)
 	var named := func(at: int) -> Dictionary: return {"id": at, "name": "row number %d" % at, "value": at, "words": "choice %d" % at}
 	_model.set_value(&"items", range(ROWS).map(named))
 	_model.set_value(&"sort", {"column": "name", "ascending": true})
 	_model.set_value(&"flag", null)
 	_model.set_value(&"sections", [{"id": 0, "heading": "the first group", "items": range(10).map(named)}, {"id": 1, "heading": "the second group", "items": range(10, ROWS).map(named)}])
 	var narrowing := Narrowing.new(_made.chimes, _model.of(&"items"), ROWS)
+	_made.commands.register(Chimes.GLOBAL, &"types", narrowing)
 	var row := func(item: Bound) -> Desc: return ui.pressable(&"opens", {}, [ui.text(item.field("name"))])
 	var key := func(item: Dictionary) -> int: return item["id"]
 	var kinds := {
@@ -386,6 +389,7 @@ func _a_virtual_list_moves_a_whole_row_by_the_pad_past_its_last_slot() -> void:
 	_made.commands.stand(&"rows", long)
 	root.add_child(long)
 	var slot := func(item: Bound) -> Desc: return ui.pressable(&"opens", {}, [ui.text(item.map(func(one: Variant) -> String: return "" if one == null else one["name"]))])
+	_made.answer([&"opens"])
 	ui.start(ui.app(&"app", [ui.stack([ui.screen(&"rows", [ui.virtual_list(long, slot).named(&"rows")], null, {on_fill = func(_token: Variant) -> void: long.look(null), on_empty = long.drop}), ui.screen(&"elsewhere", [ui.text("elsewhere")])])]))
 	await _a_frame_passes()
 	await _go(&"rows", 1)

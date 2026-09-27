@@ -48,6 +48,8 @@ const Relay := preload("relay.gd")
 const TYPES := &"types_in_the_palette"
 const PICKS := &"picks_from_the_palette"
 const RUNS_FIRST := &"runs_the_first_found"
+## Every action this is told, in the palette it is handed to.
+const COMMANDS: Array[StringName] = [TYPES, PICKS, RUNS_FIRST]
 ## What a command's value begins with.
 const COMMAND := "command"
 
@@ -98,6 +100,10 @@ func told(action: StringName, payload: Dictionary) -> Phrase:
 		TYPES:
 			return super(action, payload)
 	return null
+
+
+func answers() -> Array[StringName]:
+	return COMMANDS
 
 
 ## The entry matching now under this value, or none.

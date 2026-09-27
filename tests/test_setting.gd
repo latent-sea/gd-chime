@@ -174,6 +174,7 @@ func _a_binding_listens_after_a_press_takes_the_next_key_and_the_cancel_key_bind
 func _a_binding_over_the_input_map_asks_about_its_action_at_rest_and_writes_the_map() -> void:
 	var made := Fixture.new(root, {Inputs.BINDS: "bind", &"adds": "add"})
 	var ui := made.ui
+	made.answer([&"adds"])
 	ui.start(ui.app(&"app", [ui.pressable(&"adds"), Setting.binding(ui, Inputs.BINDS, made.inputs.hint(&"adds"), {rebinds = &"adds"}).named(&"binding"), Setting.binding(ui, Inputs.BINDS, made.inputs.hint(&"adds"), {rebinds = &"no_such_action"}).named(&"stray")]))
 	await _a_frame_passes()
 	var binding: KeyCapture = ui.node_named(&"binding")

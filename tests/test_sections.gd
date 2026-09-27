@@ -76,6 +76,7 @@ func _standing(made: Fixture, model: Fixture.Model) -> void:
 	var ui := made.ui
 	var template := func(item: Bound) -> Desc: return ui.pressable(&"opens", {}, [ui.text(item.field("name"))])
 	var key := func(item: Dictionary) -> int: return item["id"]
+	made.commands.register(&"app", &"opens", model)
 	ui.start(ui.app(&"app", [Sections.make(ui, model.of(&"items"), template, {key = key}).named(&"sections")]))
 
 
@@ -157,6 +158,7 @@ func _a_heading_shuts_and_opens_what_is_under_it_and_a_detour_and_back_keep_it()
 	model.set_value(&"items", _divided())
 	var template := func(item: Bound) -> Desc: return ui.pressable(&"opens", {}, [ui.text(item.field("name"))])
 	var key := func(item: Dictionary) -> int: return item["id"]
+	made.commands.register(&"here", &"opens", model)
 	ui.start(ui.app(&"app", [ui.screen(&"here", [Sections.make(ui, model.of(&"items"), template, {key = key}).named(&"sections")]), ui.screen(&"there", [ui.text("elsewhere")])]))
 	await _a_frame_passes()
 	made.commands.dispatch(Chimes.GLOBAL, Driver.GO, {"place": &"here", "parameter": 1})

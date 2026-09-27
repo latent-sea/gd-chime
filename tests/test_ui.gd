@@ -68,13 +68,15 @@ func _a_screen_declares_what_its_pressables_perform_and_registers_its_handler_in
 	var made := Fixture.new(root, {&"saves": "save", &"opens": "open", &"counts": "count"})
 	var ui := made.ui
 	var model := Fixture.Model.new(made.chimes)
+	model.answering = [&"saves"]
 	var inner := ui.screen(&"coins", [ui.pressable(&"counts")])
 	# a tree the check would refuse - a link to no ledger, the driver's own command drawn - built to be read, its faults ignored here
 	ui.start(ui.app(&"app", [ui.screen(&"home", [ui.column([ui.pressable(&"saves"), ui.pressable(&"opens", {}, [], &"Pressable").goes_to(&"ledger"), ui.pressable(Driver.GOES_BACK, {}, [], &"Pressable").goes_to(Driver.BACK), inner])], model)]), func(_wrong: Array) -> void: pass)
 	var home: Place = made.driver.index.place_named(&"home")
 	_verdict.check(home.performs == {&"saves": &"", &"opens": &"ledger", Driver.GOES_BACK: Driver.BACK}, "the screen declares each pressable's action and where it goes, not the inner screen's: %s" % [home.performs])
-	_verdict.check(made.commands.handles(&"home", &"saves") and made.commands.handles(&"home", &"opens"), "and registers its handler for them in its region")
-	_verdict.check(not made.commands._handlers.get(&"home", {}).has(Driver.GOES_BACK), "but not for the driver's own command, which the door answers from anywhere")
+	_verdict.check(made.commands.handles(&"home", &"saves"), "and registers its handler in its region for what it answers")
+	_verdict.check(not made.commands.handles(&"home", &"opens"), "and for nothing it does not: a press that only moves the reader goes to the mover alone")
+	_verdict.check(not made.commands._handlers.get(&"home", {}).has(Driver.GOES_BACK), "nor for the driver's own command, which the door answers from anywhere")
 	_verdict.check((made.driver.index.place_named(&"coins") as Place).performs == {&"counts": &""}, "the inner screen declares its own: %s" % [(made.driver.index.place_named(&"coins") as Place).performs])
 	var pressed: Pressable = home.find_children("*", "Control", true, false).filter(func(node: Node) -> bool: return node is Pressable and node.action == &"saves")[0]
 	_verdict.check(pressed.region == &"home" and pressed.get_goes_to() == &"", "a pressable is in its place's region and reads where it goes from the place")
@@ -88,12 +90,15 @@ func _start_builds_sets_the_app_checks_and_moves() -> void:
 	var ui := made.ui
 	var zoom: Desc = ui.pop_up(&"zoom", func(_which: Bound) -> Desc: return ui.pressable(ui.CLOSES, {}, [], &"Pressable").goes_to(Driver.BACK))
 	var console: Desc = ui.pop_up(&"console", func(_which: Bound) -> Desc: return ui.text("the console"), null).blocks_nothing()
-	ui.start(ui.app(&"app", [ui.pressable(&"saves").named(&"save"), ui.pressable(&"opens").opens(zoom), console]))
+	var saver := Fixture.Model.new(made.chimes)
+	saver.answering = [&"saves"]
+	ui.start(ui.app(&"app", [ui.pressable(&"saves").named(&"save"), ui.pressable(&"opens").opens(zoom), console], saver))
 	var app: Node = made.driver.index.app
 	_verdict.check(app != null and app.name == &"app" and app.get_parent() == root, "the app is built under the root and set on the driver")
 	_verdict.check(made.driver.index.has_place(zoom.get_place()) and made.driver.index.has_place(console.get_place()) and not (made.driver.index.place_named(console.get_place()) as Place).blocks, "the pop-ups are lifted beside it, the panel blocking nothing")
 	await _a_frame_passes()
 	_verdict.check(made.driver.get_top() == [&"app"] and (ui.node_named(&"save") as Control).is_visible_in_tree(), "the tree entered, checked, and the first move made into the app: %s" % [made.driver.get_top()])
+	saver.free()
 	made.done()
 
 
@@ -103,11 +108,14 @@ func _start_refuses_a_broken_tree() -> void:
 	var before := _hearing.errors
 	# a pressable for an action the register does not have, and a registered action nothing performs
 	var told: Dictionary = {}
-	ui.start(ui.app(&"app", [ui.pressable(&"saves"), ui.pressable(&"jumps")]), func(wrong: Array) -> void: told["wrong"] = wrong)
+	var saver := Fixture.Model.new(made.chimes)
+	saver.answering = [&"saves", &"jumps"]
+	ui.start(ui.app(&"app", [ui.pressable(&"saves"), ui.pressable(&"jumps")], saver), func(wrong: Array) -> void: told["wrong"] = wrong)
 	await _a_frame_passes()
 	var said: Array = told.get("wrong", [])
 	_verdict.check(_hearing.errors >= before + 2 and said.size() == 2, "the broken tree is said, one sentence a fault, and the application told to quit: %s" % [said])
 	_verdict.check(made.driver.get_top().is_empty(), "and no move is made: %s" % [made.driver.get_top()])
+	saver.free()
 	made.done()
 
 
@@ -126,6 +134,7 @@ func _a_collection_empty_at_startup_declares_and_registers_what_its_template_per
 	var made := Fixture.new(root, {&"flips": "flip", &"opens": "open"})
 	var ui := made.ui
 	var model := Fixture.Model.new(made.chimes)
+	model.answering = [&"flips"]
 	model.set_value(&"items", [])
 	var template := func(thing: Bound) -> Desc: return ui.row([ui.text(thing.field("name")), ui.pressable(&"flips", thing.map(func(item: Variant) -> Dictionary: return {"id": item["id"] if item != null else -1})), ui.pressable(&"opens", {}, [], &"Pressable").goes_to(&"detail")])
 	var told: Dictionary = {}

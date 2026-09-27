@@ -10,7 +10,8 @@ extends SceneTree
 ## a place or Back or nowhere, every place named once, reports nothing. An
 ## action no place declares is reported; a declared name that is no action
 ## is reported; a declaration to no place is reported, and one Back never
-## is; two places of one name are reported; a place named after a reserved
+## is; an action going nowhere that nothing answers is reported, and one
+## answered from anywhere is not; two places of one name are reported; a place named after a reserved
 ## region is reported; a declaration of the driver's own command is
 ## reported. The check asks the index, so a pop-up's declarations count.
 ## And every broken thing is reported, one sentence each.
@@ -28,6 +29,7 @@ const Driver := preload("res://addons/gd_chime/driver.gd")
 const Place := preload("res://addons/gd_chime/place.gd")
 const StartupCheck := preload("res://addons/gd_chime/startup_check.gd")
 const Verdict := preload("res://tests/verdict.gd")
+const Phrase := preload("res://addons/gd_chime/phrase.gd")
 
 var _verdict := Verdict.new()
 
@@ -37,6 +39,15 @@ class Link extends "res://tests/stand_in.gd":
 	pass
 
 
+## The model answering what the places do that goes nowhere: it refuses nothing and does nothing.
+class Doer extends RefCounted:
+	func would(_action: StringName, _payload: Dictionary) -> Phrase:
+		return null
+
+	func told(_action: StringName, _payload: Dictionary) -> Phrase:
+		return null
+
+
 func _init() -> void:
 	# the tree starts on the first frame, and until it has nothing is in it
 	await process_frame
@@ -44,6 +55,7 @@ func _init() -> void:
 	await _verdict.states(_an_action_nobody_performs_is_reported)
 	await _verdict.states(_a_declared_name_that_is_no_action_is_reported)
 	await _verdict.states(_a_declaration_to_no_place_is_reported_and_one_back_never)
+	await _verdict.states(_an_action_going_nowhere_that_nothing_answers_is_reported)
 	await _verdict.states(_a_pop_up_s_declarations_count_from_the_window)
 	await _verdict.states(_two_places_of_one_name_are_reported)
 	await _verdict.states(_every_broken_thing_is_reported)
@@ -78,6 +90,9 @@ func _made() -> Dictionary:
 	places[&"ledger"].add_child(places[&"coins"])
 	places[&"coins"].add_child(Link.new(chimes, commands, places[&"coins"], &"counts_a_coin"))
 	driver.index.app = places[&"app"]
+	# what goes nowhere answered in its place: saving at home, counting in the coins
+	commands.register(&"home", &"saves_the_day", Doer.new())
+	commands.register(&"coins", &"counts_a_coin", Doer.new())
 	var window := Control.new()
 	window.add_child(places[&"app"])
 	root.add_child(window)
@@ -111,8 +126,21 @@ func _an_action_nobody_performs_is_reported() -> void:
 func _a_declared_name_that_is_no_action_is_reported() -> void:
 	var made := _made()
 	(made["places"][&"home"] as Place).performs[&"jumps"] = &""
+	(made["commands"] as Commands).register(&"home", &"jumps", Doer.new())
 
 	_verdict.check(_broken(made) == ["home declares jumps, which is no action"], "a declared name that is no action is reported: %s" % [_broken(made)])
+	_done(made)
+
+
+## A press going nowhere that no model answers, in its place or from
+## anywhere, would be refused out loud as it landed: it is said at startup.
+func _an_action_going_nowhere_that_nothing_answers_is_reported() -> void:
+	var made := _made()
+	(made["actions"] as Actions).declare_all({&"waves": ["wave"]})
+	(made["places"][&"home"] as Node).add_child(Link.new(made["chimes"], made["commands"], made["places"][&"home"], &"waves"))
+	_verdict.check(_broken(made) == ["nothing answers waves in home"], "an action going nowhere that nothing answers is reported: %s" % [_broken(made)])
+	(made["commands"] as Commands).register(Chimes.GLOBAL, &"waves", Doer.new())
+	_verdict.check(_broken(made).is_empty(), "and one answered from anywhere is not: %s" % [_broken(made)])
 	_done(made)
 
 

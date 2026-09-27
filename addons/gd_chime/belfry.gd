@@ -52,18 +52,20 @@ var _striking: int = 0  # how many strikes are sounding right now, one inside an
 var _record: FileAccess = null
 
 
-## Hang a bell at an address. Hanging over an address already taken is refused
-## rather than silently replacing what is there, because anything already
-## listening would go on hearing the old one.
-func register(region: StringName, name: StringName) -> void:
+## Hang a bell at an address, handing it back. Hanging over an address
+## already taken is refused rather than silently replacing what is there,
+## because anything already listening would go on hearing the old one: the
+## answer is then nothing.
+func register(region: StringName, name: StringName) -> Bell:
 	if has(region, name):
 		push_error("%s/%s is already hung" % [region, name])
-		return
+		return null
 	if not _held.has(region):
 		_held[region] = {}
 	var bell := Bell.new(region, name, Reads.hung(region, name))
 	_held[region][name] = bell
 	_at[bell.at] = bell
+	return bell
 
 
 ## Whether anything is hung at that address.
@@ -121,6 +123,19 @@ func at(region: StringName, name: StringName) -> Bell:
 ## read is a set of those names, and most of them are hung.
 func bell_at(address: StringName) -> Bell:
 	return _at.get(address)
+
+
+## Every bell hung in a region, for whatever is wired to them to be cut.
+func bells_in(region: StringName) -> Array:
+	return _held.get(region, {}).values()
+
+
+## Forget one bell, and its region with its last.
+func drop_bell(region: StringName, name: StringName) -> void:
+	_at.erase(_held[region][name].at)
+	_held[region].erase(name)
+	if _held[region].is_empty():
+		_held.erase(region)
 
 
 ## Forget a whole region: every bell hung in it.

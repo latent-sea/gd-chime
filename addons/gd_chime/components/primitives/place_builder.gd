@@ -23,9 +23,9 @@ const Driver := preload("../../driver.gd")
 ## writes one. The first of them answers for the place itself - asked
 ## whether it may be left - and the place holds it, with the pop-up a
 ## screen's description gives to ask before it is left (leave_guard.gd).
-## GIVEN ONE MODEL, that model also takes every action the place declares
-## that nothing answers yet, since the place is its own; given SEVERAL, each
-## answers exactly what it says it does, so an action nobody claimed is
+## However many it is handed, EACH IS TOLD EXACTLY WHAT IT SAYS IT ANSWERS:
+## a press that only moves the reader - an opener, a way back - reaches the
+## mover and no model, and an action going nowhere that no model claimed is
 ## reported by the startup check rather than swallowed by whichever model
 ## happened to be first.
 ##
@@ -66,11 +66,6 @@ static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 		if model is Node:
 			ui.also(model as Node)
 		ui.commands.stand(made.name, model)
-	# a place of ONE model: that model answers everything the place declares and nothing else answers yet - a pop-up's way out by nobody
-	if answering.size() == 1:
-		for action: StringName in made.performs:
-			if action != ui.CLOSES and not ui.commands.handles(made.name, action):
-				ui.commands.register(made.name, action, made.handled_by)
 	ui.attach(made, parent, desc.facts)
 	# every pop-up met inside, lifted once this stands, so it is drawn over it
 	for overlay: RefCounted in lifting:

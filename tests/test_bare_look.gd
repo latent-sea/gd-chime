@@ -109,6 +109,7 @@ func _a_bar_built_under_a_bare_look_wears_its_own_style() -> void:
 	var ui := made.ui
 	var act := Act.new(made.chimes, &"app")
 	made.commands.register(&"app", &"cancels", act)
+	made.commands.register(&"app", &"ticks", act)
 	ui.start(ui.app(&"app", [ui.column([
 		InstructionBar.make(ui, act, &"cancels").named(&"bar"),
 		AmountField.make(ui, &"ticks", "c").named(&"amount"),

@@ -60,15 +60,18 @@ const Reads := preload("reads.gd")
 ## with call_deferred, which runs at the end of the current frame. Flux's
 ## dispatcher refuses the same thing for the same reason.
 ##
-## THE LAST STEP OF EVERY COMMAND IS THE MOVER'S SETTLING: a pop-up up while
-## a fact holds - a moment - raised or lowered to agree with the fact the
-## command may have moved (driver.gd), so a moment goes through the chart
-## without anything hearing its fact and moving.
-##
 ## A region's handlers are forgotten with drop_region(), which whatever closes
 ## a screen calls beside the chimes' own; a model of the application is never
-## dropped. Nothing else is disconnected: a handler under a region goes with
-## the region, and a model in the global region outlives every screen.
+## dropped. A handler under a region goes with the region, and a model in the
+## global region outlives every screen.
+##
+## A MODEL FREED ANSWERS NOTHING, whoever freed it and whenever: the door
+## finds it gone - or waiting at the end of the frame to go - as it looks for
+## a handler, lets it go there, and answers as though nobody were
+## registered; so a model standing in its place is registered without a
+## word, at once, even while the one it replaces waits to be freed. Looked
+## up rather than told, because the door and its models are taken down
+## together in whatever order the engine frees them.
 ##
 ## Deliberately absent: a record longer than the last command, a payload with
 ## a shape, and an answer richer than a sentence.
@@ -97,11 +100,12 @@ func _init(chimes: Chimes, moves: Object = null) -> void:
 
 
 ## Register the model told an action in a region - refused out loud when the
-## address has one, which keeps it.
+## address has one standing, which keeps it; one freed, or waiting to be
+## freed, is replaced.
 func register(in_region: StringName, action: StringName, model: Object) -> void:
 	if not _handlers.has(in_region):
 		_handlers[in_region] = {}
-	if _handlers[in_region].has(action):
+	if _handler(in_region, action, false) != null:
 		push_error("%s in %s already has a handler" % [action, in_region])
 		return
 	_handlers[in_region][action] = model
@@ -169,9 +173,6 @@ func dispatch(in_region: StringName, action: StringName, payload: Dictionary) ->
 		answer = model.told(action, payload)
 	if answer == null and goes_to != &"":
 		answer = mover.move(goes_to, payload.get("parameter"))
-	# whatever the command moved, every pop-up presented while a fact holds brought in line with it, inside the command
-	if mover != null:
-		mover.settle()
 	# a command told from inside this one has run and been kept meanwhile; this one is the last again
 	_last = record
 	_last["answer"] = answer
@@ -197,10 +198,22 @@ func drop_region(in_region: StringName) -> void:
 	_handlers.erase(in_region)
 
 
-## The model told an action in a region: the region's own, else the global one.
-func _handler(in_region: StringName, action: StringName) -> Object:
-	if _handlers.has(in_region) and _handlers[in_region].has(action):
-		return _handlers[in_region][action]
-	if _handlers.has(Chimes.GLOBAL) and _handlers[Chimes.GLOBAL].has(action):
-		return _handlers[Chimes.GLOBAL][action]
+## The model told an action in a region: the region's own, else - unless
+## asked of that region alone - the global one.
+func _handler(in_region: StringName, action: StringName, or_global: bool = true) -> Object:
+	var model: Object = _standing(in_region, action)
+	if model == null and or_global:
+		return _standing(Chimes.GLOBAL, action)
+	return model
+
+
+## The model registered at this address while it stands: one freed, or
+## waiting to be freed, is let go here and answers nothing.
+func _standing(in_region: StringName, action: StringName) -> Object:
+	if not _handlers.has(in_region):
+		return null
+	var model: Variant = _handlers[in_region].get(action)
+	if is_instance_valid(model) and not (model as Object).is_queued_for_deletion():
+		return model
+	_handlers[in_region].erase(action)
 	return null

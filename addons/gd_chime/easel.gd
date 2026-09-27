@@ -21,8 +21,21 @@ const Themes := preload("theme.gd")
 ## same factor each way, covers the whole rect, and grows past the base
 ## along whichever side has the room. A layout in shares of the canvas is
 ## therefore a layout in shares of the rect, and a size written once in the
-## theme is a size on every screen. The container forwards input, so
-## nothing about pressing changes.
+## theme is a size on every screen. A pointer reaches the easel under it, and
+## the container forwards it, so nothing about pressing changes.
+##
+## A KEY GOES TO THE APP HOLDING THE FOCUS. The engine keeps one focus across
+## every viewport in a window, gives a key to the viewport holding it, and
+## offers one that viewport leaves untaken to every other container's
+## viewport before the host (measured on 4.6.2). So a key or a pad button
+## goes on to the canvas only while a control here holds that focus - or,
+## while nothing in the window holds it, while a control here held it last,
+## since a focused control hidden or freed must not leave its app deaf. One
+## this app takes is handled and never reaches the host, one it leaves goes
+## on to the game, and another app never hears it. Which app held the focus
+## last is kept on the window, beside the focus it is about. The easel takes
+## no focus itself, so a click on the canvas's bare ground leaves the focus
+## where it was.
 ##
 ## TURNING SWAPS THE BASE. A rect on its end drawn at a landscape base would
 ## be fitted by the width, every word shrunk to a stamp; so the base turns
@@ -42,9 +55,11 @@ const Themes := preload("theme.gd")
 ## stretched its window scales this twice, which is why the settings the
 ## framework needs say the window is not stretched (needed_settings.gd).
 
-## The project's base: what `display/window/size` says, read once.
+## The project's base: what `display/window/size` says, read as the easel enters the tree.
 const WIDTH := "display/window/size/viewport_width"
 const HEIGHT := "display/window/size/viewport_height"
+## Where the window keeps which easel's canvas held its focus last.
+const HELD_LAST := &"gd_chime_focus_held_last"
 
 ## The viewport the canvas is drawn in, at the rect's real pixels.
 var viewport := SubViewport.new()
@@ -81,13 +96,14 @@ class Canvas extends Control:
 
 
 func _init() -> void:
-	_base = Vector2i(ProjectSettings.get_setting(WIDTH), ProjectSettings.get_setting(HEIGHT))
+	# a click on the canvas's bare ground leaves the window's one focus where it was, on a control of the app or the host's
+	focus_mode = Control.FOCUS_NONE
 	stretch = true
 	viewport.size_2d_override_stretch = true
-	viewport.size_2d_override = _base
 	add_child(viewport)
 	canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
 	viewport.add_child(canvas)
+	viewport.gui_focus_changed.connect(_focused)
 
 
 ## The base the canvas is drawn at now: the project's, or its transpose while the rect is on its end.
@@ -95,14 +111,43 @@ func get_base() -> Vector2i:
 	return Vector2i(_base.y, _base.x) if _turned else _base
 
 
+## Whether an event goes on to the canvas: one with a place in the window
+## reaches the easel under it by itself; any other - a key, a pad - only
+## while a control of this app holds the window's one focus, or held it last
+## and nothing in the window holds it now.
+func _propagate_input_event(event: InputEvent) -> bool:
+	# a pointer, a finger or a gesture: it has a place in the window
+	if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag or event is InputEventGesture:
+		return true
+	var nowhere := get_viewport().gui_get_focus_owner() == null
+	# the focus on a control here, or nowhere in the window and held here last
+	return viewport.gui_get_focus_owner() != null or (nowhere and get_window().get_meta(HELD_LAST, 0) == get_instance_id())
+
+
+## A control of this app took the window's focus: this is the app that held it last.
+func _focused(_on: Control) -> void:
+	get_window().set_meta(HELD_LAST, get_instance_id())
+
+
+## Entering the tree, the project's base read - so settings a host applied in
+## its own _ready, before it added this, are the base - and the canvas fitted
+## to the rect it comes in with; resized, fitted again.
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED:
+	if what == NOTIFICATION_ENTER_TREE:
+		_base = Vector2i(ProjectSettings.get_setting(WIDTH), ProjectSettings.get_setting(HEIGHT))
+		viewport.size_2d_override = get_base()
+		_fit()
+	elif what == NOTIFICATION_RESIZED:
 		_fit()
 
 
 ## The canvas fitted to the rect: the base turned with it, and the override
 ## grown past the base along the side with room, so one scale covers the rect.
+## A rect of no width or no height fits nothing until it has both: there is
+## no scale that fits a base into nothing.
 func _fit() -> void:
+	if size.x == 0.0 or size.y == 0.0:
+		return
 	var turning: bool = (size.y > size.x) != _turned
 	_turned = size.y > size.x
 	var base := Vector2(get_base())

@@ -43,6 +43,10 @@ class Coins extends Controller:
 		_coins.set_value(_coins.read() + 1)
 		return null
 
+	## Every action this is told: counting a coin.
+	func answers() -> Array[StringName]:
+		return [COUNTS]
+
 
 ## The notes tab's own model: keeps how many notes were jotted, a value.
 class Notes extends Controller:
@@ -57,4 +61,8 @@ class Notes extends Controller:
 	func told(_action: StringName, _payload: Dictionary) -> Phrase:
 		_notes.set_value(_notes.read() + 1)
 		return null
+
+	## Every action this is told: jotting a note.
+	func answers() -> Array[StringName]:
+		return [JOTS]
 
