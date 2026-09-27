@@ -1,14 +1,18 @@
 {
   "taken": {
-    "commit": "c2ebb930",
-    "date": "2026-09-20",
+    "commit": "f0fec02f",
+    "date": "2026-09-27",
+    "folder": "c0c9341fcdb3",
     "runs": 7,
-    "of": "the lowest of the runs"
+    "of": "the lowest of the runs",
+    "window_runs": 1
   },
   "numbers": {
-    "draw_us": 60.0,
-    "page_ms_p50": 46.92,
-    "idle_ms_p50": 6.897,
-    "launch_ms": 3919.0
+    "draw_us": 73.3,
+    "page_ms_p50": 50.61,
+    "idle_ms_p50": 6.9,
+    "launch_ms": 3831.0,
+    "easel_cpu_ms_p50": 0.274,
+    "easel_gpu_ms_p50": 0.05
   }
 }

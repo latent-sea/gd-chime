@@ -31,7 +31,9 @@ by about 12%, so a launch FAIL of under 20% is read beside the machine's
 state before it is believed, and a re-run on a quiet machine settles it.
 
 --record writes the baseline as it stands now, with the commit, the date and
-the folder it was taken in, and says the numbers. It is the ONLY way the file
+a fingerprint of the folder it was taken in - never the folder's path, which
+names the machine it sits on, and this folder is published - and says the
+numbers. It is the ONLY way the file
 is written, so what is in it was made the way it is judged. Update it only in
 a commit that says why.
 
@@ -72,6 +74,7 @@ way they are judged.
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 import re
 import subprocess
@@ -124,7 +127,9 @@ def main() -> int:
     record = "--record" in sys.argv[3:]
     # the windowed engine, when a real window is to be measured
     window = next((given.removeprefix(WINDOW_SWITCH) for given in sys.argv[3:] if given.startswith(WINDOW_SWITCH)), None)
-    folder = root.resolve().as_posix()
+    path = root.resolve().as_posix()
+    # the folder as twelve hex of its path's hash: two runs in one folder agree, and the path is never written down
+    folder = hashlib.sha256(path.encode("utf-8")).hexdigest()[:12]
     here = Path(__file__).parent
     kept = here / BASELINE
     if not record and not kept.is_file():
@@ -148,13 +153,13 @@ def main() -> int:
         commit = subprocess.run(["git", "-C", str(root), "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
         taken = {"commit": commit, "date": f"{datetime.date.today():%Y-%m-%d}", "folder": folder, "runs": RUNS, "of": "the lowest of the runs", "window_runs": 1 if window else 0}
         kept.write_text(json.dumps({"taken": taken, "numbers": measured}, indent=2) + "\n", encoding="utf-8")
-        print(f"baseline recorded at {kept}, taken at {commit} on {taken['date']} in {folder}, the lowest of {RUNS} runs: {measured}")
+        print(f"baseline recorded at {kept}, taken at {commit} on {taken['date']} in {path} (folder {folder}), the lowest of {RUNS} runs: {measured}")
         return 0
 
     baseline = json.loads(kept.read_text(encoding="utf-8"))
     # a baseline recorded before the folder was written names none
     taken_in = baseline["taken"].get("folder", "a folder it did not record")
-    print(f"measured in {folder}; the baseline was taken in {taken_in}")
+    print(f"measured in {path} (folder {folder}); the baseline was taken in folder {taken_in}")
     if taken_in != folder:
         print("WARN  measured in another folder than the baseline's: the same code has read 5-9% slower in one folder than another, so a number near the line may be the folder's, not the code's - re-record the baseline in the folder this check runs in")
     failed: list[str] = []
