@@ -74,6 +74,8 @@ func _init(under: Node, bells: Chimes, door: Commands, moves: Driver, prompting:
 	shape = Shape.new(bells)
 	language = Language.new(bells, under)
 	frames = Frames.new(bells)
+	touch.chimes = bells
+	touch.motion = motion
 	# the floor's own six, under the root from the moment there is a builder: the clock, the carry, the window's shape, the language, the finger, the frames
 	for made: Node in [motion, carried, shape, language, touch, frames]:
 		also(made)
