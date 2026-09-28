@@ -20,6 +20,8 @@ const Themes := preload("theme.gd")
 ## (faint_words.gd). So the walk stops at whatever inks its own words,
 ## which is whatever answers for the boxes it is drawn in (get_drawn).
 ##
+## A gradient the kind of words names is taken off them as they are inked.
+##
 ## It holds nothing and draws nothing: the face holds the colour its words
 ## are on their way to, and hands it here. It is face.gd's alone; nothing
 ## else asks a control what ink its words are in.
@@ -42,5 +44,7 @@ static func on_words(node: Node, colour: Color) -> void:
 	for child: Node in node.get_children():
 		if child is Label:
 			(child as Label).add_theme_color_override(&"font_color", colour)
+			# the press's one ink, never a gradient its kind of words names (graded_words.gd)
+			(child as Label).material = null
 		if not child.has_method(&"get_drawn"):
 			on_words(child, colour)

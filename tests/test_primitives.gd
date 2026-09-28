@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## What must be true of the content, layout and special primitives, each
-## on its own: text, image, surface, field, row, column, grid, stack,
+## on its own: text - graded where its kind names a gradient - image, surface, field, row, column, grid, stack,
 ## scroll, view, canvas and anchored.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
@@ -27,6 +27,7 @@ const Verdict := preload("res://tests/verdict.gd")
 const Phrase := preload("res://addons/gd_chime/phrase.gd")
 const Driver := preload("res://addons/gd_chime/driver.gd")
 const Look := preload("res://addons/gd_chime/look.gd")
+const GradedWords := preload("res://addons/gd_chime/components/primitives/graded_words.gd")
 
 var _verdict := Verdict.new()
 
@@ -37,6 +38,7 @@ func _init() -> void:
 	root.size = Vector2i(400, 400)
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	await _verdict.states(_text_shows_a_string_or_a_bound_value_in_its_style_and_hides_while_empty_if_asked)
+	await _verdict.states(_words_of_a_kind_named_a_gradient_are_graded_across_themselves_but_never_on_a_press)
 	await _verdict.states(_image_shows_a_texture_or_a_bound_one)
 	await _verdict.states(_surface_draws_its_style_s_panel_under_its_content)
 	await _verdict.states(_field_dispatches_the_line_typed_and_clears_it_when_done)
@@ -80,6 +82,42 @@ func _text_shows_a_string_or_a_bound_value_in_its_style_and_hides_while_empty_if
 	_verdict.check(bound.visible and bound.get_text() == "now", "the bell rung, it re-reads and shows: %s" % bound.get_text())
 	plain.free()
 	bound.free()
+	model.free()
+	made.done()
+
+
+## Title given two colours by the look: a title's words graded between
+## them across the words' own width, well short of its line's, and graded
+## again as the words change; words of a kind with none drawn plainly; and a
+## title on a press in the press's one ink.
+func _words_of_a_kind_named_a_gradient_are_graded_across_themselves_but_never_on_a_press() -> void:
+	root.theme.set_color(GradedWords.FROM, Themes.TITLE, Color.CYAN)
+	root.theme.set_color(GradedWords.TO, Themes.TITLE, Color.VIOLET)
+	var made := Fixture.new(root, {&"opens": "open"})
+	var ui := made.ui
+	var model := Fixture.Model.new(made.chimes)
+	root.add_child(model)
+	made.commands.register(Chimes.GLOBAL, &"opens", model)
+	model.set_value(&"words", "short")
+	var title := ui.text(model.of(&"words"), Themes.TITLE).named(&"title")
+	var plain := ui.text("plain words", Themes.WORDS).named(&"plain")
+	var pressed := ui.pressable(&"opens", {}, [ui.text("a titled press", Themes.TITLE).named(&"on a press")])
+	ui.start(ui.app(&"app", [ui.column([title, plain, pressed])]))
+	await _a_frame_passes()
+	var label: Label = ui.node_named(&"title").get_child(0)
+	var graded := label.material as ShaderMaterial
+	var span := GradedWords.spanned(label)
+	_verdict.check(graded != null and graded.get_shader_parameter(&"from_colour") == Color.CYAN and graded.get_shader_parameter(&"to_colour") == Color.VIOLET, "a title's words are graded between the two colours its kind is given: %s" % [graded])
+	_verdict.check(span.y - span.x > 0.0 and span.y - span.x < label.size.x / 2.0 and graded.get_shader_parameter(&"start") == span.x and graded.get_shader_parameter(&"width") == span.y - span.x, "across the words' own width, well short of the line's: %s of %s" % [span, label.size.x])
+	model.set_value(&"words", "a good deal longer than it was")
+	await _a_frame_passes()
+	var longer := GradedWords.spanned(label)
+	_verdict.check(longer.y - longer.x > span.y - span.x and graded.get_shader_parameter(&"width") == longer.y - longer.x, "the words changed, the gradient spans them as they are now: %s" % [longer])
+	_verdict.check((ui.node_named(&"plain").get_child(0) as Label).material == null, "words of a kind with no gradient are drawn plainly")
+	var on_press: Label = ui.node_named(&"on a press").get_child(0)
+	_verdict.check(on_press.material == null and on_press.has_theme_color_override(&"font_color"), "and a title on a press is in the press's own ink, never graded")
+	root.theme.clear_color(GradedWords.FROM, Themes.TITLE)
+	root.theme.clear_color(GradedWords.TO, Themes.TITLE)
 	model.free()
 	made.done()
 
