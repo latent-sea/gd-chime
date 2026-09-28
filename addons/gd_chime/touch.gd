@@ -74,6 +74,10 @@ class Tap extends RefCounted:
 	var _down: bool = false  # whether a finger is down on the control and has not moved past the slop
 	var _from := Vector2.ZERO  # where it came down, in the control's own pixels
 
+	## Whether a finger is down on the control and still within the slop.
+	func is_down() -> bool:
+		return _down
+
 	## The finger's mouse on this control: whether it made a tap just now.
 	func read(event: InputEvent, on: Control) -> bool:
 		var click := event as InputEventMouseButton
