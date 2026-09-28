@@ -62,7 +62,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 
 - `split` - A split: two panes side by side, or one over the other, and a grip between them that shares the room out - the resizable panels of an application shell.
 - `grip` - A grip: a thin edge the reader takes hold of to resize something - the sash between a split's two panes (split.gd), a column's edge in a table's heading - every move a command through the door.
-- `menu_target` - A menu's target: whatever it holds, given a context menu of declared actions - opened by a right press on it, by the keyboard's menu key or a pad button while the focus is inside it (open_menu.gd).
+- `menu_target` - A menu's target: whatever it holds, given a context menu of declared actions - opened by a right press on it, a finger held on it, or the keyboard's menu key or a pad button while the focus is inside it (open_menu.gd).
 - `anchored_at` - A piece set down beside a rect a bound value reads - under it, or over it where there is no room below, and never past the window - with the rest of the room around it a press that sends it away: a context menu beside what it was opened over.
 - `app` - The places' builder: app, screen, tabs and pop_up made as places (place.gd), declaring what their pressables perform and registering their handler for it.
 - `screen` - The places' builder: app, screen, tabs and pop_up made as places (place.gd), declaring what their pressables perform and registering their handler for it.
@@ -228,7 +228,7 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 - `Draggable` *(lazy)* - Something a reader can pick up and drop somewhere else: a face, focused and drawn like any other, that hands what it carries to whatever takes it - and, described with an action, is pressed as well as carried.
 - `Grip` *(lazy)* - A grip: a thin edge the reader takes hold of to resize something - the sash between a split's two panes (split.gd), a column's edge in a table's heading - every move a command through the door.
 - `Layout` *(lazy)* - A row or a column: the line layout (flex.gd) with its gap a Theme name.
-- `MenuTarget` *(lazy)* - A menu's target: whatever it holds, given a context menu of declared actions - opened by a right press on it, by the keyboard's menu key or a pad button while the focus is inside it (open_menu.gd).
+- `MenuTarget` *(lazy)* - A menu's target: whatever it holds, given a context menu of declared actions - opened by a right press on it, a finger held on it, or the keyboard's menu key or a pad button while the focus is inside it (open_menu.gd).
 - `Places` *(lazy)* - The descriptions of the places: the app, a screen, a set of tabs, a pop-up - and the panel, a pop-up that blocks nothing - and the button, which may open a pop-up as one of its kind.
 - `SimulatedSight` *(lazy)* - A simulation of colour-blind sight laid over the whole screen, so a look can be checked by eye rather than by argument.
 - `Text` *(lazy)* - Words: a phrase, data, or a bound value read again whenever what it read moves - a phrase said in the language on as it is drawn.

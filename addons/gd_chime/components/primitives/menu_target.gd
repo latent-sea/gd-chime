@@ -5,8 +5,9 @@ const Inputs := preload("../../input_map.gd")
 const Inset := preload("inset.gd")
 
 ## A menu's target: whatever it holds, given a context menu of declared
-## actions - opened by a right press on it, by the keyboard's menu key or
-## a pad button while the focus is inside it (open_menu.gd).
+## actions - opened by a right press on it, a finger held on it, or the
+## keyboard's menu key or a pad button while the focus is inside it
+## (open_menu.gd).
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -20,7 +21,10 @@ const Inset := preload("inset.gd")
 ## action - the menu key, a pad button, rebound as the player likes - opens
 ## it over the control with the focus, when that control is inside it and
 ## inside no nearer target. Either way the event is spent here, so nothing
-## else takes it too.
+## else takes it too. A FINGER HELD STILL on it for the look's long press
+## opens it where the finger is: touch.gd times the hold, finds the nearest
+## target under the finger as a right press does, and tells it
+## (finger_held).
 ##
 ## OPENING IS A PRESS THROUGH THE DOOR: the opening action, which its place
 ## declares as going to the menu's pop-up, carrying {actions, payload,
@@ -28,8 +32,7 @@ const Inset := preload("inset.gd")
 ## of them is about (read now, from a bound value if it was given one), the
 ## region they are pressed in, and where to open. The pop-up reads it.
 ##
-## Deliberately absent: a long press, and a menu that differs by where in
-## the target it opened.
+## Deliberately absent: a menu that differs by where in the target it opened.
 
 ## The mark on every target, the engine's own group: nothing to hold, gone with the node.
 const TARGET := &"menu target"
@@ -60,19 +63,28 @@ func _input(event: InputEvent) -> void:
 		return
 	var click := event as InputEventMouseButton
 	if click != null and click.button_index == MOUSE_BUTTON_RIGHT:
-		if _nearest(get_viewport().gui_get_hovered_control()) == self:
+		if nearest(get_viewport().gui_get_hovered_control()) == self:
+			get_viewport().set_input_as_handled()
 			# where the press landed, on the canvas the window draws
 			_open(Rect2(get_global_transform() * (make_input_local(click) as InputEventMouseButton).position, Vector2.ZERO))
 		return
 	if not _ui.inputs.get_actions(Inputs.of_event(event)).has(_opens):
 		return
 	var focus := get_viewport().gui_get_focus_owner()
-	if _nearest(focus) == self:
+	if nearest(focus) == self:
+		get_viewport().set_input_as_handled()
 		_open(focus.get_global_rect())
 
 
-## The nearest target holding this control, itself or above it; none for nothing.
-static func _nearest(control: Control) -> Node:
+## A finger held still on it past the look's long press (touch.gd): its
+## menu opened where the finger is, a point of the canvas.
+func finger_held(at: Vector2) -> void:
+	_open(Rect2(at, Vector2.ZERO))
+
+
+## The nearest target holding this control, itself or above it; none for
+## nothing. PUBLIC because a held finger finds its target as a right press does.
+static func nearest(control: Control) -> Node:
 	var at: Node = control
 	# up from the control, for the first node marked a target
 	while at != null and not at.is_in_group(TARGET):
@@ -87,9 +99,8 @@ func payload() -> Dictionary:
 	return _payload.read() if _payload is Bound else _payload
 
 
-## The menu opened over this rect, through the door, and the event spent.
+## The menu opened over this rect, through the door.
 func _open(at: Rect2) -> void:
-	get_viewport().set_input_as_handled()
 	_ui.commands.dispatch(_region, _opens, {"parameter": {"actions": _actions, "payload": payload(), "region": _region, "at": at}})
 
 
