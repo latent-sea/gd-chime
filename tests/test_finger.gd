@@ -44,6 +44,7 @@ func _init() -> void:
 	await _verdict.states(_a_finger_on_a_slider_moves_no_list)
 	await _verdict.states(_on_a_phone_s_window_a_pressable_is_at_least_the_look_s_least)
 	await _verdict.states(_a_press_taller_than_its_words_stands_them_in_its_middle)
+	await _verdict.states(_a_press_gives_under_a_hand_held_on_it_and_springs_back)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -238,4 +239,65 @@ func _a_press_taller_than_its_words_stands_them_in_its_middle() -> void:
 	# words are drawn from the top of their label, a line tall, wherever its box stretches to
 	var off := label.global_position.y + label.get_combined_minimum_size().y / 2.0 - room.get_center().y
 	_verdict.check(absf(off) <= 1.0, "and its words stand in the middle of it, within a pixel: %s off" % off)
+	_done()
+
+
+## Under a look whose press scale is 940: a row pressed with the mouse is
+## drawn at that scale once the restyle has run, and whole again once the
+## emphasis has; a finger landing does the same, and drawn on into a scroll
+## the row is whole again; with reduced motion a press gives nothing; and
+## the floor's own thousand gives nothing at all.
+func _a_press_gives_under_a_hand_held_on_it_and_springs_back() -> void:
+	await _standing()
+	var motion := _made.ui.motion
+	motion.by_hand = true
+	motion.still = false
+	var row: Pressable = _made.ui.node_named(&"row 3")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.position = _on_window(_middle(&"row 3"))
+	click.pressed = true
+	root.push_input(click)
+	await process_frame
+	motion.step(1.0)
+	_verdict.check(row.scale == Vector2.ONE, "under the floor's press scale of a thousand, a press gives nothing: %s" % [row.scale])
+	click.pressed = false
+	root.push_input(click)
+	await process_frame
+	root.theme.set_constant(&"press_scale", &"Motion", 940)
+	# the frame the look's change reaches the rows in
+	await process_frame
+	click.pressed = true
+	root.push_input(click)
+	await process_frame
+	motion.step(motion.lasts(&"restyle", row) / 2.0)
+	var landing := row.scale
+	motion.step(motion.lasts(&"restyle", row) / 2.0)
+	_verdict.check(landing.x < 1.0 and landing.x > 0.94 and is_equal_approx(row.scale.x, 0.94) and is_equal_approx(row.scale.y, 0.94), "held down with the mouse, it gives on the clock and reaches the look's press scale: %s then %s" % [landing, row.scale])
+	_verdict.check(row.pivot_offset_ratio == Vector2(0.5, 0.5) and row.get_combined_minimum_size() == _made.ui.node_named(&"row 4").get_combined_minimum_size(), "about its middle, and never laid out smaller than a row not held")
+	click.pressed = false
+	root.push_input(click)
+	await process_frame
+	motion.step(motion.lasts(&"emphasis", row))
+	_verdict.check(row.scale == Vector2.ONE, "let go, it springs back whole once the emphasis has run: %s" % [row.scale])
+	await _touch(_middle(&"row 5"), true)
+	var five: Pressable = _made.ui.node_named(&"row 5")
+	motion.step(motion.lasts(&"restyle", five))
+	var touched := five.scale
+	await _drawn(_middle(&"row 5"), [Vector2(0, -40), Vector2(0, -40)], false)
+	motion.step(motion.lasts(&"emphasis", five))
+	_verdict.check(is_equal_approx(touched.x, 0.94) and five.scale == Vector2.ONE and _scroll.scroll_vertical > 0, "a finger landing gives it too, and drawn on into a scroll, it is whole again: %s then %s" % [touched, five.scale])
+	await _touch(_middle(&"row 5"), false)
+	motion.told(&"reduces_motion", {"on": true})
+	click.position = _on_window(_middle(&"row 3"))
+	click.pressed = true
+	root.push_input(click)
+	await process_frame
+	var reduced := row.scale
+	motion.step(1.0)
+	_verdict.check(reduced == Vector2.ONE and row.scale == Vector2.ONE, "with reduced motion, a press gives nothing: %s then %s" % [reduced, row.scale])
+	click.pressed = false
+	root.push_input(click)
+	await process_frame
+	root.theme.set_constant(&"press_scale", &"Motion", 1000)
 	_done()
