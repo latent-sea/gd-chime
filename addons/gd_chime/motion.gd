@@ -139,7 +139,13 @@ func run(from: Variant, to: Variant, easing: StringName, apply: Callable, fades:
 ## A wait on the one clock (run.gd, waiting): done once the look's token, in
 ## milliseconds, has passed - stepped like every run, and never shortened.
 func after(token: StringName, done: Callable, under: Control = null) -> Run:
-	var made: Run = Run.waiting(get_token(token, under) / 1000.0, done)
+	return wait(get_token(token, under) / 1000.0, done)
+
+
+## A wait on the one clock of this many seconds, for a time a look holds
+## under another type than Motion - a finger held (touch.gd).
+func wait(seconds: float, done: Callable) -> Run:
+	var made: Run = Run.waiting(seconds, done)
 	_runs.append(made)
 	return made
 
