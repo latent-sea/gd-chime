@@ -43,6 +43,7 @@ func _init() -> void:
 	await _verdict.states(_a_list_at_its_top_lets_a_finger_drawn_down_go_by)
 	await _verdict.states(_a_finger_on_a_slider_moves_no_list)
 	await _verdict.states(_on_a_phone_s_window_a_pressable_is_at_least_the_look_s_least)
+	await _verdict.states(_a_press_taller_than_its_words_stands_them_in_its_middle)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -221,4 +222,20 @@ func _on_a_phone_s_window_a_pressable_is_at_least_the_look_s_least() -> void:
 	for frame: int in 4:
 		await process_frame
 	_verdict.check(tall.y < least and row.get_combined_minimum_size().y >= least, "narrowed on its end to a phone's without turning, it is at least the least at once: %s then %s" % [tall, row.get_combined_minimum_size()])
+	_done()
+
+
+## On a phone's window a row of one line is the least touch size tall, well
+## over twice its line: its words stand in the middle of the room its box
+## leaves, not at the top of it.
+func _a_press_taller_than_its_words_stands_them_in_its_middle() -> void:
+	await _standing(Vector2i(720, 1280))
+	var row: Pressable = _made.ui.node_named(&"row 5")
+	var label: Label = row.find_children("*", "Label", true, false)[0]
+	var box := row.get_drawn_box()
+	var room := Rect2(row.global_position + Vector2(box.get_margin(SIDE_LEFT), box.get_margin(SIDE_TOP)), row.size - box.get_minimum_size())
+	_verdict.check(room.size.y >= 2.0 * label.get_combined_minimum_size().y, "the room inside the row is at least twice its line: %s against %s" % [room.size.y, label.get_combined_minimum_size().y])
+	# words are drawn from the top of their label, a line tall, wherever its box stretches to
+	var off := label.global_position.y + label.get_combined_minimum_size().y / 2.0 - room.get_center().y
+	_verdict.check(absf(off) <= 1.0, "and its words stand in the middle of it, within a pixel: %s off" % off)
 	_done()
