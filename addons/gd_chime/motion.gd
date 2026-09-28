@@ -80,6 +80,8 @@ var by_hand: bool = false
 var still: bool = false
 ## The budget this answers to, if any.
 var budget: FrameBudget = null
+## How long the clock has run, in seconds - by hand, as far as it was stepped: what a moving ground is drawn at.
+var time: float = 0.0
 
 var _reduced := value(false)
 var _under: Node  # what this stands under, whose look the tokens are read from
@@ -142,8 +144,7 @@ func after(token: StringName, done: Callable, under: Control = null) -> Run:
 	return wait(get_token(token, under) / 1000.0, done)
 
 
-## A wait on the one clock of this many seconds, for a time a look holds
-## under another type than Motion - a finger held (touch.gd).
+## A wait on the one clock of this many seconds: a time held under another type, a finger's (touch.gd).
 func wait(seconds: float, done: Callable) -> Run:
 	var made: Run = Run.waiting(seconds, done)
 	_runs.append(made)
@@ -220,6 +221,7 @@ func _process(delta: float) -> void:
 
 ## Every run moved on by this long, in the order they began; the arrived and the stopped let go.
 func step(seconds: float) -> void:
+	time += seconds
 	for one: Run in _runs.duplicate():
 		_advance(one, seconds)
 
