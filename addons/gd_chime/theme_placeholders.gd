@@ -152,6 +152,8 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"swipe_commit", &"Touch", 400)
 	# how far a scroll let go moving glides on: as far as the finger's speed carries it in this many milliseconds (scroll_finger.gd)
 	theme.set_constant(&"glide", Motion.TYPE, 350)
+	# how small a press is drawn while a hand is held on it, in thousandths: a thousand, nothing (face_give.gd)
+	theme.set_constant(&"press_scale", Motion.TYPE, 1000)
 
 
 ## The placeholder chime: a soft sine at its pitch, rising in over the
