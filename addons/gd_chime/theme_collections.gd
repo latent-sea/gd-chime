@@ -122,6 +122,8 @@ static func dress(theme: Theme, palette: Dictionary) -> void:
 ## card on the lit ground, and, carried, a hole in the ground where it was.
 static func _board(theme: Theme, palette: Dictionary) -> void:
 	theme.set_type_variation(LANE, Themes.PRESSABLE)
+	# a lane's cards run down the whole of it, never stood in its middle as a press's words are
+	theme.set_constant(&"align", LANE, Flex.STRETCH)
 	var lane := {&"normal": _round(palette[&"raised"], 8.0), &"hover": _round(palette[&"raised"], 8.0), &"accepting": _round(palette[&"raised"], 8.0, palette[&"accent"], 3), &"refusing": _round(palette[&"ground"], 8.0, palette[&"ink_soft"], 3)}
 	# every state a lane passes through, its box and its words in the ink
 	for state: StringName in lane:
