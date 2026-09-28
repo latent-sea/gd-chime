@@ -57,7 +57,8 @@ const Touch := preload("touch.gd")
 ## own (touch.gd): landing, it presses nothing, since the finger may be about to
 ## scroll or swipe; lifted over the control without having moved past the
 ## look's slop, it presses and lets go at once; moved further, it is a gesture
-## and presses nothing. Lifted anywhere, it leaves no hover behind.
+## and presses nothing. Lifted anywhere, it leaves no hover behind. The hand
+## DOWN on it is held_down(down), a finger's from landing to its lift or gesture.
 ##
 ## Anything that renders takes mouse events by default, so a screen that must
 ## not intercept a click sets its own mouse_filter to ignore.
@@ -139,10 +140,14 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 		return
 	if Touch.from_finger(event):
+		var was_down := _tap.is_down()
 		# a tap presses and lets go at once, and a finger lifted leaves no hover
 		if _tap.read(event, self):
 			_press(true)
 			_press(false)
+		# landing, the hand is down on it; lifted, or gone past the slop into a gesture, it is not
+		if _tap.is_down() != was_down:
+			held_down(_tap.is_down())
 		if event is InputEventMouseButton and not event.is_pressed():
 			hovered(false)
 		return
@@ -150,11 +155,18 @@ func _gui_input(event: InputEvent) -> void:
 	if click == null:
 		return
 	if click.button_index == MOUSE_BUTTON_LEFT:
+		held_down(click.pressed)
 		_press(click.pressed)
 	elif click.pressed and click.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 		scrolled(1)
 	elif click.pressed and click.button_index == MOUSE_BUTTON_WHEEL_UP:
 		scrolled(-1)
+
+
+## A hand down on this control or lifted - a pointer's button, or a finger
+## until it lifts or becomes a gesture - whatever a press then does. Overridden.
+func held_down(_down: bool) -> void:
+	pass
 
 
 ## Be pressed again while a press is held: after wait seconds, then every
