@@ -24,7 +24,8 @@ const FaceInk := preload("face_ink.gd")
 ## IN IS FACE_INK.GD'S, which says why words on a press are never the kind
 ## of words' own colour and why it stops at a press inside this one. A
 ## style the look does not know is drawn as a pressable. Its content sits
-## across it, inside the box's padding, and takes no press: the engine
+## across it, inside the box's padding, standing down it where the style's
+## align says (Flex's START to STRETCH), and takes no press: the engine
 ## decides a press landed here whichever part is under the pointer.
 ##
 ## A CHANGE OF LOOK BLENDS. When the box it is drawn in changes - its state
@@ -117,7 +118,7 @@ func get_drawn() -> Array[StyleBox]:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN:
-		Inset.fit(self, _settled_box())
+		Inset.fit(self, _settled_box(), get_theme_constant(&"align"))
 		var reach := DrawnReach.walked(self, get_drawn_box())
 		# its reach moved: what holds it measures again, making room for this one
 		if reach != _reach:
