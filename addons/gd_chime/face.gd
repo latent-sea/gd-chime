@@ -7,6 +7,7 @@ const Motion := preload("motion.gd")
 const Outgoing := preload("components/primitives/outgoing.gd")
 const DrawnReach := preload("components/primitives/drawn_reach.gd")
 const FaceInk := preload("face_ink.gd")
+const FaceGive := preload("face_give.gd")
 
 ## A face: how a thing that can be pressed looks - one box and one ink for
 ## the state it is in, under its style, holding whatever content it has.
@@ -24,17 +25,16 @@ const FaceInk := preload("face_ink.gd")
 ## IN IS FACE_INK.GD'S, which says why words on a press are never the kind
 ## of words' own colour and why it stops at a press inside this one. A
 ## style the look does not know is drawn as a pressable. Its content sits
-## across it, inside the box's padding, standing down it where the style's
-## align says (Flex's START to STRETCH), and takes no press: the engine
-## decides a press landed here whichever part is under the pointer.
+## inside the box's padding, down it where the style's align says, taking no
+## press: the engine decides a press landed here whichever part is under it.
 ##
 ## A CHANGE OF LOOK BLENDS. When the box it is drawn in changes - its state
-## moved, or its bound style did - the box it had is left fading over the
-## new one (outgoing.gd); when its ink changes, even under one box two
-## states share, its ink goes smoothly from the one colour to the other, by the look's restyle easing on the one clock, handed to it
-## as motion by the builder. One built by hand has no clock, and switches.
-## Content put in after it was first drawn is inked as it arrives. Words in
-## the ink already are left alone: a label told its colour shapes its words again.
+## moved, or its bound style did - the box it had fades over the new one
+## (outgoing.gd); when its ink changes, even under one box two states share,
+## its ink goes smoothly to the new, by the look's restyle easing on the one
+## clock the builder hands it as motion. Built by hand, with no clock, it
+## switches. Content put in after it was first drawn is inked as it arrives;
+## words already in the ink are left alone: a label told its colour shapes them again.
 ##
 ## IT RINGS THE MOMENTS OF A HAND. A press landing, the pointer arriving and
 ## focus starting to show are bells in the GLOBAL region, named by
@@ -91,6 +91,11 @@ func hovered(inside: bool) -> void:
 func focused(shown: bool) -> void:
 	_focused = shown
 	needs_refresh()
+
+
+## A hand down on it or lifted: it gives under it as the look says (face_give.gd).
+func held_down(down: bool) -> void:
+	FaceGive.held(self, motion, down)
 
 
 ## One of interaction.gd's moments, sounded where the chimes are.
