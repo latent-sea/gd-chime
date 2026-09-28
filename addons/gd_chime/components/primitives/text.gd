@@ -6,6 +6,7 @@ const Styled := preload("styled.gd")
 const Language := preload("../../language.gd")
 const Phrase := preload("../../phrase.gd")
 const DrawnReach := preload("drawn_reach.gd")
+const GradedWords := preload("graded_words.gd")
 
 ## Words: a phrase, data, or a bound value read again whenever what it read
 ## moves - a phrase said in the language on as it is drawn.
@@ -13,7 +14,8 @@ const DrawnReach := preload("drawn_reach.gd")
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
 ## The style is a Theme name, a variation of Label, and the words are sized
-## and coloured by it; nothing here knows a colour or a size. Hidden while
+## and coloured by it - graded, where the kind names a gradient
+## (graded_words.gd); nothing here knows a colour or a size. Hidden while
 ## empty when built so, as a reason under a button is.
 ##
 ## A REASON WRAPS. It is a sentence on the face of a thing that may be no
@@ -94,6 +96,9 @@ func _notification(what: int) -> void:
 	# another look, or the look dressed in another font: the reach is worked out again when next asked
 	if what == NOTIFICATION_THEME_CHANGED:
 		_reach = []
+	# resized or dressed again, its words may stand elsewhere across it: graded across where they are now
+	if what == NOTIFICATION_RESIZED or what == NOTIFICATION_THEME_CHANGED:
+		GradedWords.dress(_label)
 
 
 ## How far its words' box draws past its edge on this side, as last worked out.
@@ -115,6 +120,7 @@ func refresh() -> void:
 	if _label.theme_type_variation != kind:
 		_wear(kind)
 	_label.text = said(_content.read() if _content is Bound else _content)
+	GradedWords.dress(_label)
 	if _hides_empty:
 		visible = _label.text != ""
 
@@ -158,6 +164,7 @@ func _wear(kind: StringName) -> void:
 	var inked_by_another: bool = _label.has_theme_color_override(&"font_color") and _inking == null
 	var before := _label.get_theme_color(&"font_color")
 	_label.theme_type_variation = kind
+	GradedWords.dress(_label)
 	# another kind of words may be set in another box: worked out again, and the line holding it told
 	_reach = []
 	DrawnReach.tell_holder(self)
@@ -176,10 +183,11 @@ func _inked(colour: Color) -> void:
 	_label.add_theme_color_override(&"font_color", colour)
 
 
-## Arrived: the colour is the kind's own again, and follows the look.
+## Arrived: the colour is the kind's own again, and follows the look - graded, if the kind is.
 func _settled() -> void:
 	_label.remove_theme_color_override(&"font_color")
 	_inking = null
+	GradedWords.dress(_label)
 
 
 ## The builder's door for words, and for a reason: the pressable's answer.
