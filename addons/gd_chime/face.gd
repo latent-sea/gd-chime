@@ -29,8 +29,8 @@ const FaceInk := preload("face_ink.gd")
 ##
 ## A CHANGE OF LOOK BLENDS. When the box it is drawn in changes - its state
 ## moved, or its bound style did - the box it had is left fading over the
-## new one (outgoing.gd) and its ink goes smoothly from the one colour to
-## the other, by the look's restyle easing on the one clock, handed to it
+## new one (outgoing.gd); when its ink changes, even under one box two
+## states share, its ink goes smoothly from the one colour to the other, by the look's restyle easing on the one clock, handed to it
 ## as motion by the builder. One built by hand has no clock, and switches.
 ## Content put in after it was first drawn is inked as it arrives. Words in
 ## the ink already are left alone: a label told its colour shapes its words again.
@@ -175,8 +175,10 @@ func _blend(state: StringName) -> void:
 	var ink := FaceInk.of_state(self, state)
 	if motion == null or _last_box == null or not is_visible_in_tree():
 		_inked(ink)
-	elif box != _last_box:
-		Outgoing.leave(self, _last_box, motion)
+	# the box moved, or the ink did under one box two states share: the ink it is heading for is a running blend's end, else the one it is in
+	elif box != _last_box or ink != (_inking.to if _inking != null and not _inking.is_over() else _ink_now):
+		if box != _last_box:
+			Outgoing.leave(self, _last_box, motion)
 		if _inking == null:
 			_inking = motion.run(_ink_now, ink, Motion.RESTYLE, _inked, true)
 		else:
