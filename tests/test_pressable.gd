@@ -43,6 +43,7 @@ func _init() -> void:
 	await _verdict.states(_it_draws_the_look_s_stylebox_and_ink_for_each_of_its_four_states)
 	await _verdict.states(_a_change_of_look_blends_the_old_box_fading_over_the_new_and_the_ink_between)
 	await _verdict.states(_a_change_mid_blend_never_jumps_and_reduced_or_with_no_clock_it_is_short_or_at_once)
+	await _verdict.states(_a_state_sharing_its_box_with_another_still_takes_its_own_ink)
 	await _verdict.states(_its_payload_is_read_as_the_press_lands_and_its_reason_is_read_as_it_draws)
 	await _verdict.states(_a_bell_button_holds_the_words_and_the_reason_hidden_while_empty)
 	await _verdict.states(_one_described_current_while_a_value_holds_is_current_then_and_only_then_wherever_it_goes)
@@ -192,6 +193,37 @@ func _a_change_mid_blend_never_jumps_and_reduced_or_with_no_clock_it_is_short_or
 	model.refuse_nothing()
 	await _a_frame_passes()
 	_verdict.check(_going(pressed).is_empty() and label.get_theme_color(&"font_color") == root.theme.get_color(&"font_color_normal", Themes.PRESSABLE), "with no clock handed to it, a change of look switches")
+	model.free()
+	made.done()
+
+
+## A look may draw two states in one box and tell them apart by ink alone -
+## a link faded while inert. A press built refused, then made usable, is
+## drawn in the same box throughout, and its words still end in normal's ink.
+func _a_state_sharing_its_box_with_another_still_takes_its_own_ink() -> void:
+	var was: StyleBox = root.theme.get_stylebox(&"inert", Themes.PRESSABLE)
+	var shared: StyleBox = root.theme.get_stylebox(&"normal", Themes.PRESSABLE)
+	root.theme.set_stylebox(&"inert", Themes.PRESSABLE, shared)
+	var made := Fixture.new(root, {&"adds": "add one"})
+	var model := Fixture.Model.new(made.chimes, &"app")
+	made.commands.register(&"app", &"adds", model)
+	model.refuse(&"adds", Phrase.of("not yet"))
+	var pressed := _app(made, &"adds", [made.ui.text(made.ui.words(&"adds"))])
+	made.ui.motion.by_hand = true
+	made.ui.motion.still = false
+	await _a_frame_passes()
+	pressed.release_focus()
+	var label: Label = _texts_under(pressed)[0].get_child(0)
+	var normal_ink: Color = root.theme.get_color(&"font_color_normal", Themes.PRESSABLE)
+	var inert_ink: Color = root.theme.get_color(&"font_color_inert", Themes.PRESSABLE)
+	_verdict.check(pressed.get_state() == &"inert" and label.get_theme_color(&"font_color") == inert_ink and inert_ink != normal_ink, "built refused, its words are in inert's ink, which is not normal's: %s" % label.get_theme_color(&"font_color").to_html(false))
+	model.refuse_nothing()
+	await _a_frame_passes()
+	made.ui.motion.step(1.0)
+	await _a_frame_passes()
+	_verdict.check(pressed.get_state() == &"normal" and pressed.get_drawn()[0] == shared and _going(pressed).is_empty(), "made usable, it is drawn in the one shared box, with no box going out over it")
+	_verdict.check(label.get_theme_color(&"font_color") == normal_ink, "and its words have gone to normal's ink though the box never changed: %s, wanted %s" % [label.get_theme_color(&"font_color").to_html(false), normal_ink.to_html(false)])
+	root.theme.set_stylebox(&"inert", Themes.PRESSABLE, was)
 	model.free()
 	made.done()
 
