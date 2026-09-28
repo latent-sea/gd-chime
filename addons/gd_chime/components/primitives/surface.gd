@@ -17,6 +17,13 @@ const Bound := preload("bound.gd")
 ## look does not know is drawn as a surface. A style with a blur constant
 ## blurs what is behind it by that much before the panel is drawn over -
 ## frosted glass - through one shader on a rect under everything.
+##
+## A GROUND THAT MOVES: a style with the moves constant set is drawn again
+## every time the one clock moves on, while it is shown, and its panel is
+## handed the clock's time as it is drawn - the panel's own time property,
+## which a stylebox drawing drifting light reads - so a test stepping the
+## clock by hand sees each step drawn. Reduced motion and a frame over budget
+## hold it still where it is; a panel without a time property is an error.
 
 const FROST := "shader_type canvas_item;
 uniform sampler2D screen : hint_screen_texture, filter_linear_mipmap;
@@ -29,6 +36,8 @@ var _style: Variant  # the style described - a name, or a Bound reading one - tr
 var _chimes: RefCounted  # the chimes a bound style is heard through, or none
 var _reading: bool = false  # while the look is being read, so a fallback set here is not heard as another look
 var _frost: ColorRect  # the blurring rect under the content, or none
+var _moves: bool = false  # whether its style's ground moves, drawn on the clock
+var _drawn_at: float = -1.0  # the clock's time its moving ground was last drawn at
 
 
 func _init(style: Variant, chimes: RefCounted = null) -> void:
@@ -68,6 +77,9 @@ func _notification(what: int) -> void:
 		_read_look()
 	if what == NOTIFICATION_PREDELETE and _chimes != null:
 		_chimes.stop_all(self)
+	# the engine turns processing on as a script defining _process is ready: a ground that never moves turns it off again
+	if what == NOTIFICATION_READY:
+		set_process(_moves)
 
 
 ## The style it says now, worn; the base where the look does not know it.
@@ -77,6 +89,9 @@ func _read_look() -> void:
 	if not has_theme_stylebox(&"panel"):
 		_wear(Themes.SURFACE)
 	_frosted(get_theme_constant(&"blur") if has_theme_constant(&"blur") else 0)
+	# a moving ground looks at the clock every frame; any other ground never
+	_moves = motion != null and get_theme_constant(&"moves") != 0
+	set_process(_moves)
 	_reading = false
 	queue_redraw()
 	queue_sort()
@@ -103,8 +118,20 @@ func _frosted(blur: int) -> void:
 	(_frost.material as ShaderMaterial).set_shader_parameter(&"amount", float(blur))
 
 
+## A moving ground drawn again once the clock has moved on, while it is
+## shown and motion is neither reduced nor over its budget.
+func _process(_delta: float) -> void:
+	var held := motion.get_reduced() or (motion.budget != null and motion.budget.is_over())
+	if motion.time != _drawn_at and is_visible_in_tree() and not held:
+		queue_redraw()
+
+
 func _draw() -> void:
-	draw_style_box(get_theme_stylebox(&"panel"), Rect2(Vector2.ZERO, size))
+	var panel: Variant = get_theme_stylebox(&"panel")
+	if _moves:
+		_drawn_at = motion.time
+		panel.time = motion.time
+	draw_style_box(panel, Rect2(Vector2.ZERO, size))
 
 
 ## Its content sits inside the panel's padding: as much room as any part needs, plus the padding.
