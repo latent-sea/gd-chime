@@ -71,6 +71,8 @@ const CENTRED: Array[StringName] = [&"InstructionBar", &"Controls"]
 ## Every press's type put into this theme, from this palette.
 static func dress(theme: Theme, palette: Dictionary) -> void:
 	theme.set_type_variation(Themes.PRESSABLE, &"Control")
+	# a press taller than its content - a finger tall on a phone - stands its content in the middle down it
+	theme.set_constant(&"align", Themes.PRESSABLE, Flex.CENTER)
 	# each state: a flat ground, and the words' colour on it
 	for state: StringName in Themes.GROUNDS:
 		theme.set_stylebox(state, Themes.PRESSABLE, _flat(palette[Themes.GROUNDS[state]]))
