@@ -146,6 +146,8 @@ static func put(theme: Theme) -> void:
 	theme.set_type_variation(&"Touch", &"Control")
 	theme.set_constant(&"slop", &"Touch", 16)
 	theme.set_constant(&"least", &"Touch", 0)
+	# how long a finger held still on a menu's target waits before opening its menu, in milliseconds; none turns it off (touch.gd)
+	theme.set_constant(&"long_press", &"Touch", 500)
 	# how far a row is swiped before letting go does its side's action, in thousandths of its width (swipe.gd)
 	theme.set_constant(&"swipe_commit", &"Touch", 400)
 	# how far a scroll let go moving glides on: as far as the finger's speed carries it in this many milliseconds (scroll_finger.gd)

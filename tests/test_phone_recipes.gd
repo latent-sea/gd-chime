@@ -2,7 +2,8 @@ extends SceneTree
 const Actions := preload("res://addons/gd_chime/actions.gd")
 
 ## What must be true of the phone's recipes: a swipe row's actions are its
-## menu's too, so the keys reach them; the navigation is a bar at a phone's
+## menu's too, so the keys reach them, and a finger held still on it opens
+## that menu; the navigation is a bar at a phone's
 ## foot and the same destinations a rail beside a wider window; a failed
 ## asking is said the one way - a notification and the mark on the thing -
 ## with a way to ask again and nothing lost; and the connection's line and
@@ -31,6 +32,8 @@ const AdaptiveNav := preload("res://addons/gd_chime/components/recipes/adaptive_
 const PullToRefresh := preload("res://addons/gd_chime/components/recipes/pull_to_refresh.gd")
 const ConnectionStatus := preload("res://addons/gd_chime/components/recipes/connection_status.gd")
 const Verdict := preload("res://tests/verdict.gd")
+const Touch := preload("res://addons/gd_chime/touch.gd")
+const Controller := preload("res://addons/gd_chime/controller.gd")
 
 const OPENS := &"opens"
 const DELIVERS := &"delivers"
@@ -45,6 +48,7 @@ func _init() -> void:
 	root.theme = Themes.new(Themes.NEUTRAL)
 	await process_frame
 	await _verdict.states(_a_swipe_row_s_actions_are_its_menu_s_for_the_keys)
+	await _verdict.states(_a_finger_held_still_on_a_swipe_row_opens_its_menu_and_presses_nothing)
 	await _verdict.states(_the_navigation_is_a_bar_at_a_phone_s_foot_and_the_same_a_rail_beside)
 	await _verdict.states(_a_failed_asking_is_said_one_way_and_loses_nothing)
 	await _verdict.states(_the_connection_s_line_and_each_thing_say_what_awaits_sync)
@@ -107,6 +111,113 @@ func _a_swipe_row_s_actions_are_its_menu_s_for_the_keys() -> void:
 
 	await _frames(3)
 	_verdict.check(made.driver.get_top().has(&"stop"), "and its tap's action picked from the menu goes where a tap goes: %s" % [made.driver.get_top()])
+	made.done()
+
+
+## What hears a finger held: every time it rang.
+class Hears extends Controller:
+	var rang: int = 0
+
+	func _init(chimes: Chimes) -> void:
+		super(chimes, [], Chimes.GLOBAL)
+		register_bell(Touch.HELD)
+		listen([[Chimes.GLOBAL, Touch.HELD]])
+
+	func heard(_what: StringName) -> void:
+		rang += 1
+
+
+## A finger on the glass at a point of the canvas, down or lifted, as a device's touch arrives.
+func _touch(at: Vector2, down: bool) -> void:
+	var touched := InputEventScreenTouch.new()
+	touched.position = root.get_final_transform() * at
+	touched.pressed = down
+	Input.parse_input_event(touched)
+	await process_frame
+
+
+## The one row of a stop, swiped to deliver or report and tapped to open,
+## with the menu; a finger held on it for the look's long press - half a
+## second, stepped by hand - opens its menu where the finger is, offering
+## the row's actions about the row, and rings HELD; the lift presses nothing.
+## Moved past the slop before then, it is a swipe and no menu; lifted
+## sooner, it is a tap; and a long press of none opens nothing, ever.
+func _a_finger_held_still_on_a_swipe_row_opens_its_menu_and_presses_nothing() -> void:
+	var made := Fixture.new(root, {})
+	var table: Dictionary = {}
+	# every action by its own name, the menu's included
+	for action: StringName in [OPENS, DELIVERS, REPORTS, OpenMenu.OPENS, OpenMenu.PICKS]:
+		table[action] = [String(action)]
+	made.actions.declare_all(table)
+	made.inputs.restore_defaults()
+	var model := Fixture.Model.new(made.chimes)
+	var menu := OpenMenu.new(made.chimes, made.commands, made.actions)
+	var hears := Hears.new(made.chimes)
+	# the model, the menu and what hears the moment, under the root
+	for node: Node in [model, menu, hears]:
+		root.add_child(node)
+	# the row's actions answered by the model, the menu's opening by the menu
+	for action: StringName in [OPENS, DELIVERS, REPORTS]:
+		made.commands.register(Chimes.GLOBAL, action, model)
+	made.commands.register(Chimes.GLOBAL, OpenMenu.OPENS, menu)
+	var ui := made.ui
+	var sides := {SwipeRow.RIGHT: {"action": DELIVERS, "words": Phrase.of("delivered"), "state": Status.WELL}, SwipeRow.LEFT: {"action": REPORTS, "words": Phrase.of("report"), "state": Status.FAULT}}
+	var places := ui.tabs(&"places", [ui.screen(&"list", [ui.column([SwipeRow.make(ui, OPENS, {"id": 7}, ui.text("stop 7"), {sides = sides, goes_to = &"stop"}).named(&"row")])]), ui.screen(&"stop", [ui.text("stop 7, open")])])
+	ContextMenu.make(ui, menu)
+	ui.start(ui.app(&"app", [places]))
+	root.size = Vector2i(1920, 1080)
+	await _frames(6)
+	ui.motion.by_hand = true
+	var at: Vector2 = (ui.node_named(&"row") as Control).get_global_rect().get_center()
+	var up: StringName = ui.menu_place
+	await _touch(at, true)
+	ui.motion.step(0.45)
+	await _frames(2)
+	_verdict.check(not made.driver.get_top().has(up) and hears.rang == 0, "held still for less than the long press, no menu yet: %s" % [made.driver.get_top()])
+	ui.motion.step(0.1)
+	await _frames(3)
+	var items: Array = menu.items_of(made.driver.get_parameter(up)) if made.driver.get_top().has(up) else []
+	_verdict.check(items.map(func(item: Dictionary) -> StringName: return item["action"]) == [OPENS, DELIVERS, REPORTS] and items.all(func(item: Dictionary) -> bool: return item["payload"] == {"id": 7}), "held past it, the row's menu opens, offering its tap's action and both sides', about the row: %s" % [items])
+	_verdict.check(items.size() == 3 and (made.driver.get_parameter(up)["at"] as Rect2).position.distance_to(at) < 1.0, "opened where the finger is: %s at %s" % [made.driver.get_parameter(up)["at"] if items.size() == 3 else null, at])
+	_verdict.check(hears.rang == 1, "and HELD rang once as it did: %d" % hears.rang)
+	await _touch(at, false)
+	await _frames(3)
+	_verdict.check(model.told_actions.is_empty() and made.driver.get_top().has(up), "the lift after it presses nothing - not the row, not the menu - and the menu stays: %s %s" % [model.told_actions, made.driver.get_top()])
+	made.commands.dispatch(up, ui.CLOSES, {})
+	await _frames(3)
+	# down, then drawn across past the slop before the time is up, and held on long after
+	await _touch(at, true)
+	var drag := InputEventScreenDrag.new()
+	drag.position = root.get_final_transform() * (at + Vector2(60, 0))
+	drag.relative = root.get_final_transform().basis_xform(Vector2(60, 0))
+	Input.parse_input_event(drag)
+	await _frames(2)
+	var row: Control = ui.node_named(&"row").find_children("*", "Control", true, false).filter(func(one: Node) -> bool: return one.has_method(&"get_slid"))[0]
+	ui.motion.step(1.0)
+	await _frames(2)
+	_verdict.check(not made.driver.get_top().has(up) and row.call(&"get_slid") != 0.0 and hears.rang == 1, "moved past the slop first, it is a swipe - the row slid - and no menu: %s %s" % [row.call(&"get_slid"), made.driver.get_top()])
+	await _touch(at + Vector2(60, 0), false)
+	ui.motion.step(1.0)
+	await _frames(3)
+	root.theme.set_constant(&"long_press", Touch.TYPE, 0)
+	await _touch(at, true)
+	ui.motion.step(2.0)
+	await _frames(2)
+	_verdict.check(not made.driver.get_top().has(up) and hears.rang == 1, "a long press of none: held two seconds, no menu: %s" % [made.driver.get_top()])
+	await _touch(at, false)
+	await _frames(3)
+	_verdict.check(model.told_actions == [OPENS], "and lifted, it is a tap: %s" % [model.told_actions])
+	root.theme.set_constant(&"long_press", Touch.TYPE, 500)
+	made.commands.dispatch(Chimes.GLOBAL, made.driver.GO, {"place": &"list"})
+	await _frames(4)
+	await _touch(at, true)
+	ui.motion.step(0.2)
+	await _frames(2)
+	await _touch(at, false)
+	await _frames(3)
+	_verdict.check(model.told_actions == [OPENS, OPENS] and not made.driver.get_top().has(up), "lifted before the long press, it is a tap as ever, and no menu: %s %s" % [model.told_actions, made.driver.get_top()])
+	for node: Node in [model, menu, hears]:
+		node.free()
 	made.done()
 
 
