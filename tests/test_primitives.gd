@@ -1,7 +1,8 @@
 extends SceneTree
 
 ## What must be true of the content, layout and special primitives, each
-## on its own: text - graded where its kind names a gradient - image, surface, field, row, column, grid, stack,
+## on its own: text - graded where its kind names a gradient - image,
+## surface - its ground moving on the clock where its style says - field, row, column, grid, stack,
 ## scroll, view, canvas and anchored.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
@@ -28,6 +29,7 @@ const Phrase := preload("res://addons/gd_chime/phrase.gd")
 const Driver := preload("res://addons/gd_chime/driver.gd")
 const Look := preload("res://addons/gd_chime/look.gd")
 const GradedWords := preload("res://addons/gd_chime/components/primitives/graded_words.gd")
+const FrameBudget := preload("res://addons/gd_chime/frame_budget.gd")
 
 var _verdict := Verdict.new()
 
@@ -41,6 +43,7 @@ func _init() -> void:
 	await _verdict.states(_words_of_a_kind_named_a_gradient_are_graded_across_themselves_but_never_on_a_press)
 	await _verdict.states(_image_shows_a_texture_or_a_bound_one)
 	await _verdict.states(_surface_draws_its_style_s_panel_under_its_content)
+	await _verdict.states(_a_ground_that_moves_is_drawn_again_as_the_clock_moves_and_only_then)
 	await _verdict.states(_field_dispatches_the_line_typed_and_clears_it_when_done)
 	await _verdict.states(_a_text_works_its_reach_out_once_and_again_only_as_its_look_or_kind_of_words_changes)
 	await _verdict.states(_a_field_shows_why_a_line_was_refused_under_it_until_one_is_not)
@@ -147,8 +150,71 @@ func _surface_draws_its_style_s_panel_under_its_content() -> void:
 	await _a_frame_passes()
 	_verdict.check(surface.get_theme_stylebox(&"panel") == root.theme.get_stylebox(&"panel", Themes.SURFACE) and surface.get_child(0) is Text, "it asks the look for its style's panel and holds its content")
 	_verdict.check(surface.mouse_filter == Control.MOUSE_FILTER_IGNORE, "and takes no press")
+	_verdict.check(not surface.is_processing(), "its ground never moving, it never looks at the clock")
 	surface.free()
 	made.done()
+
+
+## A panel that draws drifting light, as a look's would: the clock's time
+## it was handed each time it was drawn.
+class Drifting extends StyleBox:
+	var time: float = -1.0
+	var drawn: Array[float] = []
+
+	func _draw(_to: RID, _rect: Rect2) -> void:
+		drawn.append(time)
+
+
+## A budget over whatever the frame took, standing in for a slow machine.
+class Overrun extends FrameBudget:
+	func is_over() -> bool:
+		return true
+
+
+## A ground whose style moves, the clock stepped by hand: drawn again at
+## each step's time and never while the clock stands still; not while
+## motion is reduced, while the frame is over budget, or while it is hidden.
+func _a_ground_that_moves_is_drawn_again_as_the_clock_moves_and_only_then() -> void:
+	var drifting := Drifting.new()
+	root.theme.set_type_variation(&"Drifting", Themes.SURFACE)
+	root.theme.set_stylebox(&"panel", &"Drifting", drifting)
+	root.theme.set_constant(&"moves", &"Drifting", 1)
+	var made := Fixture.new(root)
+	var ui := made.ui
+	ui.start(ui.app(&"app", [ui.column([ui.surface(&"Drifting").named(&"ground").grow(), ui.surface(Themes.SURFACE).named(&"still")])]))
+	ui.motion.by_hand = true
+	await _a_frame_passes()
+	_verdict.check(not (ui.node_named(&"still") as Node).is_processing() and (ui.node_named(&"ground") as Node).is_processing(), "a ground that never moves never looks at the clock; one that moves does")
+	var standing := drifting.drawn.size()
+	await _a_frame_passes()
+	await _a_frame_passes()
+	_verdict.check(standing > 0 and drifting.drawn.size() == standing, "the clock standing still, it is not drawn again frame by frame: %d then %d" % [standing, drifting.drawn.size()])
+	var from := ui.motion.time
+	ui.motion.step(0.25)
+	await _a_frame_passes()
+	ui.motion.step(0.25)
+	await _a_frame_passes()
+	_verdict.check(drifting.drawn.slice(standing) == [from + 0.25, from + 0.5], "stepped twice, it is drawn at each step's time: %s" % [drifting.drawn.slice(standing)])
+	var held := drifting.drawn.size()
+	ui.motion.told(&"reduces_motion", {"on": true})
+	ui.motion.step(0.25)
+	await _a_frame_passes()
+	ui.motion.told(&"reduces_motion", {"on": false})
+	var overrun := Overrun.new(made.chimes, 16.0, 0.5, 3)
+	root.add_child(overrun)
+	ui.motion.budget = overrun
+	ui.motion.step(0.25)
+	await _a_frame_passes()
+	ui.motion.budget = null
+	overrun.free()
+	(ui.node_named(&"ground") as Control).visible = false
+	ui.motion.step(0.25)
+	await _a_frame_passes()
+	_verdict.check(drifting.drawn.size() == held, "reduced, over budget, or hidden, the clock moving draws it no more: %s" % [drifting.drawn.slice(held)])
+	made.done()
+	root.theme.clear_type_variation(&"Drifting")
+	root.theme.clear_stylebox(&"panel", &"Drifting")
+	root.theme.clear_constant(&"moves", &"Drifting")
 
 
 func _field_dispatches_the_line_typed_and_clears_it_when_done() -> void:
