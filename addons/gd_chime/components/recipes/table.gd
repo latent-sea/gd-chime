@@ -6,6 +6,7 @@ const Desc := preload("../primitives/desc.gd")
 const Bound := preload("../primitives/bound.gd")
 const FormatMarks := preload("format_marks.gd")
 const Phrase := preload("../../phrase.gd")
+const Themes := preload("../../theme.gd")
 
 ## A table: many items of one set, a line each, read down a column at a time
 ## - the columns named overhead, and every heading a control that sorts by
@@ -62,8 +63,11 @@ static func make(ui: Ui, rows: Bound, columns: Array, options: Dictionary = {}) 
 	for column: Dictionary in columns:
 		headings.append(heading(ui, column, sort, {sorts = sorts}))
 	var line := func(item: Bound) -> Desc: return _line(ui, columns, item)
-	var lines: Desc = ui.virtual_list(long, line) if long != null else ui.scroll(ui.each(rows, line, options["key"]))
-	return ui.column([ui.row(headings, HEAD), lines.grow()], options.get(Options.STYLE, &"Table"))
+	var head := ui.row(headings, HEAD)
+	# lines in a scroll stand inside its padding, so the headings above them are kept in by the same
+	if long == null:
+		return ui.column([ui.surface(Themes.ABOVE_SCROLL, [head]), ui.scroll(ui.each(rows, line, options["key"])).grow()], options.get(Options.STYLE, &"Table"))
+	return ui.column([head, ui.virtual_list(long, line).grow()], options.get(Options.STYLE, &"Table"))
 
 
 ## One heading: the column's words - in this kind, or plain - with the way

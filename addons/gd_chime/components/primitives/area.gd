@@ -1,6 +1,8 @@
 extends "../../presentation.gd"
 
 const Commands := preload("../../commands.gd")
+const Motion := preload("../../motion.gd")
+const ScrollIndicator := preload("scroll_indicator.gd")
 
 ## An area a person types in: words over as many lines as they take,
 ## broken at the width it is given, growing as they grow to the most lines
@@ -23,6 +25,10 @@ const Commands := preload("../../commands.gd")
 ## each the engine's own line height, inside its box. Past the most it
 ## scrolls inside itself, the caret kept in sight by the engine.
 ##
+## WHERE THE READER IS SHOWS OVER IT (scroll_indicator.gd), in the right of
+## its box's padding, as over a scroll: the engine's own bar is kept, for
+## where the words stand, but draws nothing and takes no room.
+##
 ## Reached like any control: a click, or the focus walked to it. Tab and
 ## Shift+Tab walk the focus on out of it, never typed into it; the pad's
 ## directions walk out of it too - measured on 4.6.2, they move no caret -
@@ -36,11 +42,12 @@ var _commands: Commands
 var _changes: StringName  # the action every change is dispatched as
 var _shows: RefCounted  # the Bound the area is set to whenever it moves
 var _area := TextEdit.new()
+var _indicator: ScrollIndicator  # where the reader is in the words, over the engine's own
 var _takes_focus: bool
 var _shown: Variant = null  # the value it showed when it last looked
 
 
-func _init(chimes: Chimes, commands: Commands, changes: StringName, shows: RefCounted, style: StringName, in_region: StringName, takes_focus: bool) -> void:
+func _init(chimes: Chimes, commands: Commands, motion: Motion, changes: StringName, shows: RefCounted, style: StringName, in_region: StringName, takes_focus: bool) -> void:
 	super(chimes, [], in_region)
 	_commands = commands
 	_changes = changes
@@ -53,6 +60,13 @@ func _init(chimes: Chimes, commands: Commands, changes: StringName, shows: RefCo
 	_area.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_area)
 	_area.text_changed.connect(_changed)
+	# the engine's bar, whose look is every list's, drawn as nothing and nothing wide
+	var bar := _area.get_v_scroll_bar()
+	for box: StringName in [&"scroll", &"scroll_focus", &"grabber", &"grabber_highlight", &"grabber_pressed"]:
+		bar.add_theme_stylebox_override(box, StyleBoxEmpty.new())
+	_indicator = ScrollIndicator.new(motion, bar, _area, &"normal")
+	_area.add_child(_indicator, false, Node.INTERNAL_MODE_BACK)
+	_area.gui_input.connect(_touched)
 
 
 ## Built to take the focus, it does once the frame it entered on has shown it.
@@ -83,15 +97,24 @@ func _get_minimum_size() -> Vector2:
 	return Vector2(box.x, box.y + get_lines_shown() * _area.get_line_height())
 
 
-## A new width breaks the words onto a different number of lines.
+## A new width breaks the words onto a different number of lines, and
+## where the reader is may have moved with them.
 func arrange() -> void:
 	update_minimum_size()
+	_indicator.moved()
 
 
 ## Every change through the door, and the height asked again.
 func _changed() -> void:
 	_commands.dispatch(region, _changes, {"text": _area.text})
 	update_minimum_size()
+	_indicator.moved()
+
+
+## Anything the reader does in it - a wheel, a finger, a key - may move the
+## words: where they are is looked at.
+func _touched(_event: InputEvent) -> void:
+	_indicator.moved()
 
 
 func heard(_what: StringName) -> void:
@@ -110,9 +133,10 @@ func refresh() -> void:
 	if words != _area.text:
 		_area.text = words
 		update_minimum_size()
+		_indicator.moved()
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
-	var made: Control = ui.primitive(&"area").new(ui.chimes, ui.commands, desc.props["action"], desc.props["shows"], desc.props["style"], ui.region(), desc.props["takes_focus"])
+	var made: Control = ui.primitive(&"area").new(ui.chimes, ui.commands, ui.motion, desc.props["action"], desc.props["shows"], desc.props["style"], ui.region(), desc.props["takes_focus"])
 	ui.attach(made, parent, desc.facts)
 	return made

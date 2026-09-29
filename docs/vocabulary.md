@@ -24,7 +24,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 - `column` - A row or a column: the line layout (flex.gd) with its gap a Theme name.
 - `grid` - A grid: the column layout (grid.gd) with its gaps Theme names and its columns declared as shares - one set of them, or one per shape of window.
 - `stack` - Pieces over one another, each across the whole of this, the last on top.
-- `scroll` - A window onto one piece taller or wider than the room: the engine's own scrolling, by wheel, drag and bar; and, given a bound value naming a piece, scrolled to bring that piece into view whenever the name moves - the reader's own row on a board.
+- `scroll` - A window onto one piece taller or wider than the room: the engine's own scrolling, by wheel and drag; and, given a bound value naming a piece, scrolled to bring that piece into view whenever the name moves - the reader's own row on a board.
 - `virtual_list` - A window of slots over a long list: one piece per visible slot, built once, each slot told its row again only when what it shows has changed.
 - `cells` - A line of cells at their columns' widths, on a ground: a table's heading line and every one of its rows, laid out alike so each cell stands under its heading - and WHAT A CELL SAYS NEVER MOVES the line.
 - `view` - A sub-viewport: a world of its own drawn inside the interface, holding whatever it was described with.

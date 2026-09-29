@@ -7,6 +7,7 @@ const Sounds := preload("sounds.gd")
 const Pressables := preload("theme_pressables.gd")
 const Fields := preload("theme_fields.gd")
 const Feedback := preload("theme_feedback.gd")
+const ScrollIndicator := preload("components/primitives/scroll_indicator.gd")
 
 ## PLACEHOLDERS, ALL IN ONE PLACE. Numbers somebody had to pick so the floor
 ## could be built, that NOBODY HAS DECIDED: a look sets its own over any of
@@ -56,6 +57,16 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"more_room", &"Scroll", 28)
 	# how far beyond a scroll's either end something is near enough to load (nearness.gd), in thousandths of the scroll's height
 	theme.set_constant(&"reach", &"Scroll", 750)
+	# the room a scroll running down keeps inside it either side of what it holds, in base pixels: its indicator stands in the right
+	theme.set_constant(&"pad", &"Scroll", 8)
+	# where the reader is in what scrolls down (scroll_indicator.gd): how thick, how far in from the box's edge and the least it is long, in base pixels
+	theme.set_constant(&"thickness", ScrollIndicator.TYPE, 4)
+	theme.set_constant(&"inset", ScrollIndicator.TYPE, 2)
+	theme.set_constant(&"least_length", ScrollIndicator.TYPE, 32)
+	# and how long it rests lit after the last move, then how long it fades, in milliseconds; 1 in stays shows it whenever there is more
+	theme.set_constant(&"rests_after", ScrollIndicator.TYPE, 700)
+	theme.set_constant(&"fades_over", ScrollIndicator.TYPE, 300)
+	theme.set_constant(&"stays", ScrollIndicator.TYPE, 0)
 	# a slider, in base pixels: its handle's width, its track's thickness, the least its track is long, and the gap before its value's words
 	theme.set_constant(&"handle_width", Fields.SLIDER, 20)
 	theme.set_constant(&"track_thickness", Fields.SLIDER, 8)

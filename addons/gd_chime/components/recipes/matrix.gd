@@ -46,7 +46,8 @@ static func make(ui: Ui, rows: Bound, columns: Bound, options: Dictionary = {}) 
 	var line := func(row: Bound) -> Desc:
 		var cells := ui.each_across(columns, func(column: Bound) -> Desc: return _crossing(ui, row, column, cell, key, symmetric), key)
 		return ui.row([(row_label.call(row) as Desc).basis(share).at_most(share), cells.basis(1.0 - share)], &"MatrixLine")
-	return ui.column([head, ui.scroll(ui.each(rows, line, key)).grow()], style)
+	# the lines stand inside the scroll's padding, so the labels above them are kept in by the same
+	return ui.column([ui.surface(Themes.ABOVE_SCROLL, [head]), ui.scroll(ui.each(rows, line, key)).grow()], style)
 
 
 ## One crossing: the cell function's description, or nothing past the

@@ -225,7 +225,8 @@ func _a_matrix_places_a_cell_per_crossing_and_shows_one_triangle_of_a_set_agains
 	root.add_child(host)
 	var wide := ui.build(Matrix.make(ui, model.of(&"items"), model.of(&"items"), {cell = cell, row_label = label, column_label = label, key = key, corner = ui.text("the corner words")}), host)
 	await _a_frame_passes()
-	var head: Control = wide.get_child(0)
+	# the labels' line, inside what keeps it in by the scroll's padding
+	var head: Control = wide.get_child(0).get_child(0)
 	var first_line: Control = wide.get_child(1).get_child(0).get_child(0)
 	var label_x: Array = []
 	for piece: Control in head.get_child(1).get_children():

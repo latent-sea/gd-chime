@@ -4,6 +4,7 @@ const Motion := preload("motion.gd")
 const MotionTokens := preload("motion_tokens.gd")
 const Transition := preload("components/primitives/transition.gd")
 const Placeholders := preload("theme_placeholders.gd")
+const ScrollIndicator := preload("components/primitives/scroll_indicator.gd")
 
 ## The look, as the engine's own Theme, built from a palette: placeholder
 ## defaults for exactly the types the primitives and the floor's recipes
@@ -58,6 +59,8 @@ const COLUMN := &"Column"
 const GRID := &"Grid"
 const SURFACE := &"Surface"
 const TILES := &"Tiles"
+## What stands above a scroll running down and lines up with what it holds - a table's headings: kept in from either side by the scroll's own padding.
+const ABOVE_SCROLL := &"AboveScroll"
 const PULSE := &"Pulse"
 const KEYFRAMES := &"Keyframes"
 ## The kinds of words the floor's recipes draw, variations of Label, and running words as a paragraph.
@@ -151,6 +154,18 @@ func _init(palette: Dictionary) -> void:
 	# how wide the band at a scroll's edge is, and how fast a carry there drags it, in base pixels a second
 	set_constant(&"drag_edge", &"Scroll", 64)
 	set_constant(&"drag_edge_speed", &"Scroll", 900)
+	# a scroll running down: the room it keeps either side of what it holds, drawing nothing
+	set_type_variation(&"Scroll", &"ScrollContainer")
+	var room := StyleBoxEmpty.new()
+	room.content_margin_left = get_constant(&"pad", &"Scroll")
+	room.content_margin_right = get_constant(&"pad", &"Scroll")
+	set_stylebox(&"panel", &"Scroll", room)
+	# what stands above one, as its headings do, kept in by the same room, so they line up
+	set_type_variation(ABOVE_SCROLL, SURFACE)
+	set_stylebox(&"panel", ABOVE_SCROLL, room)
+	# where the reader is in it: a mark in the soft ink
+	set_type_variation(ScrollIndicator.TYPE, &"Control")
+	set_color(&"colour", ScrollIndicator.TYPE, palette[&"ink_soft"])
 	# a strip's cover where more lies beyond an end: the ground, ruled in the soft ink on the side facing the things
 	for side: Array in [[&"more_before", SIDE_RIGHT], [&"more_after", SIDE_LEFT]]:
 		var cover := StyleBoxFlat.new()

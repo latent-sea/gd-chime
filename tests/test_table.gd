@@ -78,6 +78,11 @@ func _parts(node: Node, of_kind: String) -> Array:
 	return node.find_children("*", "Control", true, false).filter(func(part: Node) -> bool: return is_instance_of(part, kinds[of_kind]))
 
 
+## The row of headings over the lines, wherever the table stands it.
+func _headings(table: Node) -> Node:
+	return table.find_children("*", "Control", true, false).filter(func(part: Node) -> bool: return (part as Control).theme_type_variation == Table.HEAD)[0]
+
+
 func _columns(counted: Callable = Callable()) -> Array:
 	var name := {"name": "name", "words": "name", "share": 0.6}
 	var count := {"name": "count", "words": "count", "share": 0.4}
@@ -105,7 +110,7 @@ func _every_heading_stands_over_its_own_column() -> void:
 	await _a_frame_passes()
 	var table: Node = made.ui.node_named(&"table")
 	var heading_x: Array = []
-	for heading: Control in table.get_child(0).get_children():
+	for heading: Control in _headings(table).get_children():
 		heading_x.append(heading.global_position.x)
 	var line: Control = _parts(table, "each")[0].get_child(0)
 	var cell_x: Array = []
@@ -122,12 +127,12 @@ func _a_heading_asks_the_model_to_sort_and_says_which_way_it_did() -> void:
 	var model := _a_table(made, _columns())
 	await _a_frame_passes()
 	var table: Node = made.ui.node_named(&"table")
-	_verdict.check(_texts(table.get_child(0)) == ["name ^", "count"], "sorted by name upward, that heading alone carries the mark: %s" % [_texts(table.get_child(0))])
-	(_parts(table.get_child(0), "pressable")[1] as Pressable).pressed()
+	_verdict.check(_texts(_headings(table)) == ["name ^", "count"], "sorted by name upward, that heading alone carries the mark: %s" % [_texts(_headings(table))])
+	(_parts(_headings(table), "pressable")[1] as Pressable).pressed()
 	_verdict.check(model.told_actions == [&"sorts"] and made.commands.get_last()["payload"] == {"column": "count"}, "the count heading pressed asks the model to sort by count: %s" % [made.commands.get_last()["payload"]])
 	model.set_value(&"sort", {"column": "count", "ascending": false})
 	await _a_frame_passes()
-	_verdict.check(_texts(table.get_child(0)) == ["name", "count v"], "the model having sorted by count downward, the mark moves and turns: %s" % [_texts(table.get_child(0))])
+	_verdict.check(_texts(_headings(table)) == ["name", "count v"], "the model having sorted by count downward, the mark moves and turns: %s" % [_texts(_headings(table))])
 	model.free()
 	made.done()
 
@@ -160,9 +165,9 @@ func _a_format_dresses_a_cell_with_a_mark_and_a_kind() -> void:
 	var kinds: Array = _labels(table).map(func(label: Label) -> StringName: return label.theme_type_variation)
 	_verdict.check(dressed == ["apple", "3", "pear", "12 !"], "the value over the threshold carries the format's mark, the one under it none: %s" % [dressed])
 	_verdict.check(kinds.count(Themes.FACE) == 1 and kinds.count(Themes.REASON) == 1, "and the dressed cells are in the format's kinds, not a hue: %s" % [kinds])
-	var grounds: Array = _parts(table, "surface").map(func(part: Control) -> StringName: return part.theme_type_variation)
+	var grounds: Array = _parts(_parts(table, "each")[0], "surface").map(func(part: Control) -> StringName: return part.theme_type_variation)
 	_verdict.check(grounds.count(Themes.SURFACE) == 1 and grounds.count(Table.CELL) == 1, "the marked one sits on the ground the format named, the other on the cell's own, which draws nothing: %s" % [grounds])
-	var before: Array = _parts(table, "surface")
+	var before: Array = _parts(_parts(table, "each")[0], "surface")
 	made.ui.motion.by_hand = true
 	made.ui.motion.still = false
 	var panels: Array = before.map(func(part: Control) -> StyleBox: return part.get_theme_stylebox(&"panel"))
@@ -181,7 +186,7 @@ func _a_format_dresses_a_cell_with_a_mark_and_a_kind() -> void:
 	await _a_frame_passes()
 	_verdict.check(not rising.has_theme_color_override(&"font_color") and rising.get_theme_color(&"font_color") == face_ink and made.ui.motion.get_running() == 0, "the blend over, the colour is the kind's own again and nothing runs")
 	_verdict.check(_texts(_parts(table, "each")[0]) == ["apple", "30 !", "pear", "1"], "the values changed, the dress follows them: %s" % [_texts(_parts(table, "each")[0])])
-	var after: Array = _parts(table, "surface")
+	var after: Array = _parts(_parts(table, "each")[0], "surface")
 	var worn: Array = after.map(func(part: Control) -> StringName: return part.theme_type_variation)
 	_verdict.check(after == before and worn == [Themes.SURFACE, Table.CELL], "each value crossed the threshold and its cell changed ground in place - the same nodes before and after: %s" % [worn])
 	_verdict.check(_parts(table, "each").size() == 1, "and no each stands inside a cell: the lines' own is the only one")
