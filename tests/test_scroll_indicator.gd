@@ -16,7 +16,11 @@ extends SceneTree
 ## clock, or stays where the look says so. A text area shows the same, over
 ## words the engine's own bar takes no room from. The look's ScrollIndicator
 ## alone says how both look, whatever the engine's bars look like, and in
-## every look of the gallery it fits in the padding it stands in.
+## every look of the gallery it fits in the padding it stands in. While it
+## shows, the mark taken by a finger or the mouse and drawn moves the view,
+## the top of its track the start and the bottom the end; its grip is on a
+## phone at least the look's least touch size, pans nothing under it, takes
+## nothing once faded, and stops a glide on its way.
 
 const Fixture := preload("res://tests/fixture.gd")
 const Scroll := preload("res://addons/gd_chime/components/primitives/scroll.gd")
@@ -53,6 +57,10 @@ func _init() -> void:
 	await _verdict.states(_a_text_area_shows_where_the_reader_is_only_when_it_holds_more_than_it_shows)
 	await _verdict.states(_the_look_s_scroll_indicator_alone_says_how_both_look_and_the_engine_s_bars_say_nothing)
 	await _verdict.states(_in_every_look_it_fits_in_the_padding_it_stands_in)
+	await _verdict.states(_a_list_s_mark_taken_by_a_finger_and_drawn_moves_the_view_top_to_the_start_bottom_to_the_end)
+	await _verdict.states(_a_text_area_s_mark_taken_by_the_mouse_and_drawn_moves_the_words_and_gives_it_no_focus)
+	await _verdict.states(_its_grip_is_the_least_touch_size_on_a_phone_and_takes_the_finger_only_while_it_shows)
+	await _verdict.states(_taking_the_mark_stops_a_glide_on_its_way)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -242,3 +250,170 @@ func _in_every_look_it_fits_in_the_padding_it_stands_in() -> void:
 		if needs > scroll or needs > area:
 			over.append("%s needs %d, a scroll keeps %.1f, a text area %.1f" % [named, needs, scroll, area])
 	_verdict.check(over.is_empty(), "in every look the mark fits in the padding: %s" % [over])
+
+
+## Where the mark can be taken hold of, on the canvas.
+func _grip_of(indicator: ScrollIndicator) -> Rect2:
+	return Rect2(indicator.get_global_transform() * indicator.get_grip().position, indicator.get_grip().size)
+
+
+func _touch(at: Vector2, down: bool) -> void:
+	var touched := InputEventScreenTouch.new()
+	touched.position = at
+	touched.pressed = down
+	Input.parse_input_event(touched)
+	await _a_frame_passes()
+
+
+## The finger down drawn to a point, in one drag.
+func _finger_to(from: Vector2, to: Vector2) -> void:
+	var drag := InputEventScreenDrag.new()
+	drag.position = to
+	drag.relative = to - from
+	Input.parse_input_event(drag)
+	await _a_frame_passes()
+
+
+## A mouse's event at a point of the window, through Input, as a mouse sends it.
+func _mouse(event: InputEventMouse, at: Vector2) -> void:
+	event.position = at
+	event.global_position = at
+	Input.parse_input_event(event)
+	await _a_frame_passes()
+
+
+## The mark lit, a finger down on its grip at the top of the track, drawn
+## to the middle and on to the bottom: the view is at the start, half way,
+## then at the end, and no finger gesture pans the list under it. Held
+## still long past when it would fade, it stays lit.
+func _a_list_s_mark_taken_by_a_finger_and_drawn_moves_the_view_top_to_the_start_bottom_to_the_end() -> void:
+	var made := await _listed(200)
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var bar := scroll.get_v_scroll_bar()
+	var indicator := _indicator_of(scroll)
+	bar.value = 300.0
+	await _a_frame_passes()
+	var grip := _grip_of(indicator)
+	var top := Vector2(grip.get_center().x, grip.position.y)
+	var middle := grip.get_center()
+	var bottom := Vector2(grip.get_center().x, grip.end.y)
+	var end := bar.max_value - bar.page
+	await _touch(top, true)
+	var at_top := bar.value
+	await _finger_to(top, middle)
+	var at_middle := bar.value
+	await _finger_to(middle, bottom)
+	var at_bottom := bar.value
+	var taken := made.ui.touch.get_taken()
+	made.ui.motion.step(5.0)
+	await _a_frame_passes()
+	var held := indicator.get_opacity()
+	await _touch(bottom, false)
+	_verdict.check(at_top == 0.0 and absf(at_middle - end / 2.0) < 1.0 and at_bottom == end, "taken at the top of its track the view is at the start, at the middle half way, at the bottom the end: %.1f, %.1f, %.1f of %.1f" % [at_top, at_middle, at_bottom, end])
+	_verdict.check(taken == null, "and no finger gesture panned the list under it: %s" % [taken])
+	_verdict.check(held == 1.0, "held still long past when it would fade, it stays lit: %.2f" % held)
+	made.done()
+
+
+## The words not being typed in and the mark lit, the mouse's button down
+## on its grip at the bottom of the track: the words are at their end, and
+## the area has not taken the focus.
+func _a_text_area_s_mark_taken_by_the_mouse_and_drawn_moves_the_words_and_gives_it_no_focus() -> void:
+	var written := await _written(40)
+	var edit: TextEdit = written[2]
+	var bar := edit.get_v_scroll_bar()
+	edit.release_focus()
+	await _wheel_over(edit)
+	var grip := _grip_of(_indicator_of(edit))
+	var top := Vector2(grip.get_center().x, grip.position.y)
+	var bottom := Vector2(grip.get_center().x, grip.end.y)
+	await _mouse(InputEventMouseMotion.new(), top)
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.button_mask = MOUSE_BUTTON_MASK_LEFT
+	click.pressed = true
+	await _mouse(click, top)
+	var at_top := bar.value
+	var move := InputEventMouseMotion.new()
+	move.button_mask = MOUSE_BUTTON_MASK_LEFT
+	move.relative = bottom - top
+	await _mouse(move, bottom)
+	var at_bottom := bar.value
+	click.pressed = false
+	click.button_mask = 0
+	await _mouse(click, bottom)
+	_verdict.check(at_top == 0.0 and at_bottom == bar.max_value - bar.page, "taken at the top of its track the words are at the start, drawn to the bottom at their end: %.1f, %.1f of %.1f" % [at_top, at_bottom, bar.max_value - bar.page])
+	_verdict.check(not edit.has_focus() and edit.get_selected_text() == "", "and the area took no focus and selected nothing")
+	(written[3] as Words).free()
+	(written[0] as Fixture).done()
+
+
+## Under a look whose least touch size is 48, on a phone's window: the grip
+## is at least 48 wide though the mark is drawn 4 wide, and while the mark
+## shows a finger on the grip pans nothing; faded, the same finger pans the
+## list under it.
+func _its_grip_is_the_least_touch_size_on_a_phone_and_takes_the_finger_only_while_it_shows() -> void:
+	root.theme.set_constant(&"least", &"Touch", 48)
+	var made := await _listed(200)
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var indicator := _indicator_of(scroll)
+	scroll.get_v_scroll_bar().value = 300.0
+	await _a_frame_passes()
+	var grip := _grip_of(indicator)
+	var on := grip.get_center() - Vector2(20, 0)
+	await _touch(on, true)
+	await _finger_to(on, on + Vector2(0, -60))
+	var shown := made.ui.touch.get_taken()
+	await _touch(on + Vector2(0, -60), false)
+	# long past when it fades, with nothing moving it
+	made.ui.motion.step(5.0)
+	await _a_frame_passes()
+	var faded := indicator.get_opacity()
+	await _touch(on, true)
+	await _finger_to(on, on + Vector2(0, -60))
+	var gone := made.ui.touch.get_taken()
+	await _touch(on + Vector2(0, -60), false)
+	_verdict.check(grip.size.x >= 48.0 and indicator.get_mark().size.x == 4.0, "on a phone's window the grip is at least the least touch size, the mark drawn thin: %.1f, %.1f, phone %s" % [grip.size.x, indicator.get_mark().size.x, root.get_meta(&"phone", false)])
+	_verdict.check(shown == null, "while the mark shows, a finger on the grip pans nothing: %s" % [shown])
+	_verdict.check(faded == 0.0 and gone == scroll, "faded, a finger there pans the list: %.2f, %s" % [faded, gone])
+	root.theme.set_constant(&"least", &"Touch", 0)
+	made.done()
+
+
+## A list, and a text area, let go moving up, gliding on on the clock: its
+## mark taken at the top of its track puts the view at the start, and the
+## glide moves it no further as the clock runs on.
+func _taking_the_mark_stops_a_glide_on_its_way() -> void:
+	var made := await _listed(200)
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var listed := await _glide_then_take(made, scroll, scroll.get_v_scroll_bar())
+	made.done()
+	var written := await _written(40)
+	var edit: TextEdit = written[2]
+	edit.release_focus()
+	var words := await _glide_then_take(written[0], edit, edit.get_v_scroll_bar())
+	(written[3] as Words).free()
+	(written[0] as Fixture).done()
+	_verdict.check(listed[0] > 0.0 and listed[1] == 0.0, "a list gliding on at %.1f, its mark taken at the top of its track holds it at the start as the clock runs on: %.1f" % listed)
+	_verdict.check(words[0] > 0.0 and words[1] == 0.0, "a text area gliding on at %.1f, the same: %.1f" % words)
+
+
+## Flung up, a step of its glide run, then its mark taken at the top of its
+## track and the clock run on: where it was gliding, and where it stands.
+func _glide_then_take(made: Fixture, over: Control, bar: Range) -> Array:
+	made.ui.motion.still = false
+	var at := over.get_global_rect().get_center() - Vector2(100, 0)
+	await _touch(at, true)
+	await _finger_to(at, at + Vector2(0, -80))
+	await _finger_to(at + Vector2(0, -80), at + Vector2(0, -200))
+	await _touch(at + Vector2(0, -200), false)
+	made.ui.motion.step(0.05)
+	var gliding := bar.value
+	var grip := _grip_of(_indicator_of(over))
+	var top := Vector2(grip.get_center().x, grip.position.y)
+	await _touch(top, true)
+	made.ui.motion.step(1.0)
+	await _a_frame_passes()
+	var taken := bar.value
+	await _touch(top, false)
+	return [gliding, taken]

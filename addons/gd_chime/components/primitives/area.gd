@@ -3,6 +3,7 @@ extends "../../presentation.gd"
 const Commands := preload("../../commands.gd")
 const Motion := preload("../../motion.gd")
 const ScrollIndicator := preload("scroll_indicator.gd")
+const ScrollFinger := preload("scroll_finger.gd")
 
 ## An area a person types in: words over as many lines as they take,
 ## broken at the width it is given, growing as they grow to the most lines
@@ -27,7 +28,19 @@ const ScrollIndicator := preload("scroll_indicator.gd")
 ##
 ## WHERE THE READER IS SHOWS OVER IT (scroll_indicator.gd), in the right of
 ## its box's padding, as over a scroll: the engine's own bar is kept, for
-## where the words stand, but draws nothing and takes no room.
+## where the words stand, but draws nothing and takes no room. Taken hold
+## of and drawn, the mark scrolls the words.
+##
+## A FINGER DRAWN ALONG IT SCROLLS THE WORDS, as a finger pans a list
+## (scroll_finger.gd), and glides on let go - the finger's pixels handed on
+## as the engine's lines. The engine never hears a finger's mouse, which
+## would select as it is drawn: lifted where it landed it puts the caret
+## there, and held there for the look's long press (Touch/long_press, in
+## milliseconds on the one clock) it selects the word under it. A finger
+## landing on the words while they are not being typed in gives them no
+## focus until it lifts - the engine hands the focus to what a press lands
+## on before that hears it - so a finger drawn along them brings up no
+## keyboard. The mouse is the engine's as ever: drawn, it selects.
 ##
 ## Reached like any control: a click, or the focus walked to it. Tab and
 ## Shift+Tab walk the focus on out of it, never typed into it; the pad's
@@ -35,14 +48,20 @@ const ScrollIndicator := preload("scroll_indicator.gd")
 ## while the keyboard's arrows move the caret, as in any typed line. Its
 ## look is its style's, a variation of TextEdit.
 ##
-## Deliberately absent: an on-screen keyboard, a count of what is left, and
-## the words' own history.
+## Deliberately absent: an on-screen keyboard, a count of what is left, the
+## words' own history, and handles a finger draws to widen a selection.
 
 var _commands: Commands
+var _motion: Motion
 var _changes: StringName  # the action every change is dispatched as
 var _shows: RefCounted  # the Bound the area is set to whenever it moves
 var _area := TextEdit.new()
 var _indicator: ScrollIndicator  # where the reader is in the words, over the engine's own
+var _finger: ScrollFinger  # a finger scrolling the words, in lines
+var _on_words := Touch.Tap.new()  # a finger on the words, read as a tap or a gesture
+var _holding: Motion.Run = null  # the wait for a long press while the finger stays still, or none
+var _at := Vector2.ZERO  # where the finger came down, in the words' own pixels
+var _worded: bool = false  # whether the finger down now has selected a word by holding still
 var _takes_focus: bool
 var _shown: Variant = null  # the value it showed when it last looked
 
@@ -50,6 +69,7 @@ var _shown: Variant = null  # the value it showed when it last looked
 func _init(chimes: Chimes, commands: Commands, motion: Motion, changes: StringName, shows: RefCounted, style: StringName, in_region: StringName, takes_focus: bool) -> void:
 	super(chimes, [], in_region)
 	_commands = commands
+	_motion = motion
 	_changes = changes
 	_shows = shows
 	_takes_focus = takes_focus
@@ -64,8 +84,10 @@ func _init(chimes: Chimes, commands: Commands, motion: Motion, changes: StringNa
 	var bar := _area.get_v_scroll_bar()
 	for box: StringName in [&"scroll", &"scroll_focus", &"grabber", &"grabber_highlight", &"grabber_pressed"]:
 		bar.add_theme_stylebox_override(box, StyleBoxEmpty.new())
-	_indicator = ScrollIndicator.new(motion, bar, _area, &"normal")
+	_finger = ScrollFinger.new(_area, motion, bar, null)
+	_indicator = ScrollIndicator.new(motion, bar, _area, &"normal", _finger.stop)
 	_area.add_child(_indicator, false, Node.INTERNAL_MODE_BACK)
+	add_to_group(Touch.TAKES)
 	_area.gui_input.connect(_touched)
 
 
@@ -111,10 +133,73 @@ func _changed() -> void:
 	_indicator.moved()
 
 
+## A finger landing on the words while they are not being typed in: they
+## take no focus until it lifts.
+func _input(event: InputEvent) -> void:
+	var click := event as InputEventMouseButton
+	if click == null or not Touch.from_finger(click):
+		return
+	if not click.pressed:
+		_area.focus_mode = Control.FOCUS_ALL
+	elif not _area.has_focus() and Rect2(Vector2.ZERO, _area.size).has_point(_area.make_input_local(click).position):
+		_area.focus_mode = Control.FOCUS_NONE
+
+
 ## Anything the reader does in it - a wheel, a finger, a key - may move the
-## words: where they are is looked at.
-func _touched(_event: InputEvent) -> void:
+## words: where they are is looked at. A finger's mouse goes no further:
+## lifted where it landed it puts the caret there, and held there it
+## selects the word.
+func _touched(event: InputEvent) -> void:
 	_indicator.moved()
+	if not Touch.from_finger(event):
+		return
+	_area.accept_event()
+	var click := event as InputEventMouseButton
+	var tapped := _on_words.read(event, _area)
+	var lasts := _area.get_theme_constant(&"long_press", Touch.TYPE)
+	if click != null and click.pressed:
+		_worded = false
+		_at = click.position
+		if lasts > 0:
+			_holding = _motion.wait(lasts / 1000.0, _held)
+	# moved past the slop or lifted, it is no long press
+	if not _on_words.is_down() and _holding != null:
+		_holding.stopped = true
+		_holding = null
+	if tapped and not _worded:
+		_caret_to(click.position)
+
+
+## The finger held still as long as a long press lasts: the word under it selected.
+func _held() -> void:
+	_holding = null
+	_worded = true
+	_caret_to(_at)
+	_area.select_word_under_caret()
+
+
+## The caret put at this point of the words, nothing selected, and typing sent here.
+func _caret_to(at: Vector2) -> void:
+	var place := _area.get_line_column_at_pos(Vector2i(at))
+	_area.focus_mode = Control.FOCUS_ALL
+	_area.grab_focus()
+	_area.deselect()
+	_area.set_caret_line(place.y, false)
+	_area.set_caret_column(place.x, false)
+
+
+## A finger along the words, where they can move for it: its own (touch.gd).
+func takes_finger(axis: StringName, travel: Vector2) -> bool:
+	return _finger.takes(axis, travel)
+
+
+## The finger moving the words: its pixels are handed on as the engine's lines.
+func finger_moved(_travel: Vector2, relative: Vector2) -> void:
+	_finger.moved(relative / _area.get_line_height())
+
+
+func finger_ended(velocity: Vector2) -> void:
+	_finger.ended(velocity / _area.get_line_height())
 
 
 func heard(_what: StringName) -> void:

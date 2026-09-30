@@ -50,7 +50,8 @@ const ShownWhole := preload("shown_whole.gd")
 ## go into a glide; that is scrolling by hand, as the wheel is.
 ##
 ## WHERE THE READER IS SHOWS OVER IT, down (scroll_indicator.gd), in the right
-## of the padding its look's panel keeps inside it; the engine's bar never shows.
+## of the padding its look's panel keeps inside it; the engine's bar never
+## shows. The mark taken hold of and drawn is scrolling by hand, as a finger is.
 
 ## Which ways it scrolls: either way, across alone - a strip wider than
 ## its room, as tall as what it holds, its bar kept out of the way - or
@@ -80,7 +81,6 @@ func _init(ui: RefCounted, reveal: Variant, along: StringName) -> void:
 	_ui = ui
 	_reveal = reveal
 	_kept = ScrollKept.new(self, ui, ui.current_place())
-	_finger = ScrollFinger.new(self, ui.motion)
 	add_to_group(Touch.TAKES)
 	# across alone, it is as tall as what it holds and shows no bar between that and what is below
 	if along == ACROSS:
@@ -92,8 +92,9 @@ func _init(ui: RefCounted, reveal: Variant, along: StringName) -> void:
 		vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 		horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED if along == DOWN else ScrollContainer.SCROLL_MODE_AUTO
 		theme_type_variation = &"Scroll"
-		_indicator = ScrollIndicator.new(ui.motion, get_v_scroll_bar(), self, &"panel")
+		_indicator = ScrollIndicator.new(ui.motion, get_v_scroll_bar(), self, &"panel", _mark_taken)
 		add_child(_indicator, false, Node.INTERNAL_MODE_BACK)
+	_finger = ScrollFinger.new(self, ui.motion, null if along == ACROSS else get_v_scroll_bar(), null if along == DOWN else get_h_scroll_bar())
 	set_process(false)
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	follow_focus = true
@@ -183,6 +184,13 @@ func finger_moved(_travel: Vector2, relative: Vector2) -> void:
 
 func finger_ended(velocity: Vector2) -> void:
 	_finger.ended(velocity)
+
+
+## Its mark taken hold of (scroll_indicator.gd): scrolled by hand, a glide on its way stopped.
+func _mark_taken() -> void:
+	_kept.given_up()
+	_by_hand = true
+	_finger.stop()
 
 
 ## The pad or the keys used anywhere - which the engine hands to the focus
