@@ -58,6 +58,11 @@ const Reads := preload("reads.gd")
 ## muted AND nothing asked to play: either alone leaves sounds to arrive the
 ## moment they are turned back on.
 ##
+## THE MIXER LETS GO LATE. It holds each sound's playback on a thread of its
+## own, for some frames after the sound ends or is stopped, and one it still
+## holds as the process ends the engine reports as leaked. is_sounding() says
+## whether it holds any asked for here, for whoever ends the process to wait on.
+##
 ## Deliberately absent: music, a sound carried across a move, ducking, and a
 ## sound per control rather than per style.
 
@@ -83,6 +88,7 @@ var _root: Node  # where the look is: the Theme on it, read again every time
 var _voices: Array[AudioStreamPlayer] = []
 var _next: int = 0  # the voice the next sound is asked of, round by round
 var _played: Array = []
+var _mixing: Array[WeakRef] = []  # each playback asked for, held weakly: gone once the voice and the mixer have let it go
 var _sounded: Dictionary = {}  # moment -> the frame it last sounded on
 var _glowing: StringName = &""  # the action that glowed when the prompts last moved
 var _top: Array[StringName] = []  # the layer that took input when the driver last moved
@@ -124,6 +130,13 @@ func heard(what: StringName) -> void:
 ## Every sound it asked for, as [moment, style], newest last.
 func get_played() -> Array:
 	return _played.duplicate()
+
+
+## Whether a voice or the mixer still holds a sound asked for here.
+func is_sounding() -> bool:
+	# the playbacks nothing holds any longer are forgotten
+	_mixing = _mixing.filter(func(held: WeakRef) -> bool: return held.get_ref() != null)
+	return not _mixing.is_empty()
 
 
 ## A press landing, read off the control it landed on: the door refusing it, or
@@ -189,6 +202,7 @@ func _play(moment: StringName, style: StringName) -> void:
 	_next = (_next + 1) % VOICES
 	voice.stream = found["stream"]
 	voice.play()
+	_mixing.append(weakref(voice.get_stream_playback()))
 
 
 ## The style worn by the control the focus is on - the engine's answer to

@@ -29,8 +29,9 @@ extends SceneTree
 ## nothing plays and the bus is muted, and the volume is set on the bus; ten
 ## presses in one frame are one sound; the volume takes the payload a
 ## settings choice carries, so a choice of levels sets it through the door;
-## and a notification arriving plays its sound, taking the focus from
-## nothing, and leaving plays none.
+## a notification arriving plays its sound, taking the focus from nothing,
+## and leaving plays none; and a sound asked for is sounding until the voice
+## and the mixer have let it go.
 
 const Fixture := preload("res://tests/fixture.gd")
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
@@ -92,6 +93,7 @@ func _init() -> void:
 	await _verdict.states(_a_choice_of_volume_levels_sets_the_volume_through_the_door)
 	await _verdict.states(_a_notification_arriving_plays_the_look_s_sound_and_leaving_plays_none)
 	await _verdict.states(_a_look_that_sets_none_chimes_with_the_floor_s_placeholder)
+	await _verdict.states(_a_sound_asked_for_is_sounding_until_the_mixer_has_let_it_go)
 	root.theme = null
 	# frames for the mixer to let go of the last playback it was handed, which it holds on a thread of its own and would otherwise still hold as the process ends
 	for settling: int in 10:
@@ -488,6 +490,36 @@ func _a_look_that_sets_none_chimes_with_the_floor_s_placeholder() -> void:
 	var chime: AudioStreamWAV = found.get("stream")
 	_verdict.check(_since(heard, mark) == [Sounds.NOTIFIED], "in a look that sets none, a notification arriving plays the notified sound: %s" % [_since(heard, mark)])
 	_verdict.check(chime != null and chime.data.size() > 1000 and Array(chime.data).any(func(byte: int) -> bool: return byte != 0), "and what plays is the floor's placeholder chime, a real tone: %s" % [found])
+	_done(heard)
+
+
+## The mixer holds a sound's playback on a thread of its own and lets go some
+## frames after it ends; one it still holds as the process ends the engine
+## reports as leaked. is_sounding says so, for whoever ends the process to
+## wait on: nothing before a sound is asked for, sounding once one is, and
+## nothing again once the voice and the mixer have both let go.
+func _a_sound_asked_for_is_sounding_until_the_mixer_has_let_it_go() -> void:
+	var heard := _heard({PRESS: "presses it"})
+	var ui: Variant = heard["made"].ui
+	var sounds: Sounds = heard["sounds"]
+	var notifications: Notifications = heard["notifications"]
+	(heard["made"] as Fixture).actions.declare_all({Notifications.DISMISSES: ["dismiss"]})
+	ui.start(ui.app(&"app", [ui.pressable(PRESS, {}, [ui.text("go")]), NotificationTray.make(ui, notifications)]))
+	await _a_frame_passes()
+	var before := sounds.is_sounding()
+	var mark := _how_many(heard)
+	notifications.notify(Phrase.of("the plums are in"))
+	# frames until the sound is asked for, read in the frame it is
+	while _how_many(heard) == mark:
+		await process_frame
+	var asked := sounds.is_sounding()
+	var limit := Time.get_ticks_msec() + 5000
+	# frames until nothing holds it, or five seconds, which no mixer needs
+	while sounds.is_sounding() and Time.get_ticks_msec() < limit:
+		await process_frame
+	_verdict.check(not before, "nothing asked for, nothing is sounding")
+	_verdict.check(asked, "a sound asked for is sounding in the frame it is asked")
+	_verdict.check(not sounds.is_sounding(), "and it is sounding no longer once the voice and the mixer have let it go")
 	_done(heard)
 
 
