@@ -53,6 +53,11 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"compact_below", &"Shape", 900)
 	theme.set_constant(&"wide_from", &"Shape", 1600)
 	theme.set_constant(&"dead_band", &"Shape", 80)
+	# the window's real size on its screen, in millimetres: a desk's from this short a side and this far across
+	theme.set_constant(&"phone_under_mm", &"Shape", 110)
+	theme.set_constant(&"desk_from_mm", &"Shape", 340)
+	# of a phone's two, sideways from this many hundredths as wide as it is tall
+	theme.set_constant(&"sideways_from", &"Shape", 150)
 	# how wide a strip's cover of more beyond an end is, in base pixels
 	theme.set_constant(&"more_room", &"Scroll", 28)
 	# how far beyond a scroll's either end something is near enough to load (nearness.gd), in thousandths of the scroll's height

@@ -30,6 +30,16 @@ const Bound := preload("components/primitives/bound.gd")
 ## edge alone would flicker while a window is dragged across it, so a class
 ## holds until the width is dead_band past the edge it came in by.
 ##
+## THE REAL SIZE is whose window it is by how big it is on its screen: a
+## desk's, or a phone's held sideways or upright. It is a desk's while its
+## shorter side is at least phone_under_mm and it is at least desk_from_mm
+## across; of a phone's two it is sideways while it is at least sideways_from
+## hundredths as wide as it is tall. Pixels become millimetres by the
+## screen's dots to the inch, which `reads_dpi` answers: the engine's own,
+## until a host that knows its screen better sets another. It has no dead
+## band, so a window dragged along one of its edges changes at the edge both
+## ways.
+##
 ## IT WRITES NOTHING OUTSIDE ITSELF. The base turning with the rect is the
 ## easel's (easel.gd), which resizes this control again as it turns; the
 ## viewport's own pixels did not move, so nothing is read differently and
@@ -60,6 +70,11 @@ const REGULAR := &"regular"
 const WIDE := &"wide"
 const CLASSES: Array[StringName] = [COMPACT, REGULAR, WIDE]
 
+const DESK := &"desk"
+const SIDEWAYS := &"sideways"
+const UPRIGHT := &"upright"
+const REAL_SIZES: Array[StringName] = [DESK, SIDEWAYS, UPRIGHT]
+
 ## The look's type holding where the classes change and how far past an edge a change back must go.
 const TYPE := &"Shape"
 ## The viewport's meta saying whether it is a phone's - compact and on its end - for what measures by it without a bell: a touch target.
@@ -72,6 +87,10 @@ var _own := OwnBell.new("shape")  # the one bell both values ring, a model's as 
 var orientation := Value.new(_own, &"")
 ## How much room it has across: compact, regular or wide.
 var size_class := Value.new(_own, &"")
+## How big it really is on its screen: a desk's window, or a phone's held sideways or upright.
+var real_size := Value.new(_own, &"")
+## The dots to the inch of the screen the window is on, asked each time the window changes.
+var reads_dpi: Callable = DisplayServer.screen_get_dpi
 ## Whether the window is on its end, ready to bind to: the one thing nearly
 ## every caller of orientation wanted, written out as a comparison each time.
 var portrait: Bound = orientation.map(func(turned: Variant) -> bool: return turned == PORTRAIT)
@@ -98,13 +117,21 @@ func arrange() -> void:
 	var pixels := Vector2i(viewport.get_visible_rect().size * viewport.get_final_transform().get_scale())
 	var turned: StringName = PORTRAIT if pixels.y > pixels.x else LANDSCAPE
 	var classed := _class_at(pixels.x)
+	# the window in millimetres on its screen: 25.4 of them to the inch
+	var real := Vector2(pixels) * 25.4 / float(reads_dpi.call())
+	var sized: StringName = SIDEWAYS if real.x * 100.0 >= real.y * get_theme_constant(&"sideways_from", TYPE) else UPRIGHT
+	if minf(real.x, real.y) >= get_theme_constant(&"phone_under_mm", TYPE) and real.x >= get_theme_constant(&"desk_from_mm", TYPE):
+		sized = DESK
 	var turning: bool = turned != orientation.read()
 	var reclassing: bool = classed != size_class.read()
-	# both set before anything reads them, because a value set tells its readers at once
+	var resizing: bool = sized != real_size.read()
+	# all set before anything reads them, because a value set tells its readers at once
 	if turning:
 		orientation.set_value(turned)
 	if reclassing:
 		size_class.set_value(classed)
+	if resizing:
+		real_size.set_value(sized)
 	var phone: bool = whose_window.read() == PHONE
 	if phone != viewport.get_meta(PHONE, false):
 		# kept on the viewport for whatever measures by it, and every touch target measured again

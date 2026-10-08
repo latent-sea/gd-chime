@@ -42,7 +42,9 @@ func _init() -> void:
 	await process_frame
 	await _verdict.states(_the_shape_follows_the_window_and_rings_once_per_change_not_per_pixel)
 	await _verdict.states(_a_class_holds_its_ground_until_the_width_is_well_past_the_edge)
+	await _verdict.states(_the_real_size_is_read_in_millimetres_on_the_screen_not_in_pixels)
 	await _verdict.states(_by_shape_arranges_by_orientation_and_by_size_class)
+	await _verdict.states(_by_shape_arranges_by_the_real_size)
 	await _verdict.states(_an_arrangement_gives_each_part_the_facts_named_for_it_and_none_to_the_rest)
 	await _verdict.states(_turned_the_parts_are_the_same_parts_with_their_words_and_the_focus)
 	await _verdict.states(_a_place_under_it_is_one_place_that_keeps_its_name_and_its_stay)
@@ -60,6 +62,9 @@ func _look() -> Theme:
 	made.set_constant(&"compact_below", Shape.TYPE, 900)
 	made.set_constant(&"wide_from", Shape.TYPE, 1600)
 	made.set_constant(&"dead_band", Shape.TYPE, 80)
+	made.set_constant(&"phone_under_mm", Shape.TYPE, 110)
+	made.set_constant(&"desk_from_mm", Shape.TYPE, 340)
+	made.set_constant(&"sideways_from", Shape.TYPE, 150)
 	Transition.defaults(made, {&"by_shape": Transition.FADE})
 	return made
 
@@ -91,6 +96,8 @@ func _standing(wide: int, tall: int, declared: Dictionary = {}) -> void:
 	await _a_frame_passes()
 	_made = Fixture.new(_easel.canvas, declared)
 	_shape = _made.ui.shape
+	# a screen of 72 dots to the inch whatever this machine's is, so no statement's sizes straddle an edge of real size by chance
+	_shape.reads_dpi = func() -> int: return 72
 	_heard = Fixture.Heard.new(_made.chimes, func() -> void:
 		_shape.orientation.read()
 		_shape.size_class.read())
@@ -160,6 +167,45 @@ func _a_class_holds_its_ground_until_the_width_is_well_past_the_edge() -> void:
 	_verdict.check(_shape.size_class.read() == Shape.COMPACT, "40 back over the edge it is compact still: %s" % _shape.size_class.read())
 	await _window(1000, 700)
 	_verdict.check(_shape.size_class.read() == Shape.REGULAR, "100 over it, it gives way: %s" % _shape.size_class.read())
+	_done()
+
+
+## On a screen of 96 dots to the inch a millimetre is 3.78 pixels: 340 mm is
+## 1285 across and 110 mm is 416. On a phone's of 460 it is 18.1.
+func _the_real_size_is_read_in_millimetres_on_the_screen_not_in_pixels() -> void:
+	await _standing(1920, 1080)
+	_shape.reads_dpi = func() -> int: return 96
+	await _window(1300, 800)
+	_verdict.check(_shape.real_size.read() == Shape.DESK, "344 mm across and 212 on its shorter side is a desk's window: %s" % _shape.real_size.read())
+	await _window(1270, 800)
+	_verdict.check(_shape.real_size.read() == Shape.SIDEWAYS, "336 mm across is too narrow for a desk's, and over half again as wide as tall is a phone's held sideways: %s" % _shape.real_size.read())
+	await _window(1100, 800)
+	_verdict.check(_shape.real_size.read() == Shape.UPRIGHT, "narrowed under half again as wide as tall it is a phone's upright: %s" % _shape.real_size.read())
+	await _window(1900, 400)
+	_verdict.check(_shape.real_size.read() == Shape.SIDEWAYS, "wide enough for a desk's but 106 mm on its shorter side, it is a phone's held sideways: %s" % _shape.real_size.read())
+	await _window(1900, 1000)
+	var on_a_desk: StringName = _shape.real_size.read()
+	_shape.reads_dpi = func() -> int: return 460
+	await _window(1900, 1001)
+	_verdict.check(on_a_desk == Shape.DESK and _shape.real_size.read() == Shape.SIDEWAYS, "the same pixels are a desk's window on a desk's screen and a phone's on a phone's, 105 mm across: %s then %s" % [on_a_desk, _shape.real_size.read()])
+	await _window(1001, 1900)
+	_verdict.check(_shape.real_size.read() == Shape.UPRIGHT, "and that phone turned on its end is upright: %s" % _shape.real_size.read())
+	_done()
+
+
+func _by_shape_arranges_by_the_real_size() -> void:
+	await _standing(1920, 1080)
+	_shape.reads_dpi = func() -> int: return 96
+	var shaped := await _two_parts(_shape.real_size, {Shape.DESK: _halves(false, [&"one", &"two"]), Shape.SIDEWAYS: _halves(false, [&"two", &"one"]), Shape.UPRIGHT: _halves(true, [&"one", &"two"])})
+	var one: Control = shaped.part_for(&"one")
+	var two: Control = shaped.part_for(&"two")
+	_verdict.check(shaped.get_worn() == Shape.DESK and one.position.x < two.position.x, "a desk's window wears the desk's arrangement: %s" % shaped.get_worn())
+	await _window(844, 390)
+	await _a_frame_passes()
+	_verdict.check(shaped.get_worn() == Shape.SIDEWAYS and two.position.x < one.position.x, "a phone's held sideways wears its own, the parts swapped along the row: %s" % shaped.get_worn())
+	await _window(390, 844)
+	await _a_frame_passes()
+	_verdict.check(shaped.get_worn() == Shape.UPRIGHT and one.position.y < two.position.y, "and upright they are down a column: %s" % shaped.get_worn())
 	_done()
 
 
