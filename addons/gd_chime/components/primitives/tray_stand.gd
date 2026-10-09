@@ -30,10 +30,15 @@ const LETTER := "M"
 ## lines at the width left them beside its presses (fits), so words that do
 ## not are reported as they are made (notifications.gd).
 ##
+## A TRAY IN THE INSTRUCTION'S PLACE HOLDS NO ROOM (notification_tray.gd,
+## in_line): it stands in a line that is there already, is given no sample,
+## needs only what that line needs, and says any words fit.
+##
 ## It lays out as the column it is, and draws nothing of its own.
 
 var _notifications: Notifications
 var _sample: Control = null  # the notification measured for the room, hidden
+var _holds_room: bool = true  # whether it holds a room of its own; one stood in a line that is there does not
 
 
 func _init(notifications: Notifications, style: StringName) -> void:
@@ -51,6 +56,9 @@ func _notification(what: int) -> void:
 ## The room of one notification, the sample's size, and never what the one
 ## showing needs: what is more scrolls within it.
 func _get_minimum_size() -> Vector2:
+	# holding no room, it needs what the line it holds needs, as the column it is
+	if not _holds_room:
+		return super()
 	# asked as it is attached, before its sample is built into it: nothing, until then
 	if _sample == null:
 		return Vector2.ZERO
@@ -60,9 +68,10 @@ func _get_minimum_size() -> Vector2:
 ## Whether these words fit a notification's lines at the width they get
 ## where this stands - its width less the notice's box and the presses
 ## beside the words, as the sample has them - in the words' own kind: a
-## wider tray fits more. Not yet placed, it cannot say, and says they fit.
+## wider tray fits more. Not yet placed, it cannot say, and says they fit;
+## and one holding no room has no lines to fit, and says so of any words.
 func fits(words: String) -> bool:
-	if size.x <= 0.0:
+	if size.x <= 0.0 or not _holds_room:
 		return true
 	var font := get_theme_font(&"font", Themes.FACE)
 	var font_size := get_theme_font_size(&"font_size", Themes.FACE)
@@ -90,6 +99,9 @@ func hold(sample: Control) -> void:
 ## built into it after.
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	var made: Control = ui.primitive(&"tray_stand").new(desc.props["notifications"], desc.props["style"])
+	made._holds_room = desc.props.has("sample")
 	ui.attach(made, parent, desc.facts)
-	made.hold(ui.build(desc.props["sample"].call(), made))
+	# a tray standing in a line that is there already holds no room, and is given no sample to measure one by
+	if desc.props.has("sample"):
+		made.hold(ui.build(desc.props["sample"].call(), made))
 	return made

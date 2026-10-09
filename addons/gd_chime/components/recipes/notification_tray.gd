@@ -26,8 +26,17 @@ const Feedback := preload("../../theme_feedback.gd")
 ## words say how many are waiting ("2 more"), so a queue never asks for a
 ## line of its own.
 ##
-## IT HOLDS ITS ROOM, WHETHER ANY STANDS OR NOT, AND IT NEVER GROWS, as was
-## ruled: the layout above is locked, and a notification arriving, waiting
+## A NOTIFICATION IS SAID IN THE INSTRUCTION'S PLACE, as was ruled
+## (2026-10-09, over the ruling of 2026-09-19 below): in_line stands the
+## tray in a line an application already has - where it says what to do
+## next - showing the notification there while one stands and what the line
+## otherwise says while none does. It holds no room of its own, so no part
+## of a screen stands empty waiting for one, and nothing moves when one
+## arrives, since the line was there. make, the tray with a room of its own,
+## is the older way, kept for an application with no such line.
+##
+## MADE WITH make IT HOLDS ITS ROOM, WHETHER ANY STANDS OR NOT, AND IT NEVER
+## GROWS, as was ruled (2026-09-19): the layout above is locked, and a notification arriving, waiting
 ## or leaving never shudders it. The room is one notification as tall as a
 ## SAMPLE is (tray_stand.gd): a notification described as the one showing is
 ## and never shown, its words as many lines as the look allows one - LINES,
@@ -73,6 +82,17 @@ static func make(ui: Ui, notifications: Notifications, offers: Dictionary = {}, 
 	var list := ui.each(showing, func(notice: Bound) -> Desc: return _one(ui, notice, offers, waiting), func(one: Dictionary) -> int: return one["id"], style)
 	var room := {"notifications": notifications, "style": Themes.COLUMN, "sample": _sample.bind(ui, offers)}
 	return Desc.new(&"tray_stand", room, [ui.scroll(list).grow()])
+
+
+## The tray in a line that is there already: the notification showing while
+## one stands, and `otherwise` - what the line says with none - while none
+## does. No room is held for it.
+static func in_line(ui: Ui, notifications: Notifications, otherwise: Desc, offers: Dictionary = {}) -> Desc:
+	var standing: Bound = ui.bound(notifications.get_standing)
+	var waiting: Bound = standing.map(func(all: Array) -> Variant: return null if all.size() <= 1 else Phrase.counted("%d more", "%d more", all.size() - 1))
+	var list := ui.each(standing.map(showing_of), func(notice: Bound) -> Desc: return _one(ui, notice, offers, waiting), func(one: Dictionary) -> int: return one["id"], Themes.COLUMN)
+	var any: Bound = standing.map(func(all: Array) -> bool: return not all.is_empty())
+	return Desc.new(&"tray_stand", {"notifications": notifications, "style": Themes.COLUMN}, [ui.when(any, list, otherwise)])
 
 
 ## The notification that shows of all standing: the oldest alone, the rest

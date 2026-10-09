@@ -10,7 +10,9 @@ extends SceneTree
 ## - refused there as any press is, its reason within the room, and done,
 ## the notification leaves; the room never changes for any of it; put in a
 ## look whose notice box is thicker, the room is measured again and holds
-## one whole.
+## one whole. And of a tray stood in a line that is there already (in_line):
+## it holds no room of its own, a notification is said in the line's place
+## while one stands, and what the line says is back when none does.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -74,6 +76,7 @@ func _init() -> void:
 	await _verdict.states(_standing_in_the_layout_s_room_nothing_is_drawn_over_at_any_shape)
 	await _verdict.states(_put_in_a_look_with_a_thicker_notice_box_the_room_holds_one_whole)
 	await _verdict.states(_inside_a_themed_piece_the_room_is_that_look_s)
+	await _verdict.states(_in_a_line_that_is_there_already_it_holds_no_room_and_gives_the_line_back)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -202,6 +205,40 @@ func _stall(tray_look: Theme = null) -> Dictionary:
 	ui.start(ui.app(&"app", [ui.column([ui.button(SELLS), tray if tray_look == null else ui.themed(tray_look, [tray])])]))
 	await _a_frame_passes()
 	return {"made": made, "model": model, "notifications": notifications}
+
+
+## A line saying what to do next, with the tray stood in it, over a button:
+## the tray needs nothing of its own, so with none standing the line is as
+## tall as its words; one arriving is said where the line's words were, with
+## its dismissal, and the words are gone; dismissed, the words are back.
+## Words far past any look's lines are made with nothing reported, since a
+## tray with no room has no lines to fit.
+func _in_a_line_that_is_there_already_it_holds_no_room_and_gives_the_line_back() -> void:
+	var made := Fixture.new(root, {SELLS: "sell a crate", Notifications.DISMISSES: "dismiss"})
+	var ui := made.ui
+	var model := Grudging.new(made.chimes, &"app")
+	made.commands.register(&"app", SELLS, model)
+	var notifications := Notifications.new(made.chimes, made.commands, root)
+	notifications.by_hand = true
+	made.commands.register(Chimes.GLOBAL, Notifications.DISMISSES, notifications)
+	root.add_child(notifications)
+	var line := ui.text("pick a crate", Themes.FACE).named(&"line")
+	ui.start(ui.app(&"app", [ui.column([NotificationTray.in_line(ui, notifications, line), ui.button(SELLS)])]))
+	await _a_frame_passes()
+	var stand := _stand()
+	var words: Control = ui.node_named(&"line")
+	_verdict.check(_texts().has("pick a crate"), "with none standing the line says its own words: %s" % [_texts()])
+	_verdict.check(absf(stand.size.y - words.size.y) < 1.0, "so the line is as tall as its words and no taller: %s against %s" % [stand.size.y, words.size.y])
+	var before := _hearing.said.size()
+	notifications.notify(Phrase.of("the day's sales are counted, and every crate of plums, pears, figs, quinces and limes on the stall was sold before noon, which has not happened since the spring"))
+	await _a_frame_passes()
+	_verdict.check(_hearing.said.size() == before, "words past any look's lines are made with nothing reported: %s" % [_hearing.said.slice(before)])
+	_verdict.check(_texts().any(func(said: String) -> bool: return said.begins_with("the day's sales")) and not _texts().has("pick a crate") and _presses(Notifications.DISMISSES).size() == 1, "one standing is said in the line's place with its dismissal, the line's own words gone: %s" % [_texts()])
+	made.commands.dispatch(Chimes.GLOBAL, Notifications.DISMISSES, {"notice": notifications.get_standing()[0]["id"]})
+	await _a_frame_passes()
+	_verdict.check(_texts().has("pick a crate") and _presses(Notifications.DISMISSES).is_empty(), "dismissed, the line says its own words again: %s" % [_texts()])
+	model.free()
+	made.done()
 
 
 ## The fixture freed, the notifications with it, after the app they outlive.
