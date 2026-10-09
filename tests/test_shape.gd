@@ -50,6 +50,7 @@ func _init() -> void:
 	await _verdict.states(_a_place_under_it_is_one_place_that_keeps_its_name_and_its_stay)
 	await _verdict.states(_by_width_answers_its_own_width_while_the_window_says_one_thing)
 	await _verdict.states(_the_base_turns_with_the_window_and_words_keep_their_size)
+	await _verdict.states(_a_base_pixel_is_never_drawn_smaller_than_the_look_says_is_readable)
 	await _verdict.states(_the_turn_ends_arranged_with_nothing_drawn_over_anything_else)
 	await _verdict.states(_reduced_it_is_arranged_at_once)
 	quit(_verdict.deliver(get_script()))
@@ -91,6 +92,7 @@ func _standing(wide: int, tall: int, declared: Dictionary = {}) -> void:
 	_easel = Easel.new()
 	_easel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_easel.canvas.theme = _look()
+	_easel.reads_dpi = func() -> int: return 72
 	root.add_child(_easel)
 	root.size = Vector2i(wide, tall)
 	await _a_frame_passes()
@@ -320,6 +322,31 @@ func _the_base_turns_with_the_window_and_words_keep_their_size() -> void:
 	_verdict.check(absf(down - across) < across * 0.02, "and the same line of words takes the same share of the window's short side either way round, rather than shrinking to a stamp: %s then %s" % [across, down])
 	await _window(1920, 1080)
 	_verdict.check(_easel.viewport.size_2d_override == Vector2i(1920, 1080), "turned back, the base comes back: %s" % _easel.viewport.size_2d_override)
+	_done()
+
+
+## The look here says a base pixel is at least 120 thousandths of a
+## millimetre. On a desk's screen of 96 dots to the inch that is 0.45 of a
+## pixel, and on a phone's of 460 it is 2.17.
+func _a_base_pixel_is_never_drawn_smaller_than_the_look_says_is_readable() -> void:
+	await _standing(1920, 1080)
+	_easel.reads_dpi = func() -> int: return 96
+	_easel.canvas.theme.set_constant(&"least_pixel_um", Shape.TYPE, 120)
+	await _a_frame_passes()
+	var drawn := func() -> float: return _easel.viewport.get_final_transform().get_scale().x
+	_verdict.check(is_equal_approx(drawn.call(), 1.0), "a desk's whole screen is only fitted, a base pixel a pixel: %s" % drawn.call())
+	await _window(960, 540)
+	_verdict.check(is_equal_approx(drawn.call(), 0.5), "halved it is still only fitted, at half, which is over the least: %s" % drawn.call())
+	await _window(844, 390)
+	_verdict.check(absf(drawn.call() - 0.4535) < 0.005 and _easel.viewport.size_2d_override.x < 1920, "fitted to a small window it would be 0.36: it is drawn at the least, 0.45, and the canvas holds fewer base pixels than the base: %s %s" % [drawn.call(), _easel.viewport.size_2d_override])
+	_easel.reads_dpi = func() -> int: return 460
+	await _window(1900, 1000)
+	_verdict.check(absf(drawn.call() - 2.173) < 0.02, "on a phone's screen a window of a desk's pixels is drawn at over twice the size, not fitted at under one: %s" % drawn.call())
+	var naming_none := _look()
+	naming_none.set_constant(&"least_pixel_um", Shape.TYPE, 0)
+	_easel.canvas.theme = naming_none
+	await _a_frame_passes()
+	_verdict.check(absf(drawn.call() - 1000.0 / 1080.0) < 0.005, "and a look that names no least is only fitted, as soon as it is worn: %s" % drawn.call())
 	_done()
 
 

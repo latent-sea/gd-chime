@@ -24,6 +24,16 @@ const Themes := preload("theme.gd")
 ## theme is a size on every screen. A pointer reaches the easel under it, and
 ## the container forwards it, so nothing about pressing changes.
 ##
+## NEVER SMALLER THAN THE LOOK SAYS IS READABLE. A phone has a desk's pixels
+## in a hand's width, so a canvas only fitted to it is drawn a fifth the
+## size. The look names the least a base pixel may measure on the screen,
+## `least_pixel_um` under the type Shape, in thousandths of a millimetre;
+## where fitting would draw it smaller the canvas is drawn at that, and so
+## holds fewer base pixels than the base. Pixels become millimetres by the
+## screen's dots to the inch, which `reads_dpi` answers: the engine's own,
+## until a host that knows its screen better sets another. A look that names
+## none is only fitted.
+##
 ## A KEY GOES TO THE APP HOLDING THE FOCUS. The engine keeps one focus across
 ## every viewport in a window, gives a key to the viewport holding it, and
 ## offers one that viewport leaves untaken to every other container's
@@ -59,6 +69,9 @@ const Themes := preload("theme.gd")
 const WIDTH := "display/window/size/viewport_width"
 const HEIGHT := "display/window/size/viewport_height"
 
+## The look's type naming the least a base pixel may measure on the screen.
+const REAL_SIZE := &"Shape"
+
 ## By each window, the easel whose canvas held its focus last, both by
 ## instance id: one entry a window, however many apps come and go in it.
 static var _held_last: Dictionary = {}
@@ -67,6 +80,8 @@ static var _held_last: Dictionary = {}
 var viewport := SubViewport.new()
 ## The canvas everything is built on, spread over the viewport, wearing the look.
 var canvas := Canvas.new()
+## The dots to the inch of the screen the rect is on, asked each time the canvas is fitted.
+var reads_dpi: Callable = DisplayServer.screen_get_dpi
 var _base: Vector2i  # the project's base, landscape
 var _turned: bool = false  # whether the base stands transposed now
 
@@ -106,6 +121,8 @@ func _init() -> void:
 	canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
 	viewport.add_child(canvas)
 	viewport.gui_focus_changed.connect(_focused)
+	# a look worn after the rect was fitted may name another least size; deferred, since the engine tells of the change before the canvas reads the new look
+	canvas.theme_changed.connect(_fit, CONNECT_DEFERRED)
 
 
 ## The base the canvas is drawn at now: the project's, or its transpose while the rect is on its end.
@@ -153,8 +170,10 @@ func _fit() -> void:
 	var turning: bool = (size.y > size.x) != _turned
 	_turned = size.y > size.x
 	var base := Vector2(get_base())
-	# the one scale that fits the base inside the rect; the canvas grows past the base along the other side
-	var scale: float = minf(size.x / base.x, size.y / base.y)
+	# the least a base pixel may be drawn, in the rect's pixels: 25,400 thousandths of a millimetre to the inch
+	var least: float = canvas.get_theme_constant(&"least_pixel_um", REAL_SIZE) / 25400.0 * float(reads_dpi.call())
+	# the one scale that fits the base inside the rect, or the least; the canvas grows past the base along the other side
+	var scale: float = maxf(minf(size.x / base.x, size.y / base.y), least)
 	viewport.size_2d_override = Vector2i((size / scale).round())
 	if turning:
 		_measure_again.call_deferred()

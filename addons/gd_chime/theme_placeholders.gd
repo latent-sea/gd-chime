@@ -58,6 +58,8 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"desk_from_mm", &"Shape", 340)
 	# of a phone's two, sideways from this many hundredths as wide as it is tall
 	theme.set_constant(&"sideways_from", &"Shape", 150)
+	# the least a base pixel may measure on the screen, in thousandths of a millimetre: words of 36 are then 4.3 mm tall
+	theme.set_constant(&"least_pixel_um", &"Shape", 120)
 	# how wide a strip's cover of more beyond an end is, in base pixels
 	theme.set_constant(&"more_room", &"Scroll", 28)
 	# how far beyond a scroll's either end something is near enough to load (nearness.gd), in thousandths of the scroll's height

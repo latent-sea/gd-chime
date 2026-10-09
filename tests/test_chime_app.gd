@@ -125,6 +125,9 @@ func _standing() -> void:
 	_broad = Counting.new(Themes.new(Themes.NEUTRAL))
 	_broad.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_broad.anchor_left = NARROW
+	# a screen of 72 dots to the inch whatever this machine's is, so each is fitted and neither held to the look's least size
+	_narrow.reads_dpi = func() -> int: return 72
+	_broad.reads_dpi = func() -> int: return 72
 	root.add_child(_narrow)
 	root.add_child(_broad)
 	await _a_frame_passes()
