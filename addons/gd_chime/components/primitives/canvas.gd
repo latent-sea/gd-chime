@@ -17,6 +17,9 @@ const Bound := preload("bound.gd")
 ## "least_height", in base pixels - none unless a look says - so a drawing
 ## laid in a line that takes its parts' least, a trend under a figure, is
 ## never drawn at no height at all.
+##
+## IT TAKES NO PRESS: the pointer goes through a drawing to what it is drawn
+## on, so an icon drawn on a pressable does not keep the press from it.
 
 var _paint: Callable
 var _content: Variant
@@ -30,6 +33,7 @@ func _init(chimes: Chimes, paint: Callable, content: Variant, in_region: StringN
 	if style != &"":
 		theme_type_variation = style
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func heard(_what: StringName) -> void:

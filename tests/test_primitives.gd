@@ -402,6 +402,7 @@ func _stack_scroll_view_canvas_and_anchored_hold_and_place_their_content() -> vo
 	await _a_frame_passes()
 	_verdict.check(stack.get_child_count() == 2 and (stack.get_child(0) as Control).size == stack.size and (stack.get_child(1) as Control).size == stack.size, "a stack holds its pieces each across the whole of it")
 	_verdict.check(painted == [7], "a canvas painted once with its value: %s" % [painted])
+	_verdict.check((stack.get_child(1) as Control).mouse_filter == Control.MOUSE_FILTER_IGNORE, "a canvas lets the pointer through to what it is drawn on, so an icon on a pressable does not keep the press from it")
 	_verdict.check(scroll.get_child(0) is Layout, "a scroll holds its one piece")
 	_verdict.check(view.viewport.get_child(0) is Text, "a view holds its content inside its viewport")
 	var under: Control = ui.node_named(&"under")
