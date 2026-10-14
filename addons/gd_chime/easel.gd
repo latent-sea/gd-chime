@@ -80,6 +80,9 @@ static var _held_last: Dictionary = {}
 var viewport := SubViewport.new()
 ## The canvas everything is built on, spread over the viewport, wearing the look.
 var canvas := Canvas.new()
+## How many frames after a turn the pages are given the canvas's size again, and how many are left.
+const REFITS_FOR := 30
+var _refitting := 0
 ## The dots to the inch of the screen the rect is on, asked each time the canvas is fitted.
 var reads_dpi: Callable = DisplayServer.screen_get_dpi
 var _base: Vector2i  # the project's base, landscape
@@ -188,3 +191,22 @@ func _measure_again() -> void:
 	for piece: Node in canvas.get_children():
 		if piece is Control:
 			(piece as Control).update_minimum_size()
+
+	_refitting = REFITS_FOR
+	set_physics_process(true)
+
+
+## For a few frames after a turn, every page on the canvas given the canvas's size again, never smaller than it needs:
+## a page grows to what it needs while the canvas turns, its parts taking their new arrangement a frame or two after,
+## and the canvas, which places nothing, would otherwise leave it wider than the canvas it has turned into. The engine
+## says nothing of what a page needs shrinking, so it is looked at each frame, and only for those few. On the physics
+## frame, not the drawn one: an app made on the easel has a drawn frame of its own that would stand in its place.
+func _physics_process(_delta: float) -> void:
+	# every page standing on the canvas: the pieces that place what they hold
+	for piece: Node in canvas.get_children():
+		if piece is Container and (piece as Container).size != canvas.size:
+			# the method, not the property: the property warns of a page spread across the canvas, as every page is
+			(piece as Container).set_size(canvas.size)
+	_refitting -= 1
+	if _refitting <= 0:
+		set_physics_process(false)
