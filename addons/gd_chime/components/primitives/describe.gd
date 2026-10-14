@@ -135,9 +135,9 @@ func stack(children: Array) -> Desc:
 
 
 ## A window onto one piece, scrolled to the piece named by the bound value
-## whenever that name moves.
-func scroll(content: Desc, reveal: Bound = null, along: StringName = &"either_way") -> Desc:
-	return Desc.new(&"scroll", {"reveal": reveal, "along": along}, [content])
+## whenever that name moves; given a nudge, most of a height at a time (scroll_nudge.gd).
+func scroll(content: Desc, reveal: Bound = null, along: StringName = &"either_way", nudged: Bound = null) -> Desc:
+	return Desc.new(&"scroll", {"reveal": reveal, "along": along, "nudged": nudged}, [content])
 
 
 ## One piece per visible slot of a long list, from the template given a

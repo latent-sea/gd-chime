@@ -10,6 +10,7 @@ const ScrollEdge := preload("scroll_edge.gd")
 const Touch := preload("../../touch.gd")
 const Nearness := preload("nearness.gd")
 const ScrollIndicator := preload("scroll_indicator.gd")
+const ScrollNudge := preload("scroll_nudge.gd")
 const ShownWhole := preload("shown_whole.gd")
 
 ## A window onto one piece taller or wider than the room: the engine's own
@@ -45,7 +46,7 @@ const ShownWhole := preload("shown_whole.gd")
 ## ACROSS ALONE IT IS A STRIP (strip.gd): it rests on whole things only, a
 ## whole thing at a time, and covers an end with more beyond it.
 ##
-## A FINGER PANS IT (scroll_finger.gd): a gesture along the way it runs
+## A PRESS MOVES IT where it is given a nudge to follow (scroll_nudge.gd). A FINGER PANS IT (scroll_finger.gd): a gesture along the way it runs
 ## that it can move for is its own (touch.gd), followed to the pixel and let
 ## go into a glide; that is scrolling by hand, as the wheel is.
 ##
@@ -75,9 +76,10 @@ var _strip: Strip = null  # across alone, how it rests on whole things
 var _by_hand: bool = false  # whether the reader has scrolled by hand since the pad or the keys were last used
 var _finger: ScrollFinger  # a finger panning it
 var _indicator: ScrollIndicator = null  # where the reader is, down; none across alone
+var _nudge: ScrollNudge = null  # a press at a time moving it, where it was given a nudge to follow
 
 
-func _init(ui: RefCounted, reveal: Variant, along: StringName) -> void:
+func _init(ui: RefCounted, reveal: Variant, along: StringName, nudged: Variant) -> void:
 	_ui = ui
 	_reveal = reveal
 	_kept = ScrollKept.new(self, ui, ui.current_place())
@@ -101,6 +103,9 @@ func _init(ui: RefCounted, reveal: Variant, along: StringName) -> void:
 	ui.chimes.listen(self, Chimes.GLOBAL, Driver.NAVIGATED)
 	if reveal != null:
 		ui.chimes.follow(self, &"reveal", _reveal_moved)
+	if nudged != null:
+		_nudge = ScrollNudge.new(self, nudged, _mark_taken)
+		ui.chimes.follow(self, &"nudged", _nudge.moved)
 
 
 ## The reader moved: where this stood on the view it is on now put back.
@@ -239,6 +244,6 @@ func _notification(what: int) -> void:
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
-	var made: Control = ui.primitive(&"scroll").new(ui, desc.props["reveal"], desc.props["along"])
+	var made: Control = ui.primitive(&"scroll").new(ui, desc.props["reveal"], desc.props["along"], desc.props["nudged"])
 	ui.attach(made, parent, desc.facts)
 	return made
