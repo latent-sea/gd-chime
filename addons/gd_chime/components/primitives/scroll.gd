@@ -79,7 +79,7 @@ var _indicator: ScrollIndicator = null  # where the reader is, down; none across
 var _nudge: ScrollNudge = null  # a press at a time moving it, where it was given a nudge to follow
 
 
-func _init(ui: RefCounted, reveal: Variant, along: StringName, nudged: Variant) -> void:
+func _init(ui: RefCounted, reveal: Variant, along: StringName, nudged: Variant, style: StringName) -> void:
 	_ui = ui
 	_reveal = reveal
 	_kept = ScrollKept.new(self, ui, ui.current_place())
@@ -93,7 +93,7 @@ func _init(ui: RefCounted, reveal: Variant, along: StringName, nudged: Variant) 
 	if along != ACROSS:
 		vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 		horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED if along == DOWN else ScrollContainer.SCROLL_MODE_AUTO
-		theme_type_variation = &"Scroll"
+		theme_type_variation = style
 		_indicator = ScrollIndicator.new(ui.motion, get_v_scroll_bar(), self, &"panel", _mark_taken)
 		add_child(_indicator, false, Node.INTERNAL_MODE_BACK)
 	_finger = ScrollFinger.new(self, ui.motion, null if along == ACROSS else get_v_scroll_bar(), null if along == DOWN else get_h_scroll_bar())
@@ -244,6 +244,6 @@ func _notification(what: int) -> void:
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
-	var made: Control = ui.primitive(&"scroll").new(ui, desc.props["reveal"], desc.props["along"], desc.props["nudged"])
+	var made: Control = ui.primitive(&"scroll").new(ui, desc.props["reveal"], desc.props["along"], desc.props["nudged"], desc.props["style"])
 	ui.attach(made, parent, desc.facts)
 	return made

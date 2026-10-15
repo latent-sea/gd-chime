@@ -52,6 +52,7 @@ func _init() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	await _verdict.states(_a_scroll_running_down_leaves_as_much_room_on_the_right_of_its_piece_as_on_the_left)
 	await _verdict.states(_where_the_reader_is_stands_in_the_right_padding_never_beside_the_rows)
+	await _verdict.states(_a_scroll_given_a_look_of_its_own_stands_in_that_look_s_padding)
 	await _verdict.states(_it_shows_as_the_list_moves_and_fades_once_it_has_rested)
 	await _verdict.states(_a_look_that_says_it_stays_shows_it_unmoved_and_never_fades_it)
 	await _verdict.states(_a_text_area_shows_where_the_reader_is_only_when_it_holds_more_than_it_shows)
@@ -118,6 +119,31 @@ func _where_the_reader_is_stands_in_the_right_padding_never_beside_the_rows() ->
 	_verdict.check(indicator.get_opacity() == 1.0 and mark.position.x >= piece.end.x and mark.end.x <= box.end.x, "it stands right of the rows, inside the scroll: mark %s, rows end %.1f, scroll ends %.1f" % [mark, piece.end.x, box.end.x])
 	_verdict.check(mark.position.y > box.position.y and mark.end.y < box.end.y and mark.size.y < box.size.y / 2.0, "scrolled part way down a long list, it is short and part way down: %s in %s" % [mark, box])
 	made.done()
+
+
+## Given a look of its own, a scroll wears it: its piece stands inside that
+## look's padding, and where the reader is is drawn in it.
+func _a_scroll_given_a_look_of_its_own_stands_in_that_look_s_padding() -> void:
+	var look := Theme.new()
+	look.set_type_variation(&"Wide", &"ScrollContainer")
+	var room := StyleBoxEmpty.new()
+	room.content_margin_left = 30.0
+	room.content_margin_right = 30.0
+	look.set_stylebox(&"panel", &"Wide", room)
+	# the window's own look, worn again once this is done, as the other statements read it
+	var worn: Theme = root.theme
+	root.theme = look
+	var made := Fixture.new(root)
+	var ui := made.ui
+	var rows: Array = range(200).map(func(at: int) -> RefCounted: return ui.text("line %d" % at))
+	ui.start(ui.app(&"app", [ui.scroll(ui.column(rows).named(&"piece"), null, Scroll.DOWN, null, &"Wide").named(&"scroll").grow()]))
+	await _a_frame_passes()
+	var scroll := (made.ui.node_named(&"scroll") as Control).get_global_rect()
+	var piece := (made.ui.node_named(&"piece") as Control).get_global_rect()
+	_verdict.check(is_equal_approx(piece.position.x - scroll.position.x, 30.0) and is_equal_approx(scroll.end.x - piece.end.x, 30.0),
+		"its piece stands inside the padding of the look it was given, 30 either side: %.1f and %.1f" % [piece.position.x - scroll.position.x, scroll.end.x - piece.end.x])
+	made.done()
+	root.theme = worn
 
 
 ## Unmoved it shows nothing; moved, it shows until rests_after has passed,
