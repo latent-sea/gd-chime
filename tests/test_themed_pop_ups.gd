@@ -2,9 +2,10 @@ extends SceneTree
 
 ## What must be true of a pop-up described inside a themed subtree: opened,
 ## it wears that subtree's look - a colour and a constant only that look has
-## - and sizes by that look's shares of the window, a drawer across and a
-## long combo's sheet up; the same pop-up described outside the subtree
-## wears the app's look and sizes by the app's shares; and one inside a
+## - and sizes by that look: a drawer by its share of the window across, a
+## long combo's sheet by its sheet's cap across (Sheet/most_wide); the same
+## pop-up described outside the subtree wears the app's look and sizes by
+## the app's; and one inside a
 ## themed subtree inside another wears the inner one. The look reaches it
 ## whether the subtree is inside the place the pop-up is described in or
 ## holds that place - a place shown by a when too, first or later.
@@ -25,7 +26,6 @@ const Drawer := preload("res://addons/gd_chime/components/recipes/drawer.gd")
 const Combo := preload("res://addons/gd_chime/components/recipes/combo.gd")
 const Setting := preload("res://addons/gd_chime/components/recipes/setting.gd")
 const Narrowing := preload("res://addons/gd_chime/narrowing.gd")
-const Fields := preload("res://addons/gd_chime/theme_fields.gd")
 const Phrase := preload("res://addons/gd_chime/phrase.gd")
 const Verdict := preload("res://tests/verdict.gd")
 
@@ -33,7 +33,7 @@ const WINDOW := Vector2i(1000, 800)
 const FRUIT := ["pear", "apple", "fig", "date", "plum", "lime", "kiwi", "yuzu", "grape", "melon"]
 
 var _verdict := Verdict.new()
-## The app's look: the drawer's share across and the combo's share up that every other look here differs from.
+## The app's look: the drawer's share across and the sheet's most across that every other look here differs from.
 var _app: Theme
 ## A look of a subtree's own: its words' colour and line spacing, and its shares, none of them the app's.
 var _other: Theme
@@ -59,14 +59,14 @@ func _init() -> void:
 	quit(_verdict.deliver(get_script()))
 
 
-## A look whose words are this colour, this far apart, whose drawer takes this share across and whose long combo this share up, in thousandths.
-func _look(words: Color, spacing: int, across: int, up: int) -> Theme:
+## A look whose words are this colour, this far apart, whose drawer takes this share across, in thousandths, and whose sheet is at most this wide, in base pixels.
+func _look(words: Color, spacing: int, across: int, most_wide: int) -> Theme:
 	var look := Themes.new(Themes.NEUTRAL)
 	look.set_color(&"font_color", Themes.FACE, words)
 	look.set_constant(&"line_spacing", Themes.FACE, spacing)
 	look.set_constant(&"wide", Drawer.SHEET, across)
 	look.set_constant(&"narrow", Drawer.SHEET, across)
-	look.set_constant(Fields.TALL, Fields.COMBO, up)
+	look.set_constant(&"most_wide", &"Sheet", most_wide)
 	return look
 
 
@@ -91,9 +91,9 @@ func _wears(words: Label, look: Theme) -> bool:
 	return words.get_theme_color(&"font_color") == look.get_color(&"font_color", Themes.FACE) and words.get_theme_constant(&"line_spacing") == look.get_constant(&"line_spacing", Themes.FACE)
 
 
-## The drawer's sheet: what its words stand in, the column, and the surface holding that.
+## The drawer's sheet: what its words stand in, the page that scrolls it, the column, and the surface holding that.
 func _sheet_of(words: Node) -> Control:
-	return words.get_parent().get_parent().get_parent()
+	return words.get_parent().get_parent().get_parent().get_parent()
 
 
 ## The press opening a pop-up pressed, and the move carried out.
@@ -152,13 +152,13 @@ func _a_long_combo_inside_a_themed_piece_holding_its_screen_wears_its_look_and_s
 	var sheet := _combo_sheet(ui, &"in_overlay")
 	var title := _words_of(sheet)
 	_verdict.check(title.is_visible_in_tree() and _wears(title, _other), "a long combo whose screen stands inside a themed piece wears its look, opened: %s %d" % [title.get_theme_color(&"font_color"), title.get_theme_constant(&"line_spacing")])
-	_verdict.check(is_equal_approx(sheet.size.y, WINDOW.y * 0.9), "and its sheet is that look's share of the window tall, not the app's: %s" % [sheet.size])
+	_verdict.check(is_equal_approx(sheet.size.x, 900.0), "and its sheet is that look's most wide, not the app's: %s" % [sheet.size])
 	made.commands.dispatch(Chimes.GLOBAL, Driver.GOES_BACK, {})
 	await _frames(3)
 	await _open(ui, &"out")
 	sheet = _combo_sheet(ui, &"out_overlay")
 	title = _words_of(sheet)
-	_verdict.check(title.is_visible_in_tree() and _wears(title, _app) and is_equal_approx(sheet.size.y, WINDOW.y * 0.6), "the same combo described beside the themed piece wears the app's look and is the app's share tall: %s %d %s" % [title.get_theme_color(&"font_color"), title.get_theme_constant(&"line_spacing"), sheet.size])
+	_verdict.check(title.is_visible_in_tree() and _wears(title, _app) and is_equal_approx(sheet.size.x, 600.0), "the same combo described beside the themed piece wears the app's look and is the app's most wide: %s %d %s" % [title.get_theme_color(&"font_color"), title.get_theme_constant(&"line_spacing"), sheet.size])
 	for narrowing: Node in narrowings:
 		narrowing.free()
 	model.free()

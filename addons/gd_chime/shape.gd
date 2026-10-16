@@ -65,12 +65,9 @@ const Bound := preload("components/primitives/bound.gd")
 ## every pixel, so they ring a bell of their own, and what reads only the
 ## others never hears them.
 ##
-## A PHONE'S WINDOW - compact and on its end - is said on the viewport as
-## well, its meta PHONE, for what still measures by it (pressable.gd,
-## scroll_indicator.gd). It is a bound value too, `whose_window`, for
-## anything ARRANGED one way on a phone and another on a desktop: a bottom
-## sheet is edge to edge on a phone and capped in the middle of a desktop's
-## window (drawer.gd).
+## A PHONE'S WINDOW - compact and on its end - is a bound value,
+## `whose_window`, PHONE or DESKTOP: a device fact, read by nothing in the
+## floor that lays anything out, which answers to its room instead.
 
 const PORTRAIT := &"portrait"
 const LANDSCAPE := &"landscape"
@@ -88,7 +85,7 @@ const REAL_SIZES: Array[StringName] = [DESK, SIDEWAYS, UPRIGHT]
 
 ## The look's type holding where the classes change and how far past an edge a change back must go.
 const TYPE := &"Shape"
-## The viewport's meta saying whether it is a phone's - compact and on its end - for what measures by it without a bell.
+## Whose window it is: a phone's - compact and on its end.
 const PHONE := &"phone"
 ## The other reading of whose window it is: anything that is not a phone's, a window on a desk.
 const DESKTOP := &"desktop"
@@ -169,11 +166,6 @@ func arrange() -> void:
 		insets.set_value(inset)
 	if taking != _touchscreen.read():
 		_touchscreen.set_value(taking)
-	var phone: bool = whose_window.read() == PHONE
-	if phone != viewport.get_meta(PHONE, false):
-		# kept on the viewport for whatever measures by it, and every touch target measured again
-		viewport.set_meta(PHONE, phone)
-		get_tree().call_group(Touch.TARGETS, &"update_minimum_size")
 	_touch_said()
 
 

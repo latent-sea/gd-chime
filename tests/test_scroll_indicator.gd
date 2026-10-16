@@ -60,7 +60,7 @@ func _init() -> void:
 	await _verdict.states(_in_every_look_it_fits_in_the_padding_it_stands_in)
 	await _verdict.states(_a_list_s_mark_taken_by_a_finger_and_drawn_moves_the_view_top_to_the_start_bottom_to_the_end)
 	await _verdict.states(_a_text_area_s_mark_taken_by_the_mouse_and_drawn_moves_the_words_and_gives_it_no_focus)
-	await _verdict.states(_its_grip_is_the_least_touch_size_on_a_phone_and_takes_the_finger_only_while_it_shows)
+	await _verdict.states(_its_grip_is_the_least_touch_size_on_a_touched_window_and_takes_the_finger_only_while_it_shows)
 	await _verdict.states(_taking_the_mark_stops_a_glide_on_its_way)
 	quit(_verdict.deliver(get_script()))
 
@@ -374,13 +374,19 @@ func _a_text_area_s_mark_taken_by_the_mouse_and_drawn_moves_the_words_and_gives_
 	(written[0] as Fixture).done()
 
 
-## Under a look whose least touch size is 48, on a phone's window: the grip
-## is at least 48 wide though the mark is drawn 4 wide, and while the mark
-## shows a finger on the grip pans nothing; faded, the same finger pans the
-## list under it.
-func _its_grip_is_the_least_touch_size_on_a_phone_and_takes_the_finger_only_while_it_shows() -> void:
-	root.theme.set_constant(&"least", &"Touch", 48)
+## Under a look whose least touch size is 4800 thousandths of a millimetre,
+## a base pixel said to measure 100 of them (touch.gd: PIXEL_UM), on a
+## window that takes touch: the grip is at least 48 wide though the mark
+## is drawn 4 wide, and while the mark shows a finger on the grip pans
+## nothing; faded, the same finger pans the list under it.
+func _its_grip_is_the_least_touch_size_on_a_touched_window_and_takes_the_finger_only_while_it_shows() -> void:
+	var floor_least := root.theme.get_constant(&"least_um", &"Touch")
+	root.theme.set_constant(&"least_um", &"Touch", 4800)
+	root.set_meta(&"pixel_um", 100.0)
 	var made := await _listed(200)
+	# the window said touched through the shape's own read, as a screen that takes touch says it
+	made.ui.shape.reads_touchscreen = func() -> bool: return true
+	made.ui.shape.arrange()
 	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
 	var indicator := _indicator_of(scroll)
 	scroll.get_v_scroll_bar().value = 300.0
@@ -399,10 +405,11 @@ func _its_grip_is_the_least_touch_size_on_a_phone_and_takes_the_finger_only_whil
 	await _finger_to(on, on + Vector2(0, -60))
 	var gone := made.ui.touch.get_taken()
 	await _touch(on + Vector2(0, -60), false)
-	_verdict.check(grip.size.x >= 48.0 and indicator.get_mark().size.x == 4.0, "on a phone's window the grip is at least the least touch size, the mark drawn thin: %.1f, %.1f, phone %s" % [grip.size.x, indicator.get_mark().size.x, root.get_meta(&"phone", false)])
+	_verdict.check(grip.size.x >= 48.0 and indicator.get_mark().size.x == 4.0, "on a touched window the grip is at least the least touch size, the mark drawn thin: %.1f, %.1f, touched %s" % [grip.size.x, indicator.get_mark().size.x, root.get_meta(&"touch", false)])
 	_verdict.check(shown == null, "while the mark shows, a finger on the grip pans nothing: %s" % [shown])
 	_verdict.check(faded == 0.0 and gone == scroll, "faded, a finger there pans the list: %.2f, %s" % [faded, gone])
-	root.theme.set_constant(&"least", &"Touch", 0)
+	root.theme.set_constant(&"least_um", &"Touch", floor_least)
+	root.remove_meta(&"pixel_um")
 	made.done()
 
 

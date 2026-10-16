@@ -1,5 +1,7 @@
 extends "scroll.gd"
 
+const Preferred := preload("preferred.gd")
+
 ## A page that scrolls down and asks for no room across: what it holds is
 ## laid at its width inside its padding, or at its own least where that is
 ## wider - the engine lays nothing narrower than it needs - so a piece too
@@ -15,6 +17,8 @@ extends "scroll.gd"
 ## is the one a screen stands in.
 ##
 ## ITS LEAST IS ITS OWN PADDING, either way: nothing it holds reaches it.
+## What it would take given all the room it wants is what it holds would
+## take across, with its padding (preferred.gd).
 ## Across it never moves - what it holds stands at its left edge whatever a
 ## wheel, a pad or the focus asks, and what reaches past its right edge is
 ## cut off there.
@@ -96,6 +100,12 @@ func _notification(what: int) -> void:
 		# it scrolls down, and the line holding it gives it a share of what is left
 		if (inside as ScrollContainer).vertical_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED and holder.has_method(&"get_facts") and holder.get_facts(inside).get("grow", 0.0) > 0.0:
 			_say(inside, "%s scrolls down and grows to fill its line inside the page %s, so it shows nothing once the page holds more than its height: inside a page, a list is drawn whole" % [inside.get_path(), get_path()])
+
+
+## What it would take given all the room it wants (preferred.gd): across,
+## what it holds would take, with its padding; down, its least.
+func preferred_size() -> Vector2:
+	return Vector2(Preferred.of(get_child(0)).x + get_theme_stylebox(&"panel").get_minimum_size().x, get_combined_minimum_size().y)
 
 
 ## A sentence about a piece, said out loud the first time and never again.

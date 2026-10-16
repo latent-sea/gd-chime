@@ -16,7 +16,10 @@ extends RefCounted
 ## A MARK ON A DESCRIPTION IS A CHAINED NAME, never a boolean parameter -
 ## wraps, hides_empty, keeps, fits, takes_focus, blocks_nothing - because
 ## what a bare true at a call site marks cannot be read off the call
-## (options.gd). A mark not said is simply a name not chained.
+## (options.gd). A mark not said is simply a name not chained. Two marks
+## make it another kind of the same thing: stacks, a row whose parts may
+## stand one under another (by_room.gd), and fits_by_size, words whose size
+## steps down to fit (fitted_text.gd).
 
 var kind: StringName
 var props: Dictionary
@@ -42,8 +45,9 @@ func basis(share: float) -> RefCounted:
 	return self
 
 
-## The most of the row or column it may take, a fraction of the layout.
-func at_most(share: float) -> RefCounted:
+## The most of the row or column it may take: a fraction of the layout, or
+## the name of a constant the look holds under Shape, in base pixels.
+func at_most(share: Variant) -> RefCounted:
 	facts["max"] = share
 	return self
 
@@ -65,6 +69,54 @@ func wraps() -> RefCounted:
 ## a blank line of their own height.
 func hides_empty() -> RefCounted:
 	props["hides_empty"] = true
+	return self
+
+
+## Words that keep their line while they are empty, where they would be
+## hidden: a reason under a press, so the press never jumps as one comes.
+func holds_room() -> RefCounted:
+	props["holds_room"] = true
+	return self
+
+
+## Words drawn in their own kind where they fit, stepped down toward the
+## size of this smaller kind until they take no more than this many lines
+## at the width they are given, and never cut (fitted_text.gd): a name in a
+## narrow block.
+func fits_by_size(floor_kind: StringName, lines: int = 1) -> RefCounted:
+	kind = &"fitted_text"
+	props["floor_kind"] = floor_kind
+	props["lines"] = lines
+	return self
+
+
+## A row whose parts stand one under another where its room cannot hold
+## them along it (by_room.gd): the row while it fits, else a column of the
+## same parts.
+func stacks() -> RefCounted:
+	kind = &"by_room"
+	props["stacks"] = true
+	return self
+
+
+## Columns standing as few as make the same rows (layout.gd): ten that fit
+## six across stand five and five.
+func balanced() -> RefCounted:
+	props["balanced"] = true
+	return self
+
+
+## Columns whose rows share the height left when every one fits at its
+## least (layout.gd, flex_lines.gd).
+func shares_height() -> RefCounted:
+	props["shares_height"] = true
+	return self
+
+
+## A table in frozen panes drawn as tall as its rows, scrolling across
+## alone: for a page that draws its list whole (frozen_panes.gd).
+func whole_down() -> RefCounted:
+	props["whole_down"] = true
 	return self
 
 

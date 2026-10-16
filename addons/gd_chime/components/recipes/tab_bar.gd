@@ -6,6 +6,7 @@ const Driver := preload("../../driver.gd")
 const Ui := preload("../primitives/ui.gd")
 const Desc := preload("../primitives/desc.gd")
 const Bound := preload("../primitives/bound.gd")
+const Local := preload("../primitives/local.gd")
 const NavControl := preload("nav_control.gd")
 const Scroll := preload("../primitives/scroll.gd")
 const Documents := preload("../../documents.gd")
@@ -43,6 +44,19 @@ const Documents := preload("../../documents.gd")
 ## set of flaps: a second flap to the same place is a second of a name,
 ## refused out loud (index.gd).
 ##
+## FLAPS OF ANY PRESS, OR OF A CHOICE, ARE THE SAME STRIP. of_presses()
+## takes flaps that are whatever presses were described - a way, a command -
+## with a bound value reading which of them, by where it stands, is
+## current: that one draws CURRENT (pressable.gd's current_while) and is
+## kept in view. Each is found by its own name, or named "flap <n>" where it
+## has none, so a place holding two such strips names its flaps. of_local()
+## makes one flap for each choice of a local, {value, words}, setting it
+## when pressed and selected while the local holds it (press_local.gd), kept
+## in view as it is chosen. The flaps grow to share the strip's width while
+## all fit at their least, and stand whole, scrolling across, when they do
+## not. EVERY FLAP IS IN ONE TYPE SIZE: of_local's words are all the look's
+## FACE; of_presses' are the presses' own, each in the one kind.
+##
 ## THE TABS OF OPEN DOCUMENTS ARE NOT PLACES: a file open in an editor is a
 ## model's fact (documents.gd), come and gone as the reader opens and closes
 ## it, and Back never walks the files. documents() gives one flap per
@@ -75,6 +89,29 @@ static func make(ui: Ui, tabs: Array, content: Array = [], style: StringName = &
 	if content.is_empty():
 		return strip
 	return ui.column([strip, ui.surface(&"TabPanel", content).grow()], &"TabSet")
+
+
+## The flaps over nothing, each a press as described, growing to share the
+## strip's room: the one at where `current` reads drawn current and kept in view.
+static func of_presses(ui: Ui, flaps: Array, current: Bound, style: StringName = &"TabStrip") -> Desc:
+	var names: Array = []
+	# every flap, found by its own name or by where it stands, growing to share the strip, current while the value reads its place
+	for at: int in flaps.size():
+		var flap: Desc = flaps[at]
+		names.append(flap.props["id"] if flap.props.has("id") else StringName("flap %d" % at))
+		flap.grow().named(names[at]).current_while(current.map(func(now: Variant) -> bool: return now == at))
+	return ui.scroll(ui.row(flaps, style), current.map(func(now: Variant) -> Variant: return null if now == null else names[now]), Scroll.ACROSS)
+
+
+## The flaps of a choice held in a local, one for each {value, words},
+## growing to share the strip's room: pressed, it is chosen; the one chosen
+## drawn selected and kept in view.
+static func of_local(ui: Ui, local: Local, choices: Array, style: StringName = &"TabStrip") -> Desc:
+	var flaps: Array = []
+	# every choice, a flap that chooses its value, named for it, its words in the one kind every flap is in
+	for choice: Dictionary in choices:
+		flaps.append(ui.press_local(local, choice["value"], [ui.text(choice["words"], Themes.FACE)], &"Tab").grow().named(StringName("flap %s" % choice["value"])))
+	return ui.scroll(ui.row(flaps, style), local.map(func(now: Variant) -> StringName: return StringName("flap %s" % now)), Scroll.ACROSS)
 
 
 ## The flaps of the documents open (documents.gd): one per document in the

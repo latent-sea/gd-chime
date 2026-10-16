@@ -28,12 +28,14 @@ extends RefCounted
 ## and its two factors. That is what lets the specification's own worked cases
 ## be asserted here as numbers, rather than read back out of rectangles.
 ##
+## A PART GIVEN NO BASIS STARTS AT ITS PREFERRED LENGTH - § 9.2, flex-basis
+## auto, its content's size - and shrinks from there only to its least: so
+## words that wrap start on one line and give up room by how long they are,
+## never past their widest word (preferred.gd).
+##
 ## Deliberately absent: it knows nothing of lines, wrapping or axes, so the
 ## layout above it decides which parts are on a line and which way the line
 ## runs, and asks this only how long each of them is.
-
-## The length of each part, in the order the parts were given. A part is where
-## it starts (base), the least and most it may be, and its grow and shrink
 
 ## Where parts sit along a line and across it - words the layout above
 ## (flex.gd) takes as its own.
@@ -45,6 +47,9 @@ const AROUND := 4
 const EVENLY := 5
 const STRETCH := 6
 
+
+## The length of each part, in the order the parts were given. A part is where
+## it starts (base), the least and most it may be, and its grow and shrink
 ## factors. The gaps are the room the parts cannot have.
 static func lengths(parts: Array, room: float, gaps: float) -> Array[float]:
 	var length: Array[float] = []
@@ -117,14 +122,15 @@ static func _weight_of(part: Dictionary, growing: bool) -> float:
 
 
 ## A part's five numbers from the facts given for it (flex.gd's), the
-## least it needs along the line and the room: where it starts - its basis
-## of the room, else its least - the least and most it may be, and its grow
-## and shrink, each the specification's default where none was given.
-static func numbers(facts: Dictionary, least: float, room: float) -> Dictionary:
+## least it needs along the line, what it would take given all it wants,
+## and the room: where it starts - its basis of the room, else what it
+## would take - the least and most it may be, and its grow and shrink, each
+## the specification's default where none was given.
+static func numbers(facts: Dictionary, least: float, preferred: float, room: float) -> Dictionary:
 	return {
 		"least": least,
 		"most": facts.get("max", 1.0) * room,
-		"base": facts["basis"] * room if facts.has("basis") else least,
+		"base": facts["basis"] * room if facts.has("basis") else preferred,
 		"grow": facts.get("grow", 0.0),
 		"shrink": facts.get("shrink", 1.0),
 	}

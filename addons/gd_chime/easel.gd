@@ -3,6 +3,7 @@ extends SubViewportContainer
 const Themes := preload("theme.gd")
 const SafeArea := preload("safe_area.gd")
 const Canvas := preload("easel_canvas.gd")
+const Touch := preload("touch.gd")
 
 ## The easel: the rect a host gives an application, with the application's
 ## canvas drawn at the base size on it and stretched to fit - the window's
@@ -35,7 +36,8 @@ const Canvas := preload("easel_canvas.gd")
 ## holds fewer base pixels than the base. Pixels become millimetres by the
 ## screen's dots to the inch, which `reads_dpi` answers: the engine's own,
 ## until a host that knows its screen better sets another. A look that names
-## none is only fitted.
+## none is only fitted. How big a base pixel is drawn on the glass is said on
+## the viewport for every finger's target (touch.gd: PIXEL_UM, pressable.gd).
 ##
 ## A KEY GOES TO THE APP HOLDING THE FOCUS. The engine keeps one focus across
 ## every viewport in a window, gives a key to the viewport holding it, and
@@ -225,6 +227,10 @@ func _fit() -> void:
 	var steady := SafeArea.covered(window, rect, unobscured, 0.0, corner, dpi)
 	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()), least, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), gutter)
 	viewport.size_2d_override = Vector2i((size / drawn).round())
+	# how big a base pixel is drawn on the glass, said for every finger's target; moved, each is measured again
+	if not is_equal_approx(viewport.get_meta(Touch.PIXEL_UM, 0.0), drawn * 25400.0 / dpi):
+		viewport.set_meta(Touch.PIXEL_UM, drawn * 25400.0 / dpi)
+		get_tree().call_group(Touch.TARGETS, &"update_minimum_size")
 	canvas.set_insets(SafeArea.insets(SafeArea.covered(window, rect, unobscured, _keyboard, corner, dpi), drawn, gutter))
 	if turning:
 		_measure_again.call_deferred()

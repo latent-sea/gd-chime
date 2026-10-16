@@ -32,9 +32,8 @@ const Flex := preload("../primitives/flex.gd")
 ## The steps carry which item, so no key is on them (shortcuts.gd): the keys
 ## and the pad reach them as they reach any press.
 ##
-## THE SHEET stands tall in the middle of the window over the shade
-## (sheet.gd), the look's share of the window across and down - "wide" and
-## "high" under QuickView - read from the look its pop-up wears, as its content is made.
+## THE SHEET stands tall in the middle of the room over the shade
+## (sheet.gd: tall), as wide as a sheet's cap and as tall as the room.
 ##
 ## Deliberately absent: swiping between items.
 
@@ -64,7 +63,7 @@ static func make(ui: Ui, content: Callable, back: StringName, options: Dictionar
 ## The steps either side of what the sheet holds, made as the pop-up is
 ## lifted, in its own place: each a move to that same place, as the item
 ## before or after - where it goes, never a pop-up to lift, since this one is
-## standing by then - and the sheet as the look that place wears says.
+## standing by then - and the sheet in the quick view's look.
 static func _stepped(ui: Ui, item: Bound, content: Array, back: StringName, on: StringName, neighbours: Callable) -> Desc:
 	var to := func(side: int) -> Bound: return item.map(func(id: Variant) -> Dictionary: return {} if id == null else {"parameter": neighbours.call(id)[side]})
 	var place: Node = ui.current_place()
@@ -73,4 +72,4 @@ static func _stepped(ui: Ui, item: Bound, content: Array, back: StringName, on: 
 	# the steps stood in the middle of the sheet's height, either side of what it holds
 	for step: Desc in [before, after]:
 		step.facts["align"] = Flex.CENTER
-	return Sheet.tall(ui, [ui.row([before, ui.column(content).grow(), after], BODY).grow()], SHEET, {wide = place.get_theme_constant(&"wide", SHEET) / 1000.0, high = place.get_theme_constant(&"high", SHEET) / 1000.0})
+	return Sheet.tall(ui, [ui.row([before, ui.column(content).grow(), after], BODY).grow()], SHEET)

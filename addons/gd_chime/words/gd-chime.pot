@@ -132,64 +132,68 @@ msgstr ""
 msgid "Sun"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:100
+#: addons/gd_chime/chart.gd:112
 msgid "There is nothing to go back to"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:118
+#: addons/gd_chime/chart.gd:130
 msgid "%s is no state"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:131
-#: addons/gd_chime/chart.gd:206
+#: addons/gd_chime/chart.gd:143
+#: addons/gd_chime/chart.gd:218
 msgid "%s is not on top"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:149
-#: addons/gd_chime/chart.gd:173
+#: addons/gd_chime/chart.gd:161
+#: addons/gd_chime/chart.gd:185
 msgid "Already at %s"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:208
+#: addons/gd_chime/chart.gd:220
 msgid "%s is not up"
 msgstr ""
 
-#: addons/gd_chime/chart.gd:230
+#: addons/gd_chime/chart.gd:242
 msgid "There is nothing behind to forget"
 msgstr ""
 
-#: addons/gd_chime/command_search.gd:86
+#: addons/gd_chime/command_search.gd:88
 #: addons/gd_chime/open_menu.gd:68
 msgid "That is no longer there to pick"
 msgstr ""
 
-#: addons/gd_chime/command_search.gd:88
+#: addons/gd_chime/command_search.gd:90
 msgid "Nothing matches"
 msgstr ""
 
-#: addons/gd_chime/command_search.gd:132
+#: addons/gd_chime/command_search.gd:138
 msgid "Command"
 msgstr ""
 
-#: addons/gd_chime/commands.gd:151
+#: addons/gd_chime/commands.gd:155
 msgid "%s was dispatched from inside heard(); defer it until the ring is over"
 msgstr ""
 
-#: addons/gd_chime/commands.gd:157
+#: addons/gd_chime/commands.gd:161
 msgid "Nothing handles %s in %s"
 msgstr ""
 
-#: addons/gd_chime/components/primitives/describe_inputs.gd:133
+#: addons/gd_chime/components/primitives/describe_inputs.gd:134
 msgid "The keys move the least"
 msgstr ""
 
-#: addons/gd_chime/components/primitives/describe_inputs.gd:133
+#: addons/gd_chime/components/primitives/describe_inputs.gd:134
 msgid "The keys move the most"
 msgstr ""
 
-#: addons/gd_chime/components/primitives/ui.gd:84
+#: addons/gd_chime/components/primitives/ui.gd:85
 #: addons/gd_chime/form_actions.gd:45
 msgid "Close"
+msgstr ""
+
+#: addons/gd_chime/components/recipes/app_bar.gd:70
+msgid "Menu"
 msgstr ""
 
 #: addons/gd_chime/components/recipes/bracket.gd:65
@@ -444,7 +448,7 @@ msgstr ""
 msgid "The choice is not finished"
 msgstr ""
 
-#: addons/gd_chime/components/recipes/drill_down.gd:44
+#: addons/gd_chime/components/recipes/drill_down.gd:41
 msgid "Show the rows behind it"
 msgstr ""
 
@@ -596,8 +600,9 @@ msgid_plural "%d rows"
 msgstr[0] ""
 msgstr[1] ""
 
-#: addons/gd_chime/components/recipes/notification_tray.gd:72
-#: addons/gd_chime/components/recipes/notification_tray.gd:111
+#: addons/gd_chime/components/recipes/notification_tray.gd:81
+#: addons/gd_chime/components/recipes/notification_tray.gd:92
+#: addons/gd_chime/components/recipes/notification_tray.gd:137
 msgid "%d more"
 msgid_plural "%d more"
 msgstr[0] ""
@@ -702,11 +707,11 @@ msgstr ""
 msgid "%s in %s"
 msgstr ""
 
-#: addons/gd_chime/driver.gd:106
+#: addons/gd_chime/driver.gd:105
 msgid "No move was stopped to go on with"
 msgstr ""
 
-#: addons/gd_chime/driver.gd:108
+#: addons/gd_chime/driver.gd:107
 msgid "%s is no place to go to"
 msgstr ""
 
@@ -723,28 +728,28 @@ msgstr ""
 msgid "%s is not changed here"
 msgstr ""
 
-#: addons/gd_chime/feed.gd:127
+#: addons/gd_chime/feed.gd:122
 msgid "Already following the newest"
 msgstr ""
 
-#: addons/gd_chime/feed.gd:128
+#: addons/gd_chime/feed.gd:123
 msgid "Nothing has arrived yet"
 msgstr ""
 
-#: addons/gd_chime/feed.gd:129
+#: addons/gd_chime/feed.gd:124
 msgid "On no entry"
 msgstr ""
 
-#: addons/gd_chime/fetched.gd:95
+#: addons/gd_chime/fetched.gd:102
 msgid "Asking already"
 msgstr ""
 
-#: addons/gd_chime/fetched.gd:96
-#: addons/gd_chime/growing_list.gd:89
+#: addons/gd_chime/fetched.gd:103
+#: addons/gd_chime/growing_list.gd:88
 msgid "Still loading"
 msgstr ""
 
-#: addons/gd_chime/fetched.gd:122
+#: addons/gd_chime/fetched.gd:132
 msgid "%s could not be loaded: %s"
 msgstr ""
 
@@ -834,7 +839,7 @@ msgctxt "dates: the first day of a month"
 msgid "1"
 msgstr ""
 
-#: addons/gd_chime/growing_list.gd:87
+#: addons/gd_chime/growing_list.gd:86
 msgid "Everything is showing"
 msgstr ""
 
@@ -850,24 +855,24 @@ msgstr ""
 msgid "That is neither a key nor a pad button"
 msgstr ""
 
-#: addons/gd_chime/language.gd:144
+#: addons/gd_chime/language.gd:120
 msgid "There are no words in %s"
 msgstr ""
 
-#: addons/gd_chime/language.gd:205
+#: addons/gd_chime/language.gd:208
 msgctxt "the script its words are written in"
 msgid "Latn"
 msgstr ""
 
-#: addons/gd_chime/long_list.gd:148
+#: addons/gd_chime/long_list.gd:147
 msgid "Already at the top"
 msgstr ""
 
-#: addons/gd_chime/long_list.gd:150
+#: addons/gd_chime/long_list.gd:149
 msgid "Already at the end"
 msgstr ""
 
-#: addons/gd_chime/notifications.gd:107
+#: addons/gd_chime/notifications.gd:108
 msgid "Already gone"
 msgstr ""
 
@@ -879,15 +884,15 @@ msgstr ""
 msgid "There is no split called %s"
 msgstr ""
 
-#: addons/gd_chime/prompts.gd:131
+#: addons/gd_chime/prompts.gd:130
 msgid "The prompts have no source called %s"
 msgstr ""
 
-#: addons/gd_chime/provisional.gd:137
+#: addons/gd_chime/provisional.gd:145
 msgid "%s was not kept: %s"
 msgstr ""
 
-#: addons/gd_chime/provisional.gd:149
+#: addons/gd_chime/provisional.gd:157
 msgid "%s may not be as the server has it"
 msgstr ""
 

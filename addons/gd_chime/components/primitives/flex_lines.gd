@@ -17,6 +17,13 @@ extends RefCounted
 ## (flex.gd) decides what a part wants and how wide each gap is, and places
 ## the parts on the lines this gives back. How long each part then is on its
 ## line is flex_line.gd's.
+##
+## HOW THICK EACH OF THEM IS ACROSS, § 9.4: the thickest part on the line -
+## and where the lines SHARE the room (align-content: stretch, § 8.4), and
+## every line fits across at that with the gaps between them, an even share
+## of what is left over besides, so rows of cards fill a screen they fit.
+## Where they do not all fit, each line is its thickest and the layout asks
+## for them all, for whatever holds it to scroll.
 
 
 ## The parts a line lays out, in order: every shown control among these
@@ -57,3 +64,17 @@ static func collect(wants: Array, gaps: Array, room: float, wrapping: bool) -> A
 		line.append(at)
 	lines.append(line)
 	return lines
+
+
+## How thick each line is across, the lines given by where their parts
+## stand and each part's least across beside: its thickest part's - and,
+## sharing, an even share of the room left once every line has that and its
+## gap, where any is left.
+static func thicknesses(lines: Array, across: Array, room: float, gap: float, sharing: bool) -> Array:
+	# every line, for the thickest of the parts standing on it
+	var thick: Array = lines.map(func(line: Array) -> float: return line.map(func(at: int) -> float: return across[at]).max())
+	# the room left across once every line stands at its thickest, with a gap between each two
+	var spare: float = room - thick.reduce(func(sum: float, one: float) -> float: return sum + one, 0.0) - gap * (lines.size() - 1)
+	if not sharing or spare <= 0.0:
+		return thick
+	return thick.map(func(one: float) -> float: return one + spare / thick.size())

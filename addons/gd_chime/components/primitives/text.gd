@@ -7,6 +7,8 @@ const Language := preload("../../language.gd")
 const Phrase := preload("../../phrase.gd")
 const DrawnReach := preload("drawn_reach.gd")
 const GradedWords := preload("graded_words.gd")
+const WordMeasure := preload("word_measure.gd")
+const Preferred := preload("preferred.gd")
 
 ## Words: a phrase, data, or a bound value read again whenever what it read
 ## moves - a phrase said in the language on as it is drawn.
@@ -23,6 +25,17 @@ const GradedWords := preload("graded_words.gd")
 ## given rather than widening whatever holds it: held to one line, the
 ## refusal under a back button made a rail as wide as the sentence and
 ## pushed the rest of its row past the window's edge.
+##
+## WORDS THAT WRAP ARE NEVER NARROWER THAN THEIR WIDEST WORD: that is the
+## least they ask across, shaped as the label shapes them (word_measure.gd)
+## and never the engine's one pixel, a letter to a line; down, the lines
+## they take at the width they have, or, given less than their widest word
+## as they are first laid out, at that word's width. What they would take given all the
+## room they want is one line (preferred_size), which a line starts them at
+## and narrows them from. Said again, they ask both again, which the
+## label's own least does not move with. Hidden while empty unless built to
+## hold their line (desc.gd, holds_room): a reason under a press keeps its
+## line then, so the press does not jump as a reason comes and goes.
 ##
 ## ONLY A TEXT TRANSLATES, AND ONLY AS IT DRAWS (language.gd). English words
 ## are phrases (phrase.gd) - a key, a pattern and its data, a count, a key's
@@ -51,6 +64,7 @@ var _content: Variant  # a phrase, a string of data, or a Bound reading either
 var _hides_empty: bool
 var _style: Variant  # a Theme name, or a Bound reading one
 var _reach: Array[float] = []  # how far its box draws past each edge, empty until worked out again
+var _measure := WordMeasure.new()  # its widest word and its one line, kept while the words, the font and its size stand
 ## How many times its reach has been worked out, so that it being kept is
 ## something a test can read rather than something it argues.
 var reach_count: int = 0
@@ -81,8 +95,29 @@ func get_text() -> String:
 	return _label.text
 
 
+## What the label needs, but across, for words that wrap, their widest word
+## and the box they are set in: the label's own is a pixel, a letter to a
+## line. Down, while the label is narrower than that - not yet placed - the
+## words as tall as they stand at that width, never a letter to a line.
 func _get_minimum_size() -> Vector2:
-	return _label.get_minimum_size()
+	var least := _label.get_minimum_size()
+	if _label.autowrap_mode == TextServer.AUTOWRAP_OFF:
+		return least
+	var box := _label.get_theme_stylebox(&"normal").get_minimum_size()
+	least.x = _measure.widest(_label, _label.get_theme_font_size(&"font_size")) + box.x
+	if _label.size.x < least.x and _label.text != "":
+		least.y = _measure.tall_at_widest(_label, _label.get_theme_font_size(&"font_size")) + box.y
+	return least
+
+
+## What it would take given all the room it wants (preferred.gd): words that
+## wrap, all of them on one line in the box they are set in; any other, the
+## least, which is that already.
+func preferred_size() -> Vector2:
+	var least := get_combined_minimum_size()
+	if _label.autowrap_mode == TextServer.AUTOWRAP_OFF:
+		return least
+	return Vector2(maxf(least.x, _measure.one_line(_label, _label.get_theme_font_size(&"font_size")) + _label.get_theme_stylebox(&"normal").get_minimum_size().x), least.y)
 
 
 ## Placed, words that wrap have what they need asked again at the width
@@ -93,9 +128,10 @@ func _get_minimum_size() -> Vector2:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN and _label.autowrap_mode != TextServer.AUTOWRAP_OFF:
 		update_minimum_size()
-	# another look, or the look dressed in another font: the reach is worked out again when next asked
+	# another look, or the look dressed in another font: the reach and the words' measure are worked out again when next asked
 	if what == NOTIFICATION_THEME_CHANGED:
 		_reach = []
+		_measure.forget()
 	# resized or dressed again, its words may stand elsewhere across it: graded across where they are now
 	if what == NOTIFICATION_RESIZED or what == NOTIFICATION_THEME_CHANGED:
 		GradedWords.dress(_label)
@@ -119,7 +155,12 @@ func refresh() -> void:
 	var kind := Styled.name_of(_style)
 	if _label.theme_type_variation != kind:
 		_wear(kind)
+	var before := _label.text
 	_label.text = said(_content.read() if _content is Bound else _content)
+	# words that wrap, said again: their widest word and their one line may have moved where the label's own least has not
+	if _label.autowrap_mode != TextServer.AUTOWRAP_OFF and _label.text != before:
+		update_minimum_size()
+		Preferred.moved(self)
 	GradedWords.dress(_label)
 	if _hides_empty:
 		visible = _label.text != ""
@@ -193,6 +234,8 @@ func _settled() -> void:
 ## The builder's door for words, and for a reason: the pressable's answer.
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 	var content: Variant = ui.current_pressable().reason() if desc.kind == &"reason" else desc.props["content"]
-	var made: Control = ui.primitive(&"text").new(ui.chimes, content, desc.props["style"], ui.region(), desc.kind == &"reason" or desc.props["hides_empty"], desc.kind == &"reason" or desc.props.get("wraps", false))
+	# hidden while empty, as a reason is, unless described to hold its line then
+	var hides: bool = (desc.kind == &"reason" or desc.props["hides_empty"]) and not desc.props.has("holds_room")
+	var made: Control = ui.primitive(&"text").new(ui.chimes, content, desc.props["style"], ui.region(), hides, desc.kind == &"reason" or desc.props.get("wraps", false))
 	ui.attach(made, parent, desc.facts)
 	return made

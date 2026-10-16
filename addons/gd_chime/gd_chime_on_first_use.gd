@@ -16,7 +16,7 @@ extends RefCounted
 ## extend it - gd_chime_recipes.gd, then gd_chime_floor.gd, then gd_chime.gd,
 ## the one name an application preloads - because a static var is inherited
 ## through that chain, so `GdChime.Card` finds a name wherever in the chain it
-## is written, and 163 names in one file would be over the 250-line cap.
+## is written, and 169 names in one file would be over the 250-line cap.
 ##
 ## IT MUST NEVER BE PRELOADED BY ANYTHING INSIDE gd-chime. A file of the floor
 ## names what it uses, by its own path; this exists only between an application

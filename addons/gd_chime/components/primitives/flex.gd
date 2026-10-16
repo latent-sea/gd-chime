@@ -10,10 +10,10 @@ extends Container
 ## parts are on which line § 9.3, in flex_lines.gd; this file decides which way
 ## the line runs, how wide the gaps are, and where each part ends up.
 ##
-## A part's length starts at its basis, a fraction of this layout, or at its
-## own smallest size. Lengths are fractions because pixels are a size on one
-## screen and a mistake on the next; the gap alone arrives in pixels, from
-## whoever knows the window and its scale.
+## A part's length starts at its basis, a fraction of this layout, or at
+## what it would take given all it wants (preferred.gd). Lengths are
+## fractions: pixels are a size on one screen and a mistake on the next;
+## the gap alone arrives in pixels, from whoever knows the window's scale.
 ##
 ## It extends the engine's Container, told - with nothing connected - when a
 ## part's smallest size changes, when this is resized, and when a part is
@@ -51,6 +51,7 @@ const FlexLine := preload("flex_line.gd")
 const FlexLines := preload("flex_lines.gd")
 const DrawnReach := preload("drawn_reach.gd")
 const Shift := preload("shift.gd")
+const Preferred := preload("preferred.gd")
 
 const ROW := 0
 const COLUMN := 1
@@ -79,6 +80,7 @@ var _facts: Dictionary = {}  # part -> what was given for it
 var _wrapped: float = 0.0  # how thick its lines came to as last placed, wrapping
 var _reach: Array[float] = [0.0, 0.0, 0.0, 0.0]  # how far what it holds draws past each of its edges, as last placed
 var _placed_from: Array = []  # what its parts were last placed from: its size, the parts, their least sizes, reaches and facts, and its settings
+var _rows_share: bool = false  # its wrapped lines share the height left across when every one fits (flex_lines.gd): columns' (layout.gd)
 
 
 func _init(direction: int, wrapping: bool, gap: float) -> void:
@@ -163,13 +165,12 @@ func _get_minimum_size() -> Vector2:
 
 func _arrange() -> void:
 	var parts := _in_order()
-	var smallest: Array[Vector2] = []
-	# every part's least size, asked once
-	for part: Control in parts:
-		smallest.append(part.get_combined_minimum_size())
+	# every part's least size, and the length it would start at given no basis, each asked once
+	var smallest: Array = parts.map(func(part: Control) -> Vector2: return part.get_combined_minimum_size())
+	var preferred: Array = Preferred.along(parts, smallest, _direction == ROW)
 	var reaches := DrawnReach.of_each(parts)
 	# placed from all the same as last time - shown again, or told of a change that moved nothing here - every part stands where it was put
-	var from := [size, parts, smallest, reaches, parts.map(func(part: Control) -> Dictionary: return _facts[part]), _gap, justify, align, _wrap]
+	var from := [size, parts, smallest, preferred, reaches, parts.map(func(part: Control) -> Dictionary: return _facts[part]), _gap, justify, align, _wrap]
 	if from == _placed_from:
 		return
 	_placed_from = from
@@ -181,15 +182,17 @@ func _arrange() -> void:
 	var wants: Array = []
 	# every part's five numbers - where it starts, its limits, and how it flexes - and what it wants of the line
 	for at: int in parts.size():
-		numbers.append(FlexLine.numbers(_facts[parts[at]], _main(smallest[at]), room))
+		numbers.append(FlexLine.numbers(_facts[parts[at]], _main(smallest[at]), preferred[at], room))
 		wants.append(FlexLine.held(numbers[-1]["base"], numbers[-1]))
 	var before := DrawnReach.gaps(parts, reaches, _gap, _direction == ROW)
 	var lines := FlexLines.collect(wants, before, room, _wrap)
-
+	# how thick each line is across: its thickest part's, and sharing, a share of the room left (flex_lines.gd)
+	var thicknesses := FlexLines.thicknesses(lines, smallest.map(_cross), _cross(size), _gap, _rows_share)
 	var across := 0.0
 	var needed := 0.0
 	# every line, its parts named by where they stand: how long they are, then where each one sits along and across it
-	for placing: Array in lines:
+	for line: int in lines.size():
+		var placing: Array = lines[line]
 		var gaps := 0.0
 		var each: Array = []
 		var thickest := 0.0
@@ -204,7 +207,7 @@ func _arrange() -> void:
 		for at: int in length.size():
 			used += length[at]
 		# one line alone is as thick as this layout, so a lone part can fill it
-		var thickness: float = _cross(size) if lines.size() == 1 else thickest
+		var thickness: float = _cross(size) if lines.size() == 1 else thicknesses[line]
 		var spread := FlexLine.spread(justify, room - used, placing.size(), _gap)
 		var along := spread.x
 		var between := spread.y

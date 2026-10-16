@@ -236,11 +236,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE and _ui != null:
 		_ui.chimes.stop_all(self)
 	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
-		# the engine's scroll sizes its piece to the window only when told the piece fills
+		# the engine's scroll sizes its piece to the window only when told it fills, and only it places it: anchored, a resize would add the old overflow
 		for child: Node in get_children():
 			if child is Control:
 				(child as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
 				(child as Control).size_flags_vertical = Control.SIZE_EXPAND_FILL
+				(child as Control).set_anchors_preset(Control.PRESET_TOP_LEFT)
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:

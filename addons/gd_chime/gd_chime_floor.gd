@@ -30,6 +30,8 @@ extends "gd_chime_recipes.gd"
 ## IT IS A LIST AND NOTHING ELSE: no function, no value, never made.
 
 ## --- the vocabulary: what describes, beside the builder ---
+static var Capped: GDScript:
+	get: return _at("components/primitives/capped.gd")
 static var Draggable: GDScript:
 	get: return _at("components/primitives/draggable.gd")
 static var Grip: GDScript:
@@ -40,6 +42,8 @@ static var MenuTarget: GDScript:
 	get: return _at("components/primitives/menu_target.gd")
 static var Places: GDScript:
 	get: return _at("components/primitives/describe_places.gd")
+static var PriorityRow: GDScript:
+	get: return _at("components/primitives/priority_row.gd")
 static var SimulatedSight: GDScript:
 	get: return _at("components/primitives/simulated_sight.gd")
 static var Text: GDScript:

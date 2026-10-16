@@ -1,7 +1,8 @@
 extends SceneTree
 
 ## What must be true of a page that scrolls down: it asks for no room of its
-## own, lays what fits it at exactly its width, never widens the app, never
+## own, and would take what it holds would take, with its padding; it lays
+## what fits it at exactly its width, never widens the app, never
 ## moves across, says the piece too wide for it and a scroll growing inside
 ## it, looking for them only when its width or what it holds needs has moved
 ## and never while hidden, and scrolls down as a scroll does; and follows the
@@ -48,6 +49,7 @@ func _init() -> void:
 	await process_frame
 	root.size = Vector2i(ROOM, ROOM)
 	await _verdict.states(_its_least_is_its_own_padding_whatever_it_holds)
+	await _verdict.states(_it_would_take_what_it_holds_would_take_with_its_padding)
 	await _verdict.states(_what_fits_is_laid_at_exactly_its_width)
 	await _verdict.states(_a_piece_too_wide_never_widens_the_app_and_is_cut_at_the_page_s_edge)
 	await _verdict.states(_across_it_never_moves)
@@ -95,6 +97,15 @@ func _its_least_is_its_own_padding_whatever_it_holds() -> void:
 	await _standing(func(ui: RefCounted) -> Array: return [ui.scroll(_too_wide(ui), null, Scroll.DOWN).named(&"plain")])
 	var plain: Control = _made.ui.node_named(&"plain")
 	_verdict.check(plain.get_combined_minimum_size().x >= TOO_WIDE, "while a plain scroll running down asks for the width of what it holds: %s" % [plain.get_combined_minimum_size()])
+	_made.done()
+
+
+func _it_would_take_what_it_holds_would_take_with_its_padding() -> void:
+	await _standing(func(ui: RefCounted) -> Array: return [ui.row([ui.page_scroll(ui.column([ui.text("words that wrap", &"").wraps().named(&"words")])).named(&"page")])])
+	var page: Control = _made.ui.node_named(&"page")
+	var words: Control = _made.ui.node_named(&"words")
+	_verdict.check(page.get_combined_minimum_size() == _padding(page) and is_equal_approx(page.preferred_size().x, words.preferred_size().x + _padding(page).x), "it asks for its padding, and would take the one line of the words it holds, with its padding: %s, %s of %s" % [page.get_combined_minimum_size(), page.preferred_size().x, words.preferred_size().x])
+	_verdict.check(is_equal_approx(page.size.x, page.preferred_size().x), "so a row holding it starts it there: %s" % page.size.x)
 	_made.done()
 
 

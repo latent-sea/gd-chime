@@ -13,7 +13,7 @@ extends "gd_chime_on_first_use.gd"
 ## GDScript demands a constant - never as a type, and only the console's
 ## `const STATES` reads one (Status) inside a constant of its own, which puts
 ## that one in gd_chime.gd. That is what makes the recipes worth having lazily:
-## they are the fat of the framework, 66 of the facade's 163 names, and an
+## they are the fat of the framework, 68 of the facade's 169 names, and an
 ## application draws a handful of them.
 ##
 ## A name here is a PROMISE (CONSTITUTION.md): removing one or pointing it
@@ -30,6 +30,8 @@ static var AdaptiveNav: GDScript:
 	get: return _at("components/recipes/adaptive_nav.gd")
 static var AmountField: GDScript:
 	get: return _at("components/recipes/amount_field.gd")
+static var AppBar: GDScript:
+	get: return _at("components/recipes/app_bar.gd")
 static var Attention: GDScript:
 	get: return _at("components/recipes/attention.gd")
 static var Avatar: GDScript:
@@ -120,6 +122,8 @@ static var NavControl: GDScript:
 	get: return _at("components/recipes/nav_control.gd")
 static var NotificationTray: GDScript:
 	get: return _at("components/recipes/notification_tray.gd")
+static var Page: GDScript:
+	get: return _at("components/recipes/page.gd")
 static var Panes: GDScript:
 	get: return _at("components/recipes/panes.gd")
 static var Progress: GDScript:

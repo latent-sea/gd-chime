@@ -134,6 +134,35 @@ func _ready() -> void:
   screen (`reads_safe_area`, `reads_corner_um`, `reads_keyboard`,
   `reads_dpi`) may be set on it by a host that knows its screen better.
 
+## Fitting the room
+
+A screen is laid out by the room it is given, never by the device it is on,
+so one description fits a small phone held either way and a wide desk.
+
+- **The window holds the page.** The app stands in the safe rect, and each
+  screen's one scroll down is `ui.page_scroll`, which asks for no room across:
+  a piece too wide is cut inside its page and said in the output, never
+  passed up to widen the bar, another screen or the window.
+- **Every piece has a least and a preferred size.** The least is the
+  narrowest it can rightly be - words that wrap, their widest word - and the
+  preferred is what it would take given all it wants - those words on one
+  line. A part of a line with no basis starts at its preferred length and
+  gives up room only to its least.
+- **Every line says what gives** when the room runs short: a row whose
+  parts' leasts fit; `.wraps()` tiles; `ui.columns`, as many equal columns as
+  fit; `ui.by_room` or `.stacks()`, the first arrangement that fits; a strip
+  (`Tabs.of_presses`, `Tabs.of_local`), which scrolls across; a held line
+  (`ui.priority_row`, and the `AppBar` built on it), which folds by rank
+  behind MENU or onto the page; and `ui.frozen_panes`, a table that scrolls
+  either way with its heads and labels held.
+- **A figure that changes stands in a slot of its widest sample**
+  (`ui.room_for`), so what folds is the same whatever it shows.
+- **A pop-up fits itself** (`Sheet.fitted`): its head and its ways out
+  pinned, its body scrolling, capped by the look's `Sheet/margin` and
+  `Sheet/most_wide`; `Page.held` keeps a screen's action in hand the same way.
+- **A finger's target is finger-sized** on every touched window, as the
+  look's `Touch/least_um`, in thousandths of a millimetre on the glass.
+
 ## The demos
 
 Eight applications, each wearing a look of its own, and a gallery of every

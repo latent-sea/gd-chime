@@ -214,5 +214,5 @@ func _phone() -> void:
 	# a screen: the ground itself, two steps of air from the glass's edge
 	Look.ground(self, &"PhoneScreen", Look.flat(PALETTE[&"ground"], {pad = STEP * 2.0}))
 	set_constant(&"holds", Themes.NOTICE, 1)
-	# on a phone's window anything pressed is at least eleven steps each way: undecided, short of Material's 48dp (eighteen steps at 360dp across) to suit this look's type
-	set_constant(&"least", &"Touch", int(STEP * 11.0))
+	# on a touched window anything pressed is at least Material's 48dp each way, in thousandths of a millimetre on the glass
+	set_constant(&"least_um", &"Touch", 7600)

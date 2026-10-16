@@ -42,7 +42,7 @@ msgstr ""
 #: demo/apps/dashboard/dashboard.gd:87
 #: demo/apps/form/form.gd:57
 #: demo/apps/kanban/kanban.gd:70
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/pipes/pipes.gd:56
 #: demo/apps/shop/shop.gd:90
 #: demo/apps/workspace/workspace.gd:69
@@ -58,10 +58,10 @@ msgstr ""
 #: demo/apps/dashboard/dashboard.gd:87
 #: demo/apps/form/form.gd:57
 #: demo/apps/kanban/kanban.gd:70
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/shop/shop.gd:90
 #: demo/apps/workspace/workspace.gd:69
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Dismiss"
 msgstr ""
 
@@ -231,7 +231,7 @@ msgstr ""
 
 #: demo/apps/dashboard/dashboard.gd:87
 #: demo/apps/kanban/kanban.gd:70
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/pipes/pipes.gd:56
 #: demo/apps/workspace/workspace.gd:69
 msgid "More"
@@ -264,7 +264,7 @@ msgid "Remove the filter"
 msgstr ""
 
 #: demo/apps/dashboard/dashboard_view.gd:66
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 msgid "Today"
 msgstr ""
 
@@ -779,7 +779,7 @@ msgid "Move to the lane before"
 msgstr ""
 
 #: demo/apps/kanban/kanban.gd:70
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/workspace/workspace.gd:69
 #: demo/collection/collection.gd:39
 #: demo/gallery/stall.gd:123
@@ -1020,8 +1020,8 @@ msgstr ""
 msgid "Labels"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
-#: demo/gallery/gallery.gd:204
+#: demo/apps/mobile/mobile.gd:65
+#: demo/gallery/gallery.gd:205
 #: demo/gallery/stall.gd:123
 #: demo/stalls/bento.gd:111
 #: demo/stalls/data_dense.gd:97
@@ -1031,7 +1031,7 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_route.gd:124
 #: demo/apps/mobile/mobile_route.gd:37
 #: demo/apps/mobile/mobile_view.gd:56
@@ -1040,43 +1040,43 @@ msgstr ""
 msgid "Delivered"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_view.gd:68
 msgid "Report a problem"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 msgid "Undo"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 msgid "Delivery actions"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 msgid "Refresh"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_view.gd:117
 msgid "Sync"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_view.gd:124
 #: demo/gallery/more_pieces.gd:85
 #: demo/gallery/stall.gd:123
 msgid "Settings"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_view.gd:115
 msgid "Signal"
 msgstr ""
 
-#: demo/apps/mobile/mobile.gd:58
+#: demo/apps/mobile/mobile.gd:65
 #: demo/apps/mobile/mobile_view.gd:123
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Reduce motion"
 msgstr ""
 
@@ -1958,7 +1958,7 @@ msgid "How loud the stall's sounds are: drag it, or left and right"
 msgstr ""
 
 #: demo/gallery/extra_pieces.gd:116
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Mute"
 msgstr ""
 
@@ -2013,7 +2013,7 @@ msgid "On the counter"
 msgstr ""
 
 #: demo/gallery/extra_pieces.gd:144
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Drag and drop"
 msgstr ""
 
@@ -2049,116 +2049,116 @@ msgstr ""
 msgid "The same crates, carried without a mouse"
 msgstr ""
 
-#: demo/gallery/gallery.gd:145
+#: demo/gallery/gallery.gd:146
 #: demo/stalls/bento.gd:55
 #: demo/stalls/material.gd:60
 msgid "This is a MOMENT: it appears once when something worth marking has happened, and one button dismisses it."
 msgstr ""
 
-#: demo/gallery/gallery.gd:174
+#: demo/gallery/gallery.gd:175
 #: demo/stalls/bento.gd:75
 #: demo/stalls/material.gd:114
 msgid "What this is"
 msgstr ""
 
-#: demo/gallery/gallery.gd:174
+#: demo/gallery/gallery.gd:175
 msgid "A gallery of the interface kit, one component at a time,"
 msgstr ""
 
-#: demo/gallery/gallery.gd:174
+#: demo/gallery/gallery.gd:175
 msgid "told as a market stall with crates of fruit."
 msgstr ""
 
-#: demo/gallery/gallery.gd:174
+#: demo/gallery/gallery.gd:175
 msgid "Every screen is a tab: a flap on the panel it opens."
 msgstr ""
 
-#: demo/gallery/gallery.gd:174
+#: demo/gallery/gallery.gd:175
 msgid "Every component sits in a box with its name and what to try."
 msgstr ""
 
-#: demo/gallery/gallery.gd:175
+#: demo/gallery/gallery.gd:176
 msgid "The tabs"
 msgstr ""
 
-#: demo/gallery/gallery.gd:175
+#: demo/gallery/gallery.gd:176
 msgid "One flap per screen, on the panel it reveals; the one you are on is joined to it."
 msgstr ""
 
-#: demo/gallery/gallery.gd:175
+#: demo/gallery/gallery.gd:176
 msgid "BACK returns to the screen you came from,"
 msgstr ""
 
-#: demo/gallery/gallery.gd:175
+#: demo/gallery/gallery.gd:176
 msgid "and the clock is a COUNTDOWN: time until the stall closes."
 msgstr ""
 
-#: demo/gallery/gallery.gd:176
+#: demo/gallery/gallery.gd:177
 msgid "The instruction bar"
 msgstr ""
 
-#: demo/gallery/gallery.gd:176
+#: demo/gallery/gallery.gd:177
 msgid "The INSTRUCTION BAR: its words say what to do next."
 msgstr ""
 
-#: demo/gallery/gallery.gd:176
+#: demo/gallery/gallery.gd:177
 msgid "Its two buttons are the actions you can take now."
 msgstr ""
 
-#: demo/gallery/gallery.gd:176
+#: demo/gallery/gallery.gd:177
 msgid "The glowing one is the one the guide means."
 msgstr ""
 
-#: demo/gallery/gallery.gd:177
+#: demo/gallery/gallery.gd:178
 #: demo/stalls/material.gd:117
 #: demo/stalls/skeuomorphic.gd:84
 msgid "Try this"
 msgstr ""
 
-#: demo/gallery/gallery.gd:177
+#: demo/gallery/gallery.gd:178
 msgid "Press start restocking: the bar asks for crates, 0 of 3, and a stop button appears."
 msgstr ""
 
-#: demo/gallery/gallery.gd:177
+#: demo/gallery/gallery.gd:178
 msgid "The glow moves to pick a crate, with a bubble pointing at it. Press it three times."
 msgstr ""
 
-#: demo/gallery/gallery.gd:177
+#: demo/gallery/gallery.gd:178
 msgid "A moment appears saying you are done; carry on dismisses it."
 msgstr ""
 
-#: demo/gallery/gallery.gd:178
+#: demo/gallery/gallery.gd:179
 #: demo/stalls/material.gd:118
 msgid "Words you will see"
 msgstr ""
 
-#: demo/gallery/gallery.gd:178
+#: demo/gallery/gallery.gd:179
 #: demo/stalls/material.gd:118
 #: demo/stalls/skeuomorphic.gd:85
 msgid "A crate is one item on the stall. c is the coin."
 msgstr ""
 
-#: demo/gallery/gallery.gd:178
+#: demo/gallery/gallery.gd:179
 msgid "Takings is how much it has made. Recent is the last four days' takings."
 msgstr ""
 
-#: demo/gallery/gallery.gd:178
+#: demo/gallery/gallery.gd:179
 #: demo/stalls/material.gd:118
 msgid "Marks is how many complaints it has had."
 msgstr ""
 
-#: demo/gallery/gallery.gd:187
+#: demo/gallery/gallery.gd:188
 #: demo/stalls/bento.gd:83
 #: demo/stalls/glass.gd:87
 #: demo/stalls/material.gd:121
 msgid "The look"
 msgstr ""
 
-#: demo/gallery/gallery.gd:187
+#: demo/gallery/gallery.gd:188
 msgid "The same gallery in each design language; press one"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:92
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2167,14 +2167,14 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:92
 #: demo/stalls/glass.gd:96
 #: demo/stalls/material.gd:129
 msgid "The pear crate's takings"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:93
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2183,14 +2183,14 @@ msgstr ""
 msgid "Bar"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:93
 #: demo/stalls/material.gd:130
 #: demo/stalls/neo_brutalist.gd:99
 msgid "The same, as a fill; full is 100,000"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:95
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2199,14 +2199,14 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:95
 #: demo/stalls/glass.gd:98
 #: demo/stalls/material.gd:131
 msgid "The crate's name, read live"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:96
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2215,14 +2215,14 @@ msgstr ""
 msgid "Mark"
 msgstr ""
 
-#: demo/gallery/gallery.gd:194
+#: demo/gallery/gallery.gd:195
 #: demo/stalls/bento.gd:96
 #: demo/stalls/material.gd:132
 #: demo/stalls/neo_brutalist.gd:105
 msgid "Complaints, a diamond each; pear has none"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:94
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2231,14 +2231,14 @@ msgstr ""
 msgid "Trace"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:94
 #: demo/stalls/material.gd:133
 #: demo/stalls/skeuomorphic.gd:103
 msgid "The last four days' takings"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:97
 #: demo/stalls/flat.gd:72
 #: demo/stalls/flat.gd:22
@@ -2247,7 +2247,7 @@ msgstr ""
 msgid "Relative"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:97
 #: demo/stalls/glass.gd:103
 #: demo/stalls/material.gd:134
@@ -2255,23 +2255,23 @@ msgstr ""
 msgid "Closeness to another crate; press to compare"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:98
 #: demo/stalls/material.gd:136
 msgid "Countdown"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 msgid "The clock BACK stands with"
 msgstr ""
 
-#: demo/gallery/gallery.gd:195
+#: demo/gallery/gallery.gd:196
 #: demo/stalls/bento.gd:98
 #: demo/stalls/material.gd:136
 msgid "Time until the stall closes"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/bento.gd:109
 #: demo/stalls/data_dense.gd:95
 #: demo/stalls/flat.gd:80
@@ -2280,12 +2280,12 @@ msgstr ""
 msgid "Menu link"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/glass.gd:119
 msgid "A button to a screen"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/bento.gd:110
 #: demo/stalls/data_dense.gd:96
 #: demo/stalls/flat.gd:80
@@ -2294,18 +2294,18 @@ msgstr ""
 msgid "Inline link"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/bento.gd:110
 #: demo/stalls/glass.gd:120
 msgid "A name; press to open it"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/glass.gd:121
 msgid "The screen you came from"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/bento.gd:112
 #: demo/stalls/data_dense.gd:98
 #: demo/stalls/flat.gd:80
@@ -2314,27 +2314,27 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-#: demo/gallery/gallery.gd:204
+#: demo/gallery/gallery.gd:205
 #: demo/stalls/bento.gd:112
 #: demo/stalls/glass.gd:122
 msgid "Opens your own crate, the fig"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:115
 #: demo/stalls/flat.gd:80
 #: demo/stalls/material.gd:150
 msgid "Card, list"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:115
 #: demo/stalls/material.gd:150
 #: demo/stalls/neo_brutalist.gd:132
 msgid "A crate as a row; press to open"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:116
 #: demo/stalls/flat.gd:80
 #: demo/stalls/hud.gd:116
@@ -2342,13 +2342,13 @@ msgstr ""
 msgid "Card, tile"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:116
 #: demo/stalls/material.gd:151
 msgid "The same crate as a tile"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:117
 #: demo/stalls/flat.gd:80
 #: demo/stalls/hud.gd:117
@@ -2356,26 +2356,26 @@ msgstr ""
 msgid "Card, dense"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:117
 #: demo/stalls/material.gd:152
 msgid "Live picture, takings, a button"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:118
 #: demo/stalls/flat.gd:80
 #: demo/stalls/material.gd:153
 msgid "Card, empty"
 msgstr ""
 
-#: demo/gallery/gallery.gd:205
+#: demo/gallery/gallery.gd:206
 #: demo/stalls/bento.gd:118
 #: demo/stalls/material.gd:153
 msgid "An empty slot and the ways to fill it"
 msgstr ""
 
-#: demo/gallery/gallery.gd:206
+#: demo/gallery/gallery.gd:207
 #: demo/stalls/bento.gd:120
 #: demo/stalls/data_dense.gd:99
 #: demo/stalls/flat.gd:80
@@ -2384,7 +2384,7 @@ msgstr ""
 msgid "Amount field"
 msgstr ""
 
-#: demo/gallery/gallery.gd:206
+#: demo/gallery/gallery.gd:207
 #: demo/stalls/bento.gd:120
 #: demo/stalls/glass.gd:126
 #: demo/stalls/material.gd:157
@@ -2393,7 +2393,7 @@ msgstr ""
 msgid "Type a number, Enter sets the price"
 msgstr ""
 
-#: demo/gallery/gallery.gd:206
+#: demo/gallery/gallery.gd:207
 #: demo/stalls/bento.gd:121
 #: demo/stalls/data_dense.gd:100
 #: demo/stalls/flat.gd:80
@@ -2403,7 +2403,7 @@ msgstr ""
 msgid "Disposition"
 msgstr ""
 
-#: demo/gallery/gallery.gd:206
+#: demo/gallery/gallery.gd:207
 #: demo/stalls/bento.gd:121
 #: demo/stalls/glass.gd:127
 #: demo/stalls/material.gd:158
@@ -2413,7 +2413,7 @@ msgstr ""
 msgid "One of three; the chosen opens its second half"
 msgstr ""
 
-#: demo/gallery/gallery.gd:220
+#: demo/gallery/gallery.gd:221
 #: demo/stalls/bento.gd:135
 #: demo/stalls/flat.gd:86
 #: demo/stalls/glass.gd:141
@@ -2421,7 +2421,7 @@ msgstr ""
 msgid "Collection, rows"
 msgstr ""
 
-#: demo/gallery/gallery.gd:220
+#: demo/gallery/gallery.gd:221
 #: demo/stalls/bento.gd:135
 #: demo/stalls/glass.gd:141
 #: demo/stalls/material.gd:171
@@ -2430,7 +2430,7 @@ msgstr ""
 msgid "Add, sort, filter; press a row to open it"
 msgstr ""
 
-#: demo/gallery/gallery.gd:221
+#: demo/gallery/gallery.gd:222
 #: demo/stalls/bento.gd:138
 #: demo/stalls/flat.gd:86
 #: demo/stalls/glass.gd:142
@@ -2438,7 +2438,7 @@ msgstr ""
 msgid "Collection, tiles"
 msgstr ""
 
-#: demo/gallery/gallery.gd:221
+#: demo/gallery/gallery.gd:222
 #: demo/stalls/bento.gd:138
 #: demo/stalls/data_dense.gd:114
 #: demo/stalls/glass.gd:142
@@ -2448,7 +2448,7 @@ msgstr ""
 msgid "The same crates as tiles"
 msgstr ""
 
-#: demo/gallery/gallery.gd:221
+#: demo/gallery/gallery.gd:222
 #: demo/stalls/bento.gd:139
 #: demo/stalls/flat.gd:86
 #: demo/stalls/glass.gd:143
@@ -2456,25 +2456,25 @@ msgstr ""
 msgid "Board"
 msgstr ""
 
-#: demo/gallery/gallery.gd:221
+#: demo/gallery/gallery.gd:222
 #: demo/stalls/bento.gd:139
 #: demo/stalls/glass.gd:143
 #: demo/stalls/material.gd:169
 msgid "Ranked by takings; scrolled to keep your fig in view"
 msgstr ""
 
-#: demo/gallery/gallery.gd:227
+#: demo/gallery/gallery.gd:228
 #: demo/stalls/bento.gd:162
 #: demo/stalls/glass.gd:157
 #: demo/stalls/material.gd:184
 msgid "Matrix"
 msgstr ""
 
-#: demo/gallery/gallery.gd:227
+#: demo/gallery/gallery.gd:228
 msgid "The gap in takings between each pair, in thousands; one triangle since a gap has no direction"
 msgstr ""
 
-#: demo/gallery/gallery.gd:227
+#: demo/gallery/gallery.gd:228
 #: demo/stalls/bento.gd:162
 #: demo/stalls/glass.gd:156
 #: demo/stalls/hud.gd:152
@@ -2486,14 +2486,14 @@ msgstr ""
 msgid "Gap, thousands"
 msgstr ""
 
-#: demo/gallery/gallery.gd:232
+#: demo/gallery/gallery.gd:233
 #: demo/stalls/bento.gd:148
 #: demo/stalls/glass.gd:151
 #: demo/stalls/material.gd:179
 msgid "Relationship graph"
 msgstr ""
 
-#: demo/gallery/gallery.gd:232
+#: demo/gallery/gallery.gd:233
 #: demo/stalls/data_dense.gd:130
 #: demo/stalls/material.gd:179
 #: demo/stalls/neo_brutalist.gd:171
@@ -2501,13 +2501,13 @@ msgstr ""
 msgid "Who deals with whom; thicker is stronger. Drag, wheel, press a name"
 msgstr ""
 
-#: demo/gallery/gallery.gd:239
+#: demo/gallery/gallery.gd:240
 #: demo/stalls/bento.gd:171
 #: demo/stalls/material.gd:193
 msgid "A note kept with this crate"
 msgstr ""
 
-#: demo/gallery/gallery.gd:239
+#: demo/gallery/gallery.gd:240
 #: demo/stalls/bento.gd:171
 #: demo/stalls/glass.gd:167
 #: demo/stalls/material.gd:193
@@ -2515,164 +2515,164 @@ msgstr ""
 msgid "Type a note and Enter, tick flags, go to suppliers, come back: still here"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Motion"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Language, sound, keys"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "To the front of the stall"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "To the back room"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Choose a language"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "This language"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Set the volume"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 #: demo/gallery/stall.gd:123
 msgid "Bind"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Restore the defaults"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Save the keys"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Load the keys"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Put a crate on"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Take one off"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Turn the shelf round"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Ripen"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Fill"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Put in the basket"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Put in the fig basket"
 msgstr ""
 
-#: demo/gallery/gallery.gd:80
+#: demo/gallery/gallery.gd:81
 msgid "Empty the baskets"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Numbers and choices"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Choose a size"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Choose a fruit"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Set the crates"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Fill the crate"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "This size"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "This fruit"
 msgstr ""
 
-#: demo/gallery/gallery.gd:81
+#: demo/gallery/gallery.gd:82
 msgid "Find a fruit"
 msgstr ""
 
-#: demo/gallery/gallery.gd:82
+#: demo/gallery/gallery.gd:83
 msgid "Words, links and chips"
 msgstr ""
 
-#: demo/gallery/gallery.gd:82
+#: demo/gallery/gallery.gd:83
 msgid "Turn the label on or off"
 msgstr ""
 
-#: demo/gallery/gallery.gd:82
+#: demo/gallery/gallery.gd:83
 msgid "Take the label off"
 msgstr ""
 
-#: demo/gallery/gallery.gd:82
+#: demo/gallery/gallery.gd:83
 msgid "Put the labels back"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Writing, loading, notices"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Write"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Send the note"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Count the stock"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "The delivery arrives"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Ask for it again"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Notify"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "Notify with an offer"
 msgstr ""
 
-#: demo/gallery/gallery.gd:83
+#: demo/gallery/gallery.gd:84
 msgid "View the sales"
 msgstr ""
 

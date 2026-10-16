@@ -144,7 +144,7 @@ func _over_a_long_list_it_opens_a_type_ahead_and_picking_closes_it_showing_the_n
 	root.size = Vector2i(400, 800)
 	await _a_frame_passes()
 	var standing := sheet.get_global_rect()
-	_verdict.check(standing.has_area() and standing.position.y > 0.0 and standing.end.y < root.size.y and standing.position.x >= 0.0 and standing.end.x <= root.size.x, "on a window on its end the sheet still stands inside the window, the shade showing above and below it: %s" % [standing])
+	_verdict.check(standing.has_area() and standing.position.y >= 0.0 and standing.end.y <= root.size.y and standing.position.x > 0.0 and standing.end.x < root.size.x, "on a window on its end the tall sheet still stands inside the window, the shade showing either side of it: %s" % [standing])
 	root.size = Vector2i(600, 600)
 	await _a_frame_passes()
 	line.grab_focus()

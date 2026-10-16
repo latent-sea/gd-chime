@@ -1,9 +1,9 @@
 extends SceneTree
 
 ## What must be true of a finger on the floor's controls: a press is a tap,
-## a list scrolls under it and glides on, and on a phone's window anything
-## pressed is big enough to hit - while the mouse, the keys and the pad press
-## as they always did.
+## a list scrolls under it and glides on, and on a touched window, in any
+## shape, anything pressed is big enough to hit - while the mouse, the keys
+## and the pad press as they always did.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -12,12 +12,14 @@ extends SceneTree
 ## The touches go in as a device's do, through Input.parse_input_event, so
 ## the engine makes its mouse from them first (touch.gd); the mouse, the keys
 ## and the pad go in at the window. The app is a list of forty rows, each a
-## pressable of one action, over a slider, in a scroll.
+## pressable of one action, over a slider, in a scroll. The look's least
+## touch size is 8800 thousandths of a millimetre, and a base pixel is said
+## to measure 100 of them on the glass (touch.gd: PIXEL_UM), as an easel
+## says it: so a touched press is at least 88 base pixels each way.
 
 const Fixture := preload("res://tests/fixture.gd")
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
 const Themes := preload("res://addons/gd_chime/theme.gd")
-const Shape := preload("res://addons/gd_chime/shape.gd")
 const Touch := preload("res://addons/gd_chime/touch.gd")
 const Pressable := preload("res://addons/gd_chime/components/primitives/pressable.gd")
 const Verdict := preload("res://tests/verdict.gd")
@@ -33,8 +35,9 @@ var _scroll: ScrollContainer
 
 func _init() -> void:
 	root.theme = Themes.new(Themes.NEUTRAL)
-	# a look that sets a least touch size, as the floor's does not
-	root.theme.set_constant(&"least", &"Touch", 88)
+	# a look's least touch size, and a base pixel's measure on the glass: 88 base pixels each way
+	root.theme.set_constant(&"least_um", Touch.TYPE, 8800)
+	root.set_meta(Touch.PIXEL_UM, 100.0)
 	await process_frame
 	await _verdict.states(_a_finger_that_scrolls_the_list_presses_no_row)
 	await _verdict.states(_a_tap_presses_once_as_the_finger_lifts)
@@ -42,7 +45,7 @@ func _init() -> void:
 	await _verdict.states(_let_go_moving_the_list_glides_on_the_clock_and_reduced_it_stops_dead)
 	await _verdict.states(_a_list_at_its_top_lets_a_finger_drawn_down_go_by)
 	await _verdict.states(_a_finger_on_a_slider_moves_no_list)
-	await _verdict.states(_on_a_phone_s_window_a_pressable_is_at_least_the_look_s_least)
+	await _verdict.states(_on_a_touched_window_a_pressable_is_at_least_the_look_s_least_in_any_shape)
 	await _verdict.states(_a_press_taller_than_its_words_stands_them_in_its_middle)
 	await _verdict.states(_a_press_gives_under_a_hand_held_on_it_and_springs_back)
 	quit(_verdict.deliver(get_script()))
@@ -65,6 +68,15 @@ func _standing(window: Vector2i = Vector2i(1920, 1080)) -> void:
 	for frame: int in 6:
 		await process_frame
 	_scroll = ui.node_named(&"list")
+
+
+## The window said touched, or not, through the shape's own read, as a screen that takes touch says it.
+func _touched(touched: bool) -> void:
+	_made.ui.shape.reads_touchscreen = func() -> bool: return touched
+	_made.ui.shape.arrange()
+	# the frames the targets' measuring again takes
+	for frame: int in 2:
+		await process_frame
 
 
 ## Everything under the root freed, the model with it.
@@ -190,47 +202,39 @@ func _a_finger_on_a_slider_moves_no_list() -> void:
 	_done()
 
 
-func _on_a_phone_s_window_a_pressable_is_at_least_the_look_s_least() -> void:
+func _on_a_touched_window_a_pressable_is_at_least_the_look_s_least_in_any_shape() -> void:
 	await _standing(Vector2i(1920, 1080))
 	var row: Pressable = _made.ui.node_named(&"row 5")
-	var least := float(row.get_theme_constant(&"least", Touch.TYPE))
+	var least := Pressable.least_each_way(row)
+	var own := row.get_combined_minimum_size()
+	_verdict.check(least == 88.0 and own.y < least, "not touched, a row of one line on a wide window is its face's own height, under the least touch size of %s: %s" % [least, own])
+	await _touched(true)
 	var wide := row.get_combined_minimum_size()
-	root.size = Vector2i(720, 1280)
-	# the frames the window's turn and its measuring again take
-	for frame: int in 4:
-		await process_frame
-	var phone := row.get_combined_minimum_size()
-	_verdict.check(wide.y < least and phone.y >= least and phone.x >= least, "on a wide window a row of one line is shorter than the least touch size, %s; on a phone's it is at least it each way, %s" % [wide, phone])
+	_verdict.check(wide.y >= least and wide.x >= least, "touched, on the same wide window on its side, it is at least the least each way: %s" % [wide])
+	# every shape a touched window may have: a phone's on its end, a narrow window on its side, a tall regular one
+	for window: Vector2i in [Vector2i(720, 1280), Vector2i(800, 700), Vector2i(1000, 1400)]:
+		root.size = window
+		# the frames the window's turn and its measuring again take
+		for frame: int in 4:
+			await process_frame
+		var shaped := row.get_combined_minimum_size()
+		_verdict.check(shaped.y >= least and shaped.x >= least, "touched, a window of %s makes it at least the least each way too: %s" % [window, shaped])
+	await _touched(false)
+	_verdict.check(row.get_combined_minimum_size().y < least, "no longer touched, live, it needs its face's own height again: %s" % [row.get_combined_minimum_size()])
 	root.size = Vector2i(1920, 1080)
 	# the frames the window's turn back takes
 	for frame: int in 4:
 		await process_frame
-	_verdict.check(row.get_combined_minimum_size() == wide, "and turned back to a wide window, live, it needs what it did: %s" % [row.get_combined_minimum_size()])
-	# narrowed to a compact window still on its side: a desktop's window narrowed, not a phone's
-	root.size = Vector2i(800, 700)
-	# the frames the class moving takes
-	for frame: int in 4:
-		await process_frame
-	_verdict.check(row.get_combined_minimum_size() == wide, "a narrow window on its side is no phone's: it needs what it did: %s" % [row.get_combined_minimum_size()])
-	# a window on its end, wide enough to be regular, narrowed to a phone's: the class moves and the window does not turn
-	root.size = Vector2i(1000, 1400)
-	# the frames the turn takes
-	for frame: int in 4:
-		await process_frame
-	var tall := row.get_combined_minimum_size()
-	root.size = Vector2i(720, 1400)
-	# the frames the class moving takes
-	for frame: int in 4:
-		await process_frame
-	_verdict.check(tall.y < least and row.get_combined_minimum_size().y >= least, "narrowed on its end to a phone's without turning, it is at least the least at once: %s then %s" % [tall, row.get_combined_minimum_size()])
+	_verdict.check(row.get_combined_minimum_size() == own, "and back on the wide window it needs what it did: %s" % [row.get_combined_minimum_size()])
 	_done()
 
 
-## On a phone's window a row of one line is the least touch size tall, well
+## On a touched window a row of one line is the least touch size tall, well
 ## over twice its line: its words stand in the middle of the room its box
 ## leaves, not at the top of it.
 func _a_press_taller_than_its_words_stands_them_in_its_middle() -> void:
 	await _standing(Vector2i(720, 1280))
+	await _touched(true)
 	var row: Pressable = _made.ui.node_named(&"row 5")
 	var label: Label = row.find_children("*", "Label", true, false)[0]
 	var box := row.get_drawn_box()

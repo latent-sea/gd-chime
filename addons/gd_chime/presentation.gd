@@ -88,6 +88,12 @@ const DRAWN := &"drawn"
 ## nothing is asked again, and setting custom_minimum_size does the telling for
 ## you. A change of look needs no call either: the engine asks every control
 ## again by itself.
+##
+## BESIDE THE LEAST IS WHAT IT WOULD TAKE given all the room it wants,
+## preferred_size() - CSS's max-content - which a line starts it at and
+## narrows it from, never past its least (preferred.gd). It is the least
+## here; a piece that can be narrower than it would like - words that wrap
+## (text.gd) - answers its own.
 
 ## How many draws have run, so that coalescing is something a test can read
 ## rather than something it argues.
@@ -129,6 +135,12 @@ func _notification(what: int) -> void:
 ## engine tells a control hidden by itself nothing when its holder is shown.
 func shows_itself() -> bool:
 	return false
+
+
+## What it would take given all the room it wants (preferred.gd): its least,
+## until a piece that knows better answers its own.
+func preferred_size() -> Vector2:
+	return get_combined_minimum_size()
 
 
 ## Arrange whatever this holds within its own rect. Overridden by a subclass

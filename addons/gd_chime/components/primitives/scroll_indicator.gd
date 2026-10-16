@@ -3,6 +3,7 @@ extends Node2D
 const Motion := preload("../../motion.gd")
 const Shape := preload("../../shape.gd")
 const Touch := preload("../../touch.gd")
+const Pressable := preload("pressable.gd")
 
 ## Where the reader is in what scrolls down: a thin mark drawn over it, in
 ## the right padding of the box it scrolls inside, taking no room.
@@ -35,9 +36,9 @@ const Touch := preload("../../touch.gd")
 ## drawn: the view goes where along its track the pointer is, the top the
 ## start and the bottom the end, and it stays lit while held. What takes
 ## the pointer is a GRIP of its own, a control as tall as the track, from
-## the box's right edge in as far as the mark stands - and on a phone's
-## window at least the look's least touch size (Touch/least), over the
-## words' edge though the mark is drawn thin. The grip holds the finger
+## the box's right edge in as far as the mark stands - and on a touched
+## window at least the look's least touch size each way (Touch/least_um, as
+## a press is: pressable.gd), over the words' edge though the mark is thin. The grip holds the finger
 ## (touch.gd), so a finger on it pans nothing under it; faded, it takes
 ## nothing, and whatever is under it is pressed as ever. Taken, it makes
 ## the call it was handed, so whoever holds it stops anything else moving
@@ -116,13 +117,13 @@ func get_mark() -> Rect2:
 
 
 ## Where it can be taken hold of, in its own space: down the whole track,
-## from the box's right edge in as far as the mark stands, and on a phone's
+## from the box's right edge in as far as the mark stands, and on a touched
 ## window at least the look's least touch size.
 func get_grip() -> Rect2:
 	var track := _track()
 	var wide := float(_boxed.get_theme_constant(&"thickness", TYPE) + _boxed.get_theme_constant(&"inset", TYPE))
-	if get_viewport().get_meta(Shape.PHONE, false):
-		wide = maxf(wide, _boxed.get_theme_constant(&"least", Touch.TYPE))
+	if get_viewport().get_meta(Shape.TOUCH, false):
+		wide = maxf(wide, Pressable.least_each_way(_boxed))
 	return Rect2(_boxed.size.x - wide, track.position.y, wide, track.size.y)
 
 

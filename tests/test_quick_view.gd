@@ -3,7 +3,8 @@ extends SceneTree
 ## What must be true of a quick view: a card pressed raises it over the
 ## collection on the card's item, the collection staying where it was; its
 ## steps go to the item after and before, round the ends, without closing
-## it; it stands in a tall sheet at the look's shares; and Back lowers it,
+## it; it stands in a tall sheet, the look's sheet cap across and the whole
+## room down; and Back lowers it,
 ## the focus back on the very card it was opened from.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
@@ -34,8 +35,7 @@ var _closer: StringName  # the quick view's pop-up, named by the builder
 
 func _init() -> void:
 	var theme := Themes.new(Themes.NEUTRAL)
-	theme.set_constant(&"wide", QuickView.SHEET, 800)
-	theme.set_constant(&"high", QuickView.SHEET, 600)
+	theme.set_constant(&"most_wide", &"Sheet", 800)
 	root.theme = theme
 	await process_frame
 	root.size = Vector2i(1000, 800)
@@ -85,7 +85,7 @@ func _a_card_pressed_raises_it_on_the_cards_item_over_the_collection() -> void:
 	# up to the sheet itself, the surface holding what it says
 	while sheet.theme_type_variation != QuickView.SHEET:
 		sheet = sheet.get_parent()
-	_verdict.check(is_equal_approx(sheet.size.x, 800.0) and is_equal_approx(sheet.size.y, 480.0), "in a tall sheet at the look's shares of the window: %s" % sheet.size)
+	_verdict.check(is_equal_approx(sheet.size.x, 800.0) and is_equal_approx(sheet.size.y, 800.0), "in a tall sheet, the look's most across and the whole room down: %s" % sheet.size)
 	var step := _step(ON).get_global_rect()
 	_verdict.check(absf(step.get_center().y - sheet.get_global_rect().get_center().y) < 2.0, "what it holds takes the sheet's height, the steps stood half way down it: %s in %s" % [step, sheet.get_global_rect()])
 	made.done()

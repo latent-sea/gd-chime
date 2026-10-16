@@ -15,8 +15,8 @@ const Flex := preload("components/primitives/flex.gd")
 ## built, over the palette it was given, and a look dresses any of these
 ## again after it. It names a colour only by the palette's name for it. Its
 ## numbers are PLACEHOLDERS nobody has decided, and theme_placeholders.gd
-## holds them with the rest: a drawer's shares of the window, a quick view's
-## and a drill's.
+## holds them with the rest: a drawer's shares of the window, and a
+## sheet's cap.
 ##
 ## THE SHADE IS A PRESS: it closes what stands over it (sheet.gd), so it is
 ## dressed as a pressable in every state and takes no focus ring - it never
@@ -31,15 +31,14 @@ const Flex := preload("components/primitives/flex.gd")
 const SHADE := &"Shade"
 const SHEET := &"Confirm"
 const ASKED := &"Asked"
-## What a moment stands on, and how wide and tall a drill's sheet is, in thousandths of the window.
+## What a moment stands on, and a drill's sheet.
 const MOMENT := &"Moment"
 const DRILL := &"DrillDown"
-## A drawer's sheet, its head, its column, the press closing it, its foot and the line against the shade (drawer.gd).
+## A drawer's sheet, its head, its column, the press closing it and the line against the shade (drawer.gd).
 const DRAWER := &"Drawer"
 const DRAWER_HEAD := &"DrawerHead"
 const DRAWER_COLUMN := &"DrawerColumn"
 const DRAWER_CLOSE := &"DrawerClose"
-const DRAWER_FOOT := &"DrawerFoot"
 const DRAWER_LINE := &"DrawerLine"
 ## A quick view's sheet, its steps and the row they stand in (quick_view.gd).
 const QUICK_VIEW := &"QuickView"
@@ -52,16 +51,15 @@ const PALETTE_ENTRY := &"PaletteEntry"
 ## Every state a press is drawn in.
 const STATES: Array[StringName] = [&"normal", &"hover", &"inert", &"glowing", &"selected", &"current"]
 ## Every line an overlay's recipe names, with the base it varies.
-const LINES := {ASKED: Themes.ROW, DRAWER_HEAD: Themes.ROW, DRAWER_COLUMN: Themes.COLUMN, DRAWER_LINE: Themes.ROW, DRAWER_FOOT: Themes.ROW, QUICK_VIEW_BODY: Themes.ROW}
+const LINES := {ASKED: Themes.ROW, DRAWER_HEAD: Themes.ROW, DRAWER_COLUMN: Themes.COLUMN, DRAWER_LINE: Themes.ROW, QUICK_VIEW_BODY: Themes.ROW}
 
 
 static func dress(theme: Theme, palette: Dictionary) -> void:
 	# every line an overlay stands in: its base, so a look that sets nothing lays it out
 	for line: StringName in LINES:
 		theme.set_type_variation(line, LINES[line])
-	# the sheet against the shade beside it, and a bottom sheet against the shade either side: no gap between them
+	# the sheet against the shade beside it: no gap between them
 	theme.set_constant(&"gap", DRAWER_LINE, 0)
-	theme.set_constant(&"gap", DRAWER_FOOT, 0)
 	# what is asked stands in the middle of the shade, both ways
 	theme.set_constant(&"justify", ASKED, Flex.CENTER)
 	theme.set_constant(&"align", ASKED, Flex.CENTER)

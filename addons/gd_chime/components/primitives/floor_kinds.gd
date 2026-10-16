@@ -14,6 +14,7 @@ extends RefCounted
 const KINDS := {
 	&"text": preload("text.gd"),
 	&"reason": preload("text.gd"),
+	&"fitted_text": preload("../../fitted_text.gd"),
 	&"image": preload("image.gd"),
 	&"surface": preload("surface.gd"),
 	&"paragraph": preload("paragraph.gd"),
@@ -67,4 +68,12 @@ const KINDS := {
 	&"pop_up": preload("place_builder.gd"),
 	# the pieces that answer to the room they are given (describe_rooms.gd)
 	&"page_scroll": preload("page_scroll.gd"),
+	&"by_room": preload("by_room.gd"),
+	&"columns": preload("layout.gd"),
+	&"room_for": preload("room_for.gd"),
+	&"priority_row": preload("priority_row.gd"),
+	&"while_fits": preload("while_fits.gd"),
+	&"capped": preload("capped.gd"),
+	&"shade_band": preload("shade_band.gd"),
+	&"frozen_panes": preload("frozen_panes.gd"),
 }

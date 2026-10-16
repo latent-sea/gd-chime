@@ -12,7 +12,8 @@ extends SceneTree
 ## the surplus back to the others, a part is never taken below what it needs,
 ## and factors under one between them - grow or shrink, read as the factors
 ## themselves and not as the shares they are weighed by - leave the rest of the
-## room alone.
+## room alone. A part given no basis starts at what it would take (§ 9.2,
+## flex-basis auto), one given a basis at its share of the room.
 ##
 ## Every expected length below is worked by hand from the specification, so a
 ## check disagreeing with the code is a question about which of the two is
@@ -38,6 +39,7 @@ func _init() -> void:
 	await _verdict.states(_the_gaps_are_room_the_parts_cannot_have)
 	await _verdict.states(_an_exact_fit_moves_nothing)
 	await _verdict.states(_a_most_under_what_a_part_needs_still_gives_what_it_needs)
+	await _verdict.states(_a_part_with_no_basis_starts_at_what_it_would_take)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -175,3 +177,19 @@ func _a_most_under_what_a_part_needs_still_gives_what_it_needs() -> void:
 	var length := FlexLine.lengths(line, 300.0, 0.0)
 
 	_verdict.check(_same(length, [100.0]), "what it needs, not what it was allowed: %s" % [length])
+
+
+## A part needing 40 that would take 160 starts at 160, and given a basis of
+## a quarter of 400 starts at 100. Beside a part needing and taking 30, in
+## 100 of room: the shortfall of 90 is taken by where each started, 160 to
+## 30, which would leave the second under 30; so it keeps 30 and the first
+## takes the rest, 70.
+func _a_part_with_no_basis_starts_at_what_it_would_take() -> void:
+	var free := FlexLine.numbers({}, 40.0, 160.0, 400.0)
+	var shared := FlexLine.numbers({"basis": 0.25}, 40.0, 160.0, 400.0)
+	_verdict.check(free["base"] == 160.0 and free["least"] == 40.0 and shared["base"] == 100.0, "no basis starts at what it would take, a basis at its share: %s %s" % [free["base"], shared["base"]])
+	var line: Array = [FlexLine.numbers({}, 40.0, 160.0, 100.0), FlexLine.numbers({}, 30.0, 30.0, 100.0)]
+
+	var length := FlexLine.lengths(line, 100.0, 0.0)
+
+	_verdict.check(_same(length, [70.0, 30.0]), "and short of room it shrinks from there, never past what either needs: %s" % [length])

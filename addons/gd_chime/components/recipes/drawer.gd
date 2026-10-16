@@ -9,6 +9,7 @@ const Bound := preload("../primitives/bound.gd")
 const Transition := preload("../primitives/transition.gd")
 const Flex := preload("../primitives/flex.gd")
 const Shape := preload("../../shape.gd")
+const Capped := preload("../primitives/capped.gd")
 const Sheet := preload("sheet.gd")
 
 ## A drawer: a side sheet sliding in from an edge over the shade, holding
@@ -33,22 +34,23 @@ const Sheet := preload("sheet.gd")
 ## laid beside the sheet here rather than under it, and the one close press.
 ##
 ## THE SHEET is a head - its title and a press that closes it - over what
-## it holds, taking the rest of its height, over a foot kept in view below
-## it: a basket's total and its way on. The foot is the caller's, or none.
-## HOW WIDE it is is the look's share of the window, one for a window on
-## its side and one for a window on its end, where a drawer is most of the
-## width; read from the look its pop-up wears - a themed piece's it was
-## described inside, or the app's - as its content is made (describe_places.gd).
+## it holds, which scrolls (page_scroll.gd) in the rest of its height, over
+## a foot kept in view below it: a basket's total and its way on. The foot
+## is the caller's, or none. HOW WIDE it is is the look's share of the
+## window, one for a window on its side and one for a window on its end,
+## where a drawer is most of the width; read from the look its pop-up wears
+## - a themed piece's it was described inside, or the app's - as its content
+## is made (describe_places.gd).
 ##
-## FROM THE FOOT it is a bottom sheet: edge to edge on a PHONE'S WINDOW
-## (shape.gd), and on a desktop's centred at the look's most share of the
-## width ("most_wide"), the shade either side; the look's share of its
-## height tall ("tall") either way.
-## WHOSE WINDOW IT IS IS THE SHAPE'S, NOT A WIDTH MEASURED HERE. The canvas
-## is drawn at the base size and stretched, so a phone's window is 1080
-## base pixels across - past every look's compact width - and a piece
-## measuring itself caps a phone's sheet as if it were a desk's, which is
-## what it did: 432 of 720 pixels, centred, where a bottom sheet spans.
+## FROM THE FOOT it is a bottom sheet, the look's share of the height tall
+## ("tall"), against the foot, and across capped as a fitted sheet is
+## (sheet.gd, capped.gd): the room less Sheet/margin either side, at most
+## Sheet/most_wide, in the middle, the shade either side of it. It meets the
+## window's edges only where that cap leaves less than its least - the room
+## decides, never whose window it is.
+##
+## THE WHOLE WINDOW IS SHADED: under the drawer, a band (sheet.gd: band)
+## carries the shade past the safe rect the pop-up stands in.
 ##
 ## Deliberately absent: a drawer dragged shut, and one from the top.
 
@@ -58,8 +60,6 @@ const HEAD := &"DrawerHead"
 const CLOSE := &"DrawerClose"
 ## Its column: the head over the body over the foot.
 const COLUMN := &"DrawerColumn"
-## The line a bottom sheet stands in between the shade's sides, with no gap.
-const FOOT := &"DrawerFoot"
 ## The line the sheet and the shade stand in, with no gap between them.
 const ALONGSIDE := &"DrawerLine"
 ## The edges it may come from: a side, or the foot - a bottom sheet.
@@ -87,7 +87,7 @@ static func over(ui: Ui, title: Variant, content: Callable, options: Dictionary 
 ## The sheet and the shade beside it, arranged by the window's shape.
 static func _drawn(ui: Ui, title: Variant, content: Desc, foot: Desc, from: StringName) -> Desc:
 	var head := ui.row([ui.text(title, Themes.WORDS).grow(), ui.pressable(ui.CLOSES, {}, [ui.text("✕", Themes.FACE)], CLOSE).goes_to(Driver.BACK)], HEAD)
-	var sheet := ui.surface(SHEET, [ui.column([head, content.grow()] + ([foot] if foot != null else []), COLUMN)])
+	var sheet := ui.surface(SHEET, [ui.column([head, ui.page_scroll(content).grow()] + ([foot] if foot != null else []), COLUMN)])
 	var look: Node = ui.current_place()
 	var wide: float = look.get_theme_constant(&"wide", SHEET) / 1000.0
 	var narrow: float = look.get_theme_constant(&"narrow", SHEET) / 1000.0
@@ -96,19 +96,7 @@ static func _drawn(ui: Ui, title: Variant, content: Desc, foot: Desc, from: Stri
 	# the sheet its share across - or up, from the foot - on a window on its side and on its end, what is beside it taking the rest
 	var arranged := func(share: float) -> Dictionary: return (ui.column_of(order, {&"beside": {"grow": 1.0}, &"sheet": {"basis": share, "align": Flex.STRETCH}}, ALONGSIDE) if down else ui.row_of(order, {&"beside": {"grow": 1.0}, &"sheet": {"basis": share, "align": Flex.STRETCH}}, ALONGSIDE))
 	var tall: float = look.get_theme_constant(&"tall", SHEET) / 1000.0
-	var standing: Desc = sheet.arrives(from) if not down else _capped(ui, sheet.arrives(from), look.get_theme_constant(&"most_wide", SHEET) / 1000.0)
-	return ui.by_shape({&"beside": Sheet.shade(ui), &"sheet": standing}, {Shape.LANDSCAPE: arranged.call(tall if down else wide), Shape.PORTRAIT: arranged.call(tall if down else narrow)})
+	# from the foot, the sheet capped across over the shade, which shows either side of it
+	var standing: Desc = sheet.arrives(from) if not down else ui.stack([Sheet.shade(ui), Sheet.capped(ui, sheet.arrives(from), Capped.SPANS, Capped.FILLS)])
+	return ui.stack([Sheet.band(ui), ui.by_shape({&"beside": Sheet.shade(ui), &"sheet": standing}, {Shape.LANDSCAPE: arranged.call(tall if down else wide), Shape.PORTRAIT: arranged.call(tall if down else narrow)})])
 
-
-## A bottom sheet across the whole width of a phone's window, and on a
-## desktop's centred at the look's most share of it, the shade either side.
-## The shade at each side is nothing at all on a phone: it holds no words
-## and takes no touch target's least (pressable.gd), so it takes no width,
-## and the sheet's own edges are the window's.
-static func _capped(ui: Ui, sheet: Desc, most: float) -> Desc:
-	var parts := {&"left": Sheet.shade(ui), &"sheet": sheet, &"right": Sheet.shade(ui)}
-	var order: Array = [&"left", &"sheet", &"right"]
-	var beside := (1.0 - most) / 2.0
-	var centred := ui.row_of(order, {&"left": {"basis": beside}, &"sheet": {"basis": most, "align": Flex.STRETCH}, &"right": {"basis": beside}}, FOOT)
-	var whole := ui.row_of(order, {&"left": {"basis": 0.0}, &"sheet": {"grow": 1.0, "align": Flex.STRETCH}, &"right": {"basis": 0.0}}, FOOT)
-	return ui.by_shape(parts, {Shape.PHONE: whole, Shape.DESKTOP: centred}, ui.shape.whose_window)

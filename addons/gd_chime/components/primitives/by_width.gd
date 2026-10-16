@@ -1,7 +1,5 @@
 extends "by_shape.gd"
 
-const Shape := preload("../../shape.gd")
-
 ## The same parts arranged by the width THIS has, not the width the window
 ## has: a card that stacks itself when it is put in a narrow column, beside
 ## another of the same card that stays a row because its column is wide.
@@ -22,6 +20,14 @@ const Shape := preload("../../shape.gd")
 ## pixel count written in a recipe - that is a size on one screen and a
 ## mistake on the next. The widest breakpoint the width meets wins, so one
 ## of them is 0.0: the arrangement for a width that meets nothing else.
+##
+## ITS LEAST ACROSS IS ITS NARROWEST ARRANGEMENT'S, as an areas' is
+## (areas.gd), so whatever holds it may narrow it into that one; down, it
+## is what the arrangement worn needs. An arrangement needs across its
+## shown parts' least widths along a row, with its style's gap between each
+## two - the widest of them where the row wraps - or the widest of them
+## down a column (least_across): never the arrangement worn's alone, or a
+## wide one worn would hold this wide for ever.
 
 var _breakpoints: Dictionary
 var _sized: bool = false  # whether it has ever been given a width
@@ -34,8 +40,11 @@ func _init(ui: RefCounted, names: Array, arrangements: Dictionary, breakpoints: 
 
 
 ## The arrangement for the width it has: the widest breakpoint that width
-## meets. Before it has been sized that is the one at nothing.
+## meets. Before it has been sized that is the one at nothing; asked as it
+## is made, before it holds its parts, there is none to wear yet.
 func key_now() -> StringName:
+	if not _gathered:
+		return &""
 	var best: StringName = &""
 	var most := -1.0
 	# every breakpoint the width meets, keeping the widest of them
@@ -47,6 +56,61 @@ func key_now() -> StringName:
 	if best == &"":
 		push_error("nothing is arranged for a width of %s; the breakpoints are %s" % [size.x, _breakpoints])
 	return best
+
+
+## Across, the least its narrowest arrangement needs - so a holder may
+## narrow it into that one - and down, what the arrangement worn needs.
+func _get_minimum_size() -> Vector2:
+	var least := super()
+	if not _gathered:
+		return least
+	# every arrangement, for the narrowest any of them can stand
+	for named: StringName in _arrangements:
+		least.x = minf(least.x, least_across(_arrangements[named]))
+	return least
+
+
+## The least an arrangement needs across, its parts as they need now: their
+## least widths along a row, with its gaps - the widest where the row wraps
+## - or the widest of them down a column.
+func least_across(arrangement: Dictionary) -> float:
+	var widths: Array = _shown(arrangement).map(func(part: Control) -> float: return part.get_combined_minimum_size().x)
+	if widths.is_empty():
+		return 0.0
+	if arrangement["down"] or get_theme_constant(&"wrap", _style_of(arrangement)) != 0:
+		return widths.max()
+	# the widths end to end, with its style's gap between each two
+	return widths.reduce(func(sum: float, wide: float) -> float: return sum + wide, 0.0) + get_theme_constant(&"gap", _style_of(arrangement)) * (widths.size() - 1)
+
+
+## The least an arrangement needs down, its parts as they need now: their
+## least heights down a column, with its gaps, or the tallest along a row.
+func least_down(arrangement: Dictionary) -> float:
+	var heights: Array = _shown(arrangement).map(func(part: Control) -> float: return part.get_combined_minimum_size().y)
+	if heights.is_empty():
+		return 0.0
+	if not arrangement["down"]:
+		return heights.max()
+	# the heights end to end, with its style's gap between each two
+	return heights.reduce(func(sum: float, tall: float) -> float: return sum + tall, 0.0) + get_theme_constant(&"gap", _style_of(arrangement)) * (heights.size() - 1)
+
+
+## The parts an arrangement lays out, in its order: those shown and not going.
+func _shown(arrangement: Dictionary) -> Array[Control]:
+	var shown: Array[Control] = []
+	# every part the arrangement names, kept while it takes room
+	for named: StringName in arrangement["order"]:
+		if (_parts[named] as Control).visible and not Going.is_going(_parts[named]):
+			shown.append(_parts[named])
+	return shown
+
+
+## The style an arrangement is laid out in: its own where the look knows it,
+## else its base, a row or a column, as a line wears one (layout.gd).
+func _style_of(arrangement: Dictionary) -> StringName:
+	if has_theme_constant(&"align", arrangement["style"]):
+		return arrangement["style"]
+	return Themes.COLUMN if arrangement["down"] else Themes.ROW
 
 
 ## A breakpoint in the canvas's own pixels: a share of the base width, or a

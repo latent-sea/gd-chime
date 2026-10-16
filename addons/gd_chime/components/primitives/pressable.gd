@@ -17,10 +17,15 @@ extends "../../action_control.gd"
 ## and its REASON, a bound value the content may read (ui.reason()), why it
 ## cannot be used or why the last press was refused, re-read as this draws.
 ##
-## A FINGER'S TARGET: on a phone's window - compact and on its end - it is
-## at least the look's least touch size each way (Touch/least), read off
-## the window (shape.gd), which measures every target again as that moves.
-## One holding nothing - a drawer's shade - is ground, not a target.
+## A FINGER'S TARGET: on a touched window (shape.gd's meta TOUCH), in any
+## shape and either way round, it is at least the look's least touch size
+## each way, Touch/least_um, in thousandths of a millimetre on the glass,
+## made base pixels by how big a base pixel is drawn there
+## (least_each_way): what the easel fitting the canvas says on its viewport
+## (touch.gd's meta PIXEL_UM), or, on a window with no easel, the window's
+## own pixel at the screen's dots to the inch. Every target is measured
+## again as either moves. One holding nothing - a drawer's shade - is
+## ground, not a target.
 
 const Shape := preload("../../shape.gd")
 
@@ -36,13 +41,25 @@ func _init(chimes: Chimes, commands: Commands, place: Node, does: StringName, pa
 	add_to_group(Touch.TARGETS)
 
 
-## What the face needs, and on a phone's window at least the look's least touch size each way.
+## What the face needs, and on a touched window at least the look's least touch size each way.
 func _get_minimum_size() -> Vector2:
 	var needs := super._get_minimum_size()
 	# a press holding nothing - a shade - is a stretch of ground whatever holds it sizes, not a target
-	if get_child_count() == 0 or not is_inside_tree() or not get_viewport().get_meta(Shape.PHONE, false):
+	if get_child_count() == 0 or not is_inside_tree() or not get_viewport().get_meta(Shape.TOUCH, false):
 		return needs
-	return needs.max(Vector2.ONE * get_theme_constant(&"least", Touch.TYPE))
+	return needs.max(Vector2.ONE * least_each_way(self))
+
+
+## The look's least touch size in the base pixels this control is drawn in:
+## Touch/least_um over how many thousandths of a millimetre one of them
+## measures on the glass - said by the easel on its viewport, or else the
+## window's own pixel, stretched as it is drawn, at the screen's dots to the
+## inch (25,400 thousandths of a millimetre to the inch).
+static func least_each_way(on: Control) -> float:
+	var viewport := on.get_viewport()
+	# the easel's word where it fits the canvas; else the window's pixel as drawn, at the screen's dots to the inch
+	var pixel_um: float = viewport.get_meta(Touch.PIXEL_UM) if viewport.has_meta(Touch.PIXEL_UM) else viewport.get_final_transform().get_scale().x * 25400.0 / DisplayServer.screen_get_dpi()
+	return on.get_theme_constant(&"least_um", Touch.TYPE) / pixel_um
 
 
 ## Why it cannot be used, or why the last press was refused: an answer of

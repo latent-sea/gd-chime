@@ -15,6 +15,109 @@ This file must never become a second copy of the history. What was added or
 fixed, and why, is kept by the commits; only what breaks a caller is listed
 here, because that is the one thing a caller has to act on.
 
+## 4.0.0 - 2026-10-16
+
+The responsive round, steps 2 to 6: honest sizes; held bars and pages;
+pop-ups that fit; collections, tabs and finger sizes; wide tables.
+
+- WORDS THAT WRAP NEED THEIR WIDEST WORD ACROSS (`text.gd`,
+  `word_measure.gd`), shaped in their font and size with the text server's
+  breaks between words in the language on, where they needed the engine
+  Label's one pixel and fell a letter to a line wherever a line left them
+  less. A reason is the same. What breaks: a line holding words that wrap
+  needs at least their widest word for them, so a row that fitted by
+  squeezing them needs more room, and in a room narrower than that stands
+  past it - in a page, cut at its edge and said. New beside it:
+  `Desc.holds_room()`, words hidden while empty that keep their line then,
+  and the mark `Desc.fits_by_size(floor_kind, lines)`, words stepped down
+  from their own kind's size toward the floor kind's until they fit in so
+  many lines, never cut, needing what they need at the floor
+  (`fitted_text.gd`).
+- A PART GIVEN NO BASIS STARTS AT WHAT IT WOULD TAKE (`flex_line.gd`,
+  `preferred.gd`): along a row, its preferred width - words that wrap on one
+  line, a line its parts at theirs - from which it shrinks, by where it
+  started, only to its least, as CSS's flex-basis auto does; it started at
+  its least. Down a column nothing moves. What breaks: words that wrap in a
+  row, given no basis and no grow, stand on one line where there is room
+  and narrow evenly with the rest where there is not, so a row of them is
+  laid out wider than before; and `FlexLine.numbers(facts, least, room)` is
+  `numbers(facts, least, preferred, room)`. New beside it: every piece that
+  draws answers `preferred_size()` (`presentation.gd`), its least unless it
+  knows better - words that wrap, a line (`layout.gd`), a page
+  (`page_scroll.gd`).
+- BY THE WIDTH, THE PARTS NEED ONLY THEIR NARROWEST ARRANGEMENT ACROSS
+  (`by_width.gd`), as an areas' do, where they needed the arrangement worn's,
+  so whatever holds them may narrow them into that one. What breaks: a
+  `by_width` in a line that held it at the width of the arrangement worn may
+  be narrowed past it, and wears what its breakpoints give for the width it
+  is left. New beside it: `ui.by_room(parts, arrangements, most_tall)`, the
+  same parts in the first arrangement, in the order preferred, whose least
+  fits the width it has - and, given a share, that share of the safe height
+  - needing its narrowest across and preferring its first; and the mark
+  `Desc.stacks()`, a row that is a `by_room` of itself and a column of its
+  parts.
+- A FINGER'S TARGET IS FINGER-SIZED ON EVERY TOUCHED WINDOW (`pressable.gd`),
+  in any shape and either way round, as the look's `Touch/least_um`, in
+  thousandths of a millimetre on the glass - 7600, 48dp, until a look sets
+  its own - made base pixels by how big a base pixel is drawn there: what
+  the easel says on its viewport (`Touch.PIXEL_UM`), else the window's own
+  pixel at the screen's dots to the inch. It was `Touch/least`, in base
+  pixels, on a phone's window alone. A scroll's grip is the same
+  (`scroll_indicator.gd`). What breaks: `Touch/least` is no longer read, so
+  a look naming it names `least_um` instead; on a touched desk or tablet
+  window every press now grows to the least, where it was its face's own
+  size; and the viewport's meta `phone` is no longer set - read the meta
+  `touch`, or a piece's own room. New beside it:
+  `Pressable.least_each_way(control)` and the look's `Touch/between_um`.
+- ADAPTIVE NAVIGATION ANSWERS TO ITS OWN WIDTH (`adaptive_nav.gd`): the rail
+  beside what it opens from the look's `Shape/compact_below`, measured on
+  the frame itself, and the destinations a bar wherever their row fits the
+  width given them, else a rail - never the window's size class. What
+  breaks: a frame in a narrow side panel of a wide window gets the bar, and
+  a wide frame on a compact window the rail.
+- A WRAPPING LINE'S COLUMNS ARE NEVER UNDER ITS WIDEST PART'S LEAST
+  (`layout.gd`), and its least across is one column. What breaks: a line
+  whose `least_column` was narrower than a part stands fewer columns. New
+  beside it: `ui.columns(parts, least, most)`, as many equal columns as fit
+  - each at least the look's constant named under `Columns`, none named the
+  widest part's least, at most `most` - marked `.balanced()` for the fewest
+  that make the same rows and `.shares_height()` for rows sharing the height
+  left when every one fits (`flex_lines.gd`); and `Desc.at_most` takes the
+  name of a constant under `Shape`, in base pixels, as well as a share.
+- EVERY SHEET FITS ITSELF TO THE SAFE ROOM (`sheet.gd`, `capped.gd`,
+  `shade_band.gd`). `Sheet.fitted(ui, {head, body, foot, style, way_out,
+  ground})` is a head and a foot pinned over a body that scrolls, as wide as
+  the room less the look's `Sheet/margin` either side and at most
+  `Sheet/most_wide`, as tall as it needs up to the room less the margin, the
+  margin dropped on an axis where that is under its least; its shade is a
+  press of its way out, and a band carries the shade past the safe rect over
+  the whole window. What breaks: `Sheet.over(ui, content, style, ground)` is
+  a fitted sheet of its content as the body - no longer `Sheet.SHARE` of the
+  window's width, and scrolling where it is taller than the room;
+  `Sheet.tall(ui, content, style)` takes no options, and is as wide as a
+  fitted sheet and as tall as the whole room - `{wide, high}` are gone, and
+  with them `Sheet.SHARE`, `Fields.TALL` and `DrillDown.DRILL`, and the
+  look's `sheet_tall` under `Combo`, `wide` and `high` under `QuickView` and
+  `DrillDown`, which nothing reads now. `Sheet.shade(ui, way_out)` takes the
+  pop-up's way out, CLOSES by default. A drawer's body scrolls in a page, and
+  from the foot it is capped across by the same cap, meeting the window's
+  edges only where the cap is under its least, never by `whose_window`:
+  `Drawer.FOOT`, `Overlays.DRAWER_FOOT` and the look's `Drawer/most_wide`
+  are gone. New beside it: `Sheet.band`, `Sheet.capped`, `Sheet.LOOK`, and
+  the kinds `ui.capped(piece, look, across, down)` and
+  `ui.shade_band(style)`, with `Capped.NEEDS`, `SPANS` and `FILLS`.
+- New, breaking nothing: `ui.room_for(content, samples, style)`, a slot as
+  wide as its widest sample; `ui.priority_row(parts, folded, menu, style)`,
+  a held line folding by rank (`PriorityRow.KEEP`, `MENU`, `PAGE`, `GONE`;
+  `fold_at(room)`); `ui.while_fits(first, otherwise)`; the recipes
+  `AppBar.make(ui, {parts, said, said_samples, folded, style})` and
+  `AppBar.declare(register)` - an app using the bar declares its MENU - and
+  `Page.scrolling`, `Page.held` and `Page.in_hand`; `Tabs.of_presses` and
+  `Tabs.of_local`, flaps sharing a strip while all fit and scrolling across
+  whole when they do not; and `ui.frozen_panes(corner, heads, labels, body,
+  options)` with `.whole_down()`, a table whose heads and labels follow a
+  body scrolling either way, no column under its least or dropped.
+
 ## 3.0.0 - 2026-10-16
 
 The responsive round, step 1: the window holds the page, and Back.

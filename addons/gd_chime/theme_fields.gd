@@ -35,8 +35,6 @@ const Flex := preload("components/primitives/flex.gd")
 const SLIDER := &"ValueSlider"
 const STEPPER := &"Stepper"
 const COMBO := &"Combo"
-## How much of the window's height a long combo's sheet takes, in thousandths, read under COMBO: a placeholder.
-const TALL := &"sheet_tall"
 ## A typed line, whatever it is for: an amount, a name, a type-ahead - one
 ## style, a variation of the engine's LineEdit, so a look dresses them all.
 const FIELD := &"Field"

@@ -7,20 +7,23 @@ const Flex := preload("components/primitives/flex.gd")
 ## everything that takes the reader somewhere or divides where they are -
 ## tabs and their panel, a document's flap, a section and its heading, a
 ## link in running words, an inline way out and a step back, the bar at a
-## phone's foot and the rail at a wider window's side, and the panes,
-## grips and foot an application's shell is framed by.
+## phone's foot and the rail at a wider window's side, an application's
+## bar across the top, and the panes, grips and foot an application's shell
+## is framed by.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
 ## theme.gd calls dress() once, with the palette it was given; this puts its
 ## types into that theme and holds nothing, and a look dresses any of them
 ## again after it. It names a colour only by the palette's name for it. The
-## grip's numbers - how thick it is and how far a key steps it - are
-## PLACEHOLDERS nobody has decided, and theme_placeholders.gd holds them.
+## grip's numbers - how thick it is and how far a key steps it - and the
+## application's bar's pad and gap are PLACEHOLDERS nobody has decided, and
+## theme_placeholders.gd holds them.
 ##
 ## A TAB IS A FLAP ON THE PANEL IT REVEALS: the flaps sit bottom-aligned on
 ## a strip with no gap over the panel, and the current one stands taller in
-## the panel's own fill, merging into it. A document's flap is joined to its
+## the panel's own fill, merging into it; a flap of a choice, chosen
+## (selected), is drawn the same. A document's flap is joined to its
 ## closing mark and stands on the same baseline.
 ##
 ## NOTHING HERE SAYS A THING BY HUE ALONE. The destination the reader is at
@@ -60,13 +63,16 @@ const PANE := &"Pane"
 const PANE_COLUMN := &"PaneColumn"
 const STATUS := &"ShellStatus"
 const SHELL_FOOT := &"ShellFoot"
+## An application's bar (app_bar.gd): its ground, and the line its parts stand on, centred down it.
+const APP_BAR := &"AppBar"
+const APP_BAR_ROW := &"AppBarRow"
 ## A link's ground and words in each state, as palette names; a state with no ground draws its words alone.
 const LINK_GROUNDS := {&"hover": &"lit", &"glowing": &"accent"}
 const LINK_INKS := {&"normal": &"accent", &"hover": &"ink", &"inert": &"ink_soft", &"glowing": &"ground", &"current": &"ink"}
 ## The states a link is ruled under in: where it can be pressed and is not lit.
 const RULED: Array[StringName] = [&"normal"]
 ## Every line navigation's recipes name, with the base it varies.
-const LINES := {TAB_STRIP: Themes.ROW, TAB_SET: Themes.COLUMN, DOCUMENT_FLAP: Themes.ROW, SECTIONS: Themes.COLUMN, SECTION: Themes.COLUMN, NAV_BAR: Themes.ROW, NAV_RAIL: Themes.COLUMN, NAV_FRAME: Themes.ROW, PANE_COLUMN: Themes.COLUMN}
+const LINES := {TAB_STRIP: Themes.ROW, TAB_SET: Themes.COLUMN, DOCUMENT_FLAP: Themes.ROW, SECTIONS: Themes.COLUMN, SECTION: Themes.COLUMN, NAV_BAR: Themes.ROW, NAV_RAIL: Themes.COLUMN, NAV_FRAME: Themes.ROW, PANE_COLUMN: Themes.COLUMN, APP_BAR_ROW: Themes.ROW}
 ## Every press navigation's recipes name, each drawn as a pressable until a look says otherwise.
 const PRESSES: Array[StringName] = [TAB, GRIP, NAV_ITEM, NAV_INLINE, NAV_PLAY, SECTION_HEADING, LINK]
 
@@ -94,6 +100,8 @@ static func _tabs(theme: Theme, palette: Dictionary) -> void:
 		theme.set_stylebox(state, TAB, _flap(palette[Themes.GROUNDS[state]], 6.0))
 	theme.set_stylebox(&"current", TAB, _flap(palette[&"lit"], 12.0))
 	theme.set_color(&"font_color_current", TAB, palette[&"ink"])
+	theme.set_stylebox(&"selected", TAB, _flap(palette[&"lit"], 12.0))
+	theme.set_color(&"font_color_selected", TAB, palette[&"ink"])
 	theme.set_constant(&"gap", TAB_STRIP, 2)
 	theme.set_constant(&"align", TAB_STRIP, Flex.END)
 	theme.set_constant(&"gap", TAB_SET, 0)
@@ -133,7 +141,8 @@ static func _link(theme: Theme, palette: Dictionary) -> void:
 
 
 ## A phone's navigation: destinations abutting at the foot and sharing the
-## width, the same line down a wider window's side, and the screen's ground.
+## width, the same line down a wider window's side, the screen's ground,
+## and an application's bar.
 static func _phone(theme: Theme, palette: Dictionary) -> void:
 	theme.set_constant(&"gap", NAV_BAR, 0)
 	theme.set_constant(&"gap", NAV_RAIL, 8)
@@ -146,6 +155,13 @@ static func _phone(theme: Theme, palette: Dictionary) -> void:
 		theme.set_color(StringName("font_color_" + state), NAV_ITEM, palette[inks[state]])
 	theme.set_type_variation(SCREEN, Themes.SURFACE)
 	theme.set_stylebox(&"panel", SCREEN, _padded(palette[&"ground"]))
+	# an application's bar: on the raised ground, its line held off the edges by the bar's pad
+	theme.set_type_variation(APP_BAR, Themes.SURFACE)
+	var bar := StyleBoxFlat.new()
+	bar.bg_color = palette[&"raised"]
+	bar.set_content_margin_all(float(theme.get_constant(&"pad", APP_BAR)))
+	theme.set_stylebox(&"panel", APP_BAR, bar)
+	theme.set_constant(&"align", APP_BAR_ROW, Flex.CENTER)
 
 
 ## The shell: a grip whose rest is a quiet rule and whose hold, hover and

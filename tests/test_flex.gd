@@ -12,7 +12,10 @@ extends SceneTree
 ## sits across its line, that the tree is never reordered, that a part nobody
 ## can see takes no room, and that the engine re-places the parts when a part's
 ## smallest size changes without anything being connected to it; and that a
-## part whose box draws past its edge - a shadow - is given that room.
+## part whose box draws past its edge - a shadow - is given that room; that
+## a part given no basis starts along a row at what it would take and down
+## a column at its least; that a most named by a look's constant is that many
+## base pixels of the line; and that a line would take its parts at theirs.
 ##
 ## Every position and size below is worked by hand, so a check that disagrees
 ## with the code is a question about which of the two is wrong.
@@ -46,6 +49,18 @@ class Counted extends Chip:
 	func get_state() -> StringName:
 		asked += 1
 		return super.get_state()
+
+
+## A part that would take more than it needs, as words that wrap would.
+class Wants extends Control:
+	var wants: float
+
+	func _init(least: Vector2, would_take: float) -> void:
+		custom_minimum_size = least
+		wants = would_take
+
+	func preferred_size() -> Vector2:
+		return Vector2(wants, get_combined_minimum_size().y)
 
 
 ## A column, as described ones are, counting how often it is measured.
@@ -86,7 +101,84 @@ func _init() -> void:
 	await _verdict.states(_fifty_parts_hidden_in_one_frame_are_measured_once_and_placed_no_more_than_twice)
 	await _verdict.states(_a_line_shown_again_with_nothing_moved_places_nothing)
 	await _verdict.states(_a_wrapping_style_naming_a_least_column_lays_its_parts_in_equal_columns)
+	await _verdict.states(_a_part_with_no_basis_starts_at_what_it_would_take_and_shrinks_only_to_its_least)
+	await _verdict.states(_a_most_named_by_a_look_s_constant_is_that_many_base_pixels_of_the_line)
+	await _verdict.states(_a_line_would_take_its_parts_at_theirs)
 	quit(_verdict.deliver(get_script()))
+
+
+## A row of 800: a part needing 50 that would take 300, and a plain part of
+## 100 - each starts where it would; in 250 the shortfall of 150 is taken by
+## where each started, 300 to 100, until the plain part reaches what it
+## needs, so it keeps 100 and the other 150. Down a column of 800 the same
+## part stands at its least, 20.
+func _a_part_with_no_basis_starts_at_what_it_would_take_and_shrinks_only_to_its_least() -> void:
+	var row := _made(Flex.ROW, false, 0.0, Vector2(800, 100))
+	var wanting := Wants.new(Vector2(50, 20), 300.0)
+	var plain := _part(Vector2(100, 20))
+	row.place(wanting)
+	row.place(plain)
+	await _a_frame_passes()
+	_verdict.check(wanting.size.x == 300.0 and plain.size.x == 100.0, "with room to spare, each starts at what it would take: %s %s" % [wanting.size.x, plain.size.x])
+	row.size = Vector2(250, 100)
+	await _a_frame_passes()
+	_verdict.check(is_equal_approx(wanting.size.x, 150.0) and plain.size.x == 100.0, "in 250, the part that would take more gives up the shortfall, the other kept at what it needs: %s %s" % [wanting.size.x, plain.size.x])
+	row.free()
+	var column := _made(Flex.COLUMN, false, 0.0, Vector2(800, 800))
+	var down := Wants.new(Vector2(50, 20), 300.0)
+	column.place(down)
+	await _a_frame_passes()
+	_verdict.check(down.size.y == 20.0, "down a column it starts at its least height, which is its height at its width: %s" % down.size.y)
+	column.free()
+
+
+## A row whose part's most is the look's constant most_of_it, 120 base
+## pixels, growing: 120 of 800; and of a row of 100, the whole of it.
+func _a_most_named_by_a_look_s_constant_is_that_many_base_pixels_of_the_line() -> void:
+	var theme := Theme.new()
+	theme.set_constant(&"most_of_it", &"Shape", 120)
+	var holder := Control.new()
+	holder.theme = theme
+	root.add_child(holder)
+	var row := Layout.new(Flex.ROW, &"Row")
+	holder.add_child(row)
+	row.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	row.size = Vector2(800, 100)
+	var part := _part(Vector2(10, 20))
+	row.place(part, {"grow": 1.0, "max": &"most_of_it"})
+	await _a_frame_passes()
+	_verdict.check(part.size.x == 120.0, "growing in 800, it stops at the look's 120: %s" % part.size.x)
+	row.size = Vector2(100, 100)
+	await _a_frame_passes()
+	_verdict.check(part.size.x == 100.0, "in a row of 100 it takes the whole of it: %s" % part.size.x)
+	holder.free()
+
+
+## A row of a part needing 50 that would take 300 and a plain part of 100,
+## 10 apart: it would take 410; a column of the same, the wider, 300; and
+## down, what it needs.
+func _a_line_would_take_its_parts_at_theirs() -> void:
+	var theme := Theme.new()
+	# a row and a column, 10 between parts
+	for style: StringName in [&"Row", &"Column"]:
+		theme.set_type_variation(style, &"Container")
+		theme.set_constant(&"gap", style, 10)
+		theme.set_constant(&"align", style, Flex.STRETCH)
+	var holder := Control.new()
+	holder.theme = theme
+	root.add_child(holder)
+	var lines: Array = []
+	# a row and a column, each holding the same two parts
+	for direction: int in [Flex.ROW, Flex.COLUMN]:
+		var line := Layout.new(direction, &"Row" if direction == Flex.ROW else &"Column")
+		holder.add_child(line)
+		line.place(Wants.new(Vector2(50, 20), 300.0))
+		line.place(_part(Vector2(100, 20)))
+		lines.append(line)
+	await _a_frame_passes()
+	_verdict.check(lines[0].preferred_size().x == 410.0 and lines[1].preferred_size().x == 300.0, "a row would take its parts at theirs with the gap, a column its widest: %s %s" % [lines[0].preferred_size().x, lines[1].preferred_size().x])
+	_verdict.check(lines[0].preferred_size().y == lines[0].get_combined_minimum_size().y, "and down, what it needs: %s" % lines[0].preferred_size())
+	holder.free()
 
 
 ## A wrapping row of seven parts under a style naming a least column of 100

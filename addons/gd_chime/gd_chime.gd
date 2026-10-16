@@ -22,10 +22,14 @@ class_name GdChime
 ##   framework sets what it needs (needed_settings.gd).
 ## - The vocabulary: Ui, the builder, whose descriptions are the kinds
 ##   (floor_kinds.gd - text, image, surface, pressable, field, row, column,
-##   grid, stack, scroll, page_scroll, virtual_list, cells, view, when, each,
-##   and the places: app, screen, pop_up); Desc, a description; Bound, Local,
-##   PressLocal, the values a description reads; Places; Areas; Text,
-##   Pressable, LazyImage, Draggable, Grip, MenuTarget, Layout, Transition,
+##   grid, stack, scroll, page_scroll, by_room, columns, room_for,
+##   priority_row, while_fits, frozen_panes, capped, shade_band,
+##   virtual_list, cells, view, when, each, and the places: app, screen,
+##   pop_up); Desc, a description, whose marks make a row that stacks, words
+##   fitted by their size, columns balanced or sharing the height, and a
+##   table in frozen panes drawn whole down; Bound, Local, PressLocal, the
+##   values a description reads; Places; Areas; Text, Pressable, LazyImage,
+##   Draggable, Grip, MenuTarget, Layout, PriorityRow, Capped, Transition,
 ##   SimulatedSight.
 ## - The look: Themes, the Theme itself; Look and PaintedBox, Paint, which
 ##   dress one; and its families of types - Pressables, Fields, Tables,
@@ -43,7 +47,7 @@ class_name GdChime
 ##   RollingSeries, Rollup, SettingsFile, SaveShape, Stream, Taken,
 ##   Thresholds, Throttle, ViewBehind.
 ## - The recipes (gd_chime_recipes.gd): what a screen is made of - Shell,
-##   Panes, Tabs, AdaptiveNav, NavControl, Sheet, Drawer, QuickView,
+##   Panes, Tabs, AdaptiveNav, NavControl, AppBar, Page, Sheet, Drawer, QuickView,
 ##   DrillDown, ContextMenu, CommandPalette, Confirm, Hint, Moment,
 ##   Attention, Loading, Progress, Status, NotificationTray, PromptBar,
 ##   InstructionBar, Divider, Badge, Avatar, Chip, Card, Wall, Gallery,
@@ -70,12 +74,12 @@ class_name GdChime
 ## gd_chime_floor.gd, over gd_chime_on_first_use.gd, which this extends. A
 ## static var is inherited, so `GdChime.Card` reads the same whichever file
 ## the name is written in, and no call site knows or cares. Three files
-## because 163 names cannot live under the 250-line cap, and the cap is what
+## because 169 names cannot live under the 250-line cap, and the cap is what
 ## made the split honest: the eager names are one kind of thing and the lazy
 ## names another.
 ##
 ## WHAT IS EAGER IS EXACTLY WHAT MUST BE. A `const X := preload(...)` compiles
-## that script, and everything it names, when this file loads. Naming all 163
+## that script, and everything it names, when this file loads. Naming all 169
 ## that way compiled the whole framework before any application's _init, and
 ## cost every application about a second and a half of its start. So a name is
 ## a constant here for ONE reason: an application names it somewhere the parser

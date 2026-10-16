@@ -5,7 +5,7 @@ const Ui := preload("../primitives/ui.gd")
 const Options := preload("../primitives/options.gd")
 const Desc := preload("../primitives/desc.gd")
 const Transition := preload("../primitives/transition.gd")
-const Flex := preload("../primitives/flex.gd")
+const Capped := preload("../primitives/capped.gd")
 
 ## A sheet over everything: a shade across the whole of what is beneath,
 ## and one sheet of content in the middle of it - the one overlay contract.
@@ -21,23 +21,67 @@ const Flex := preload("../primitives/flex.gd")
 ## press and Back - and it is the style Shade, the same in every state, the
 ## ground everything on it stands on (drawn_over.gd). The sheet is the
 ## caller's own style and scales in each time the place it stands in is
-## shown, while the shade only fades with it; the line that holds the sheet
-## is ASKED, for a look to centre and pad as it likes. What it is put in is
-## a pop-up: this is the content alone, never a place.
+## shown, while the shade only fades with it. What it is put in is a
+## pop-up: this is the content alone, never a place. ASKED is the line a
+## sheet an application lays out itself stands in, which the look centres
+## both ways (theme_overlays.gd).
 ##
 ## A moment's shade is ground and never a press (moment.gd): its way out is
 ## its model's, and a shade going back would lower it only for the moment's
 ## fact to raise it again.
+##
+## EVERY SHEET FITS ITSELF TO THE SAFE ROOM (fitted): a head and a foot of
+## ways out, pinned, and between them a body that scrolls (page_scroll.gd),
+## in the middle of the room as wide as the look's cap - the room less
+## Sheet/margin either side, and at most Sheet/most_wide - and as tall as it
+## needs up to the room less the margin (capped.gd); where that leaves less
+## than the sheet's least, the margin is dropped and it meets the safe rect's
+## edges. Its shade is a press of its way out - CLOSES, going back, or the
+## model's own action for a pop-up a model presents - and a band
+## (shade_band.gd) carries the shade past the safe rect, so the whole window
+## is darkened. over() is a fitted sheet of a body alone; tall() is as wide
+## as the same cap and as tall as the whole room, for what holds a list
+## that scrolls itself and so needs no page.
 
 const SHADE := &"Shade"
 const ASKED := &"Asked"
-## How much of the width the sheet takes.
-const SHARE := 0.6
+## The look naming a sheet's cap: margin, most_wide and most_tall (capped.gd).
+const LOOK := &"Sheet"
 
 
-## The shade: a press going back by the pop-up's way out, never focused.
-static func shade(ui: Ui) -> Desc:
-	return ui.pressable(ui.CLOSES, {}, [], SHADE).goes_to(Driver.BACK).no_focus()
+## The shade: a press of the pop-up's way out, never focused - CLOSES going
+## back, or the model's own action, told to it.
+static func shade(ui: Ui, way_out: StringName = Ui.CLOSES) -> Desc:
+	var press := ui.pressable(way_out, {}, [], SHADE).no_focus()
+	return press.goes_to(Driver.BACK) if way_out == Ui.CLOSES else press
+
+
+## The shade carried past the pop-up's rect over the rest of the window
+## (shade_band.gd): the first thing in a pop-up, under everything else in it.
+static func band(ui: Ui) -> Desc:
+	return ui.shade_band(SHADE)
+
+
+## A piece laid in the middle of the room, capped by the look's sheet
+## margin and most (capped.gd): across and down, each Capped.NEEDS, SPANS or FILLS.
+static func capped(ui: Ui, piece: Desc, across: int, down: int) -> Desc:
+	return ui.capped(piece, LOOK, across, down)
+
+
+## A sheet fitted to the safe room, over the whole window's shade: its
+## parts - head, pinned at the top, or none; body, which scrolls; foot, the
+## ways out, pinned at the bottom, or none; style, the sheet's own; way_out,
+## the pop-up's, CLOSES unless a model presents it; and ground, standing
+## in the shade's place where it is not a press - a moment's.
+const FITTED_PARTS: Array[String] = ["head", "body", "foot", "style", "way_out", "ground"]
+
+static func fitted(ui: Ui, parts: Dictionary) -> Desc:
+	Options.checked("a fitted sheet", parts, FITTED_PARTS)
+	var head: Array = [parts["head"]] if parts.has("head") else []
+	var foot: Array = [parts["foot"]] if parts.has("foot") else []
+	var sheet := ui.surface(parts["style"], [ui.column(head + [ui.page_scroll(parts["body"]).grow()] + foot)])
+	var under: Desc = parts["ground"] if parts.has("ground") else shade(ui, parts.get("way_out", Ui.CLOSES))
+	return ui.stack([band(ui), under, capped(ui, sheet.arrives(Transition.SCALE), Capped.SPANS, Capped.NEEDS)])
 
 
 ## The press closing the pop-up it stands in, with the register's words for it.
@@ -45,24 +89,18 @@ static func close(ui: Ui) -> Desc:
 	return ui.button(ui.CLOSES, {goes_to = Driver.BACK})
 
 
-## The sheet in the middle of the width, as tall as what it holds, over the
-## shade - or over this ground in its place, a moment's.
+## A fitted sheet of these lines alone, scrolling where they are more than
+## the room, over the shade - or over this ground in its place, a moment's.
 static func over(ui: Ui, content: Array, style: StringName, ground: Desc = null) -> Desc:
-	var sheet := ui.surface(style, [ui.column(content)])
-	return ui.stack([shade(ui) if ground == null else ground, ui.row([sheet.basis(SHARE).arrives(Transition.SCALE)], ASKED)])
+	var parts := {"body": ui.column(content), "style": style}
+	if ground != null:
+		parts["ground"] = ground
+	return fitted(ui, parts)
 
 
-## A sheet as wide and as tall as these shares of the window, however
-## little what it holds needs - a table of rows, whose list takes the room
-## it is given - with the same room above it as below.
-## Its options: wide and high, the shares of the window it takes.
-const TALL_OPTIONS: Array[String] = ["wide", "high"]
-
-static func tall(ui: Ui, content: Array, style: StringName, options: Dictionary = {}) -> Desc:
-	Options.checked("a tall sheet", options, TALL_OPTIONS)
-	var wide: float = options["wide"]
-	var high: float = options["high"]
-	var sheet: Desc = ui.surface(style, [ui.column(content)]).basis(wide).arrives(Transition.SCALE)
-	# the sheet as tall as the line it stands in, rather than as tall as what it holds
-	sheet.facts["align"] = Flex.STRETCH
-	return ui.stack([shade(ui), ui.column([ui.column([]).grow(), ui.row([sheet], ASKED).basis(high), ui.column([]).grow()])])
+## A sheet as wide as a fitted one and as tall as the whole room, however
+## little what it holds needs - a table of rows, whose list scrolls itself
+## in the room it is given - over the whole window's shade.
+static func tall(ui: Ui, content: Array, style: StringName) -> Desc:
+	var sheet := ui.surface(style, [ui.column(content)]).arrives(Transition.SCALE)
+	return ui.stack([band(ui), shade(ui), capped(ui, sheet, Capped.SPANS, Capped.FILLS)])

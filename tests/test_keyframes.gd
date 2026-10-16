@@ -312,7 +312,7 @@ func _the_moments_entrance_staggers_in_ends_whole_and_draws_nothing_over_anythin
 	_made.commands.dispatch(Chimes.GLOBAL, &"presents", {})
 	await _a_frame_passes()
 	var shade: Control = _ui.node_named(&"moment").get_child(0)
-	var lines: Control = shade.find_children("*", "Container", true, false).filter(func(part: Node) -> bool: return part.get_children().size() == 3)[0]
+	var lines: Control = shade.find_children("*", "Container", true, false).filter(func(part: Node) -> bool: return part.get_children().size() == 3 and part.get_children().all(func(line: Node) -> bool: return line is Keyframes))[0]
 	_verdict.check(shade.modulate.a == 0.0 and lines.get_children().all(func(line: Node) -> bool: return (line as Control).modulate.a == 0.0), "presented, the whole moment begins unseen: the shade, what stands on it, and every line of it")
 	var crossed: Array = []
 	# a hundredth of a second at a time through the whole entrance, watching the lines
@@ -331,7 +331,7 @@ func _the_moments_entrance_staggers_in_ends_whole_and_draws_nothing_over_anythin
 	_made.commands.dispatch(Chimes.GLOBAL, &"presents", {})
 	await _a_frame_passes()
 	var again: Control = _ui.node_named(&"moment").get_child(0)
-	var rows: Control = again.find_children("*", "Container", true, false).filter(func(part: Node) -> bool: return part.get_children().size() == 3)[0]
+	var rows: Control = again.find_children("*", "Container", true, false).filter(func(part: Node) -> bool: return part.get_children().size() == 3 and part.get_children().all(func(line: Node) -> bool: return line is Keyframes))[0]
 	await _step(0.05)
 	early = rows.get_children().map(func(line: Node) -> float: return (line as Control).modulate.a)
 	_verdict.check(early[0] > early[1] and early[1] >= early[2], "shown again, its lines arrive one after another rather than together: %s" % [early])

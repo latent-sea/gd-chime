@@ -16,8 +16,8 @@ const Shift := preload("components/primitives/shift.gd")
 ## that moves, its own size does, or a piece's needs do - as every holder
 ## places a piece (shift.gd), so one scaling or sliding in keeps the motion
 ## it has reached. So the band round the edge - a cutout, a corner's arc, the
-## gutter - shows the ground and nothing else. The ground is drawn again
-## whenever the look changes.
+## gutter - shows the ground, or a pop-up's shade, and nothing else. The
+## ground is drawn again whenever the look changes.
 ##
 ## IT ASKS FOR NOTHING: its least is zero whatever stands on it, so nothing
 ## on it can make the canvas, the viewport or the window larger. A piece that
@@ -30,8 +30,9 @@ const Shift := preload("components/primitives/shift.gd")
 ## ground and never the window's clear colour, which is the host's and says
 ## nothing of the app.
 ##
-## Deliberately absent: a shade in the band. A pop-up is laid in the safe rect
-## with its shade, so while one is up the band round it stays the ground.
+## The band under a pop-up is its shade's: a fitted sheet or a drawer stands
+## on a shade_band (shade_band.gd), which paints the shade past the safe rect
+## from inside the pop-up; the canvas paints only the ground.
 
 var _ground := StyleBoxFlat.new()  # the one box drawn across the whole canvas, the look's ground
 var _insets := PackedFloat32Array([0.0, 0.0, 0.0, 0.0])  # how far in from each edge is safe, in base pixels, by Side

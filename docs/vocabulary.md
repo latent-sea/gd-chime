@@ -11,6 +11,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 
 - `text` - Words: a phrase, data, or a bound value read again whenever what it read moves - a phrase said in the language on as it is drawn.
 - `reason` - Words: a phrase, data, or a bound value read again whenever what it read moves - a phrase said in the language on as it is drawn.
+- `fitted_text` - Words drawn in their own kind where they fit, and stepped down toward the size of a smaller kind, the floor kind, until they do: a name in a narrow block, written as large as its room allows and never cut.
 - `image` - A picture: a texture, or a bound value read again whenever its bells ring, drawn to fit its room and keeping its shape.
 - `surface` - A ground: a stylebox drawn under whatever it holds, by a Theme name.
 - `paragraph` - Running words: spans one after another, wrapped as a paragraph at the width it is given - phrases, a model's data, and links among them, each link a pressable laid in the line where its words fall.
@@ -72,6 +73,14 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 ### the pieces that answer to the room they are given (describe_rooms.gd)
 
 - `page_scroll` - A page that scrolls down and asks for no room across: what it holds is laid at its width inside its padding, or at its own least where that is wider - the engine lays nothing narrower than it needs - so a piece too wide for it is cut inside it and said out loud, never passed up to widen the page, the app or the window.
+- `by_room` - The same parts in the first of their arrangements, in the order they are preferred, that fits the room THIS has: a row of them while the row fits, a column of them where it does not - read off the parts' own least sizes, never off a breakpoint written for them.
+- `columns` - A row or a column: the line layout (flex.gd) with its gap a Theme name.
+- `room_for` - A slot holding the room of the widest of its samples, in a kind of words, whatever what it holds shows now: a clock, a balance, a score - any figure that changes - so the line it stands in is placed once and never again as the figure moves.
+- `priority_row` - A part that stays on the line however short the room.
+- `while_fits` - One piece while its least fits the room this is given, else another in its place: a list that scrolls itself while the room shows the rows it must, and the same list drawn whole on a page that scrolls where it cannot (page.gd).
+- `capped` - One piece laid in the middle of the room it is given, on each axis at what it needs, up to a cap - the room less a margin either side, and a most - and never under its own least: a sheet growing to fit what it holds, up to a ceiling.
+- `shade_band` - A pop-up's shade across the band round the safe rect: the look's shade painted over all of the window that lies outside this piece's own rect, so a pop-up laid in the safe rect darkens the whole window, the cutout strip and the corners' arcs included.
+- `frozen_panes` - A table wider or taller than its room, in four panes: a CORNER that never moves; the HEADS, the heading row, held at the top; the LABELS, the column that names each row, held at the left; and the BODY, which scrolls either way while the heads follow it across and the labels follow it down (frozen_offsets.gd). A table never squeezes a column under its least, never drops one and never pages: what does not fit scrolls.
 
 ## The names an application reads
 
@@ -108,7 +117,8 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 
 ### navigation
 
-- `AdaptiveNav` *(lazy)* - Navigation that follows the window: a bar of destinations at a phone's foot, under what they open; a rail down the side of a tablet's or a desktop's window, beside it - the SAME destinations, built once, only re-flowed (by_shape.gd), so the focus, a scroll and a typed line survive the window turning or widening.
+- `AdaptiveNav` *(lazy)* - Navigation that follows its own room: a bar of destinations at the foot of a narrow frame, under what they open; a rail down the side of a wide one, beside it - the SAME destinations, built once, only re-flowed (by_shape.gd), so the focus, a scroll and a typed line survive the frame narrowing or widening.
+- `AppBar` *(lazy)* - An application's bar: one held line across the top of every screen, the same parts in rank order on each, one height whatever it shows - and where the room runs short, the presses that do not fit behind MENU, and what the screen says at the head of its page.
 - `Shell` *(lazy)* - The frame of an application shell: the bar of its commands along the top, the work in the middle - its panes (panes.gd) - and its foot: what the application says about itself, and the tray its notifications stand in (notification_tray.gd).
 
 ### pressables
@@ -156,6 +166,7 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 - `Matrix` *(lazy)* - A matrix: two axes and what their crossing says. A set down the rows, a set across the columns, and for each pair a cell the matrix asks the next layer for - a function of the row and the column - and places. It knows nothing about what it is showing. ONE SET AGAINST ITSELF shows one triangle, the diagonal being meaningless.
 - `MeasureCharts` *(lazy)* - A dashboard's figures over its days as charts: a figure's TREND - its days as an area, the stretch before laid over it while the dashboard compares - and a spread's BAND - the middle half of each day's values as an area, their middle as a line through it. Each is a line chart (line_chart.gd) over a figure of the measures (measures.gd), with its loading and empty states (loaded_or_empty.gd).
 - `Moment` *(lazy)* - A moment: something presented at a boundary and handed on from - not a place the reader goes. It has no row and no way in: it arrives while its model says so, is read, and is dismissed by one press, which is a command to the model. It never enters the history.
+- `Page` *(lazy)* - A screen's page: what it shows, in the one scroll down a screen has, with at most a held line pinned above it and one below - the line holding the action the screen is for, which never scrolls out of reach.
 - `Panes` *(lazy)* - The panes of an application shell over its panels (panels.gd): a split of two panes the model shares the room of, a titled pane, and the presses that fold a pane away and bring it back or expand one over the rest - each showing the key it is on and whether its pane shows.
 - `QuickView` *(lazy)* - A quick view: one item of a collection looked at over the collection, never leaving it - opened on the item as its place's parameter, stepping to the item before and after without closing, and closed by Back to the very card it was opened from.
 - `RegionMap` *(lazy)* - A region map: every region drawn from data, shaded by how much of a figure falls in it, and each a press - its name pinned on it for the keys and the pad, its ground for the pointer - that picks it.
@@ -229,11 +240,13 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 
 ### the vocabulary: what describes, beside the builder
 
+- `Capped` *(lazy)* - One piece laid in the middle of the room it is given, on each axis at what it needs, up to a cap - the room less a margin either side, and a most - and never under its own least: a sheet growing to fit what it holds, up to a ceiling.
 - `Draggable` *(lazy)* - Something a reader can pick up and drop somewhere else: a face, focused and drawn like any other, that hands what it carries to whatever takes it - and, described with an action, is pressed as well as carried.
 - `Grip` *(lazy)* - A grip: a thin edge the reader takes hold of to resize something - the sash between a split's two panes (split.gd), a column's edge in a table's heading - every move a command through the door.
 - `Layout` *(lazy)* - A row or a column: the line layout (flex.gd) with its gap a Theme name.
 - `MenuTarget` *(lazy)* - A menu's target: whatever it holds, given a context menu of declared actions - opened by a right press on it, a finger held on it, or the keyboard's menu key or a pad button while the focus is inside it (open_menu.gd).
 - `Places` *(lazy)* - The descriptions of the places: the app, a screen, a set of tabs, a pop-up - and the panel, a pop-up that blocks nothing - and the button, which may open a pop-up as one of its kind.
+- `PriorityRow` *(lazy)* - A part that stays on the line however short the room.
 - `SimulatedSight` *(lazy)* - A simulation of colour-blind sight laid over the whole screen, so a look can be checked by eye rather than by argument.
 - `Text` *(lazy)* - Words: a phrase, data, or a bound value read again whenever what it read moves - a phrase said in the language on as it is drawn.
 - `Transition` *(lazy)* - The transitions: how a thing arrives, and how it goes.
@@ -246,7 +259,7 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 - `Fields` *(lazy)* - FIELDS, as the floor's look draws them until a look says otherwise: everything a reader types into or sets a value with - the typed line itself, a text area, code, an amount, a slider, a stepper, a combo, a type-ahead, a key binding, a chip and the filters built from them - and a form of many steps: a question and the message beside it, a section asked while an answer holds, the steps along the top, the summary of what needs attention, a step of the review, a date field and the calendar's days.
 - `Look` *(lazy)* - What every look is made of: the boxes (look_boxes.gd, which this extends), the fonts, and the theme entries a design language is written in, so a look says what it believes in a few lines and never repeats the engine's spelling.
 - `MotionTokens` *(lazy)* - A look's motion written into its Theme (motion.gd reads it): the durations and the stagger in milliseconds, and each easing's curve, its ease and which duration it lasts, all under the type Motion.
-- `Navigation` *(lazy)* - NAVIGATION, as the floor's look draws it until a look says otherwise: everything that takes the reader somewhere or divides where they are - tabs and their panel, a document's flap, a section and its heading, a link in running words, an inline way out and a step back, the bar at a phone's foot and the rail at a wider window's side, and the panes, grips and foot an application's shell is framed by.
+- `Navigation` *(lazy)* - NAVIGATION, as the floor's look draws it until a look says otherwise: everything that takes the reader somewhere or divides where they are - tabs and their panel, a document's flap, a section and its heading, a link in running words, an inline way out and a step back, the bar at a phone's foot and the rail at a wider window's side, an application's bar across the top, and the panes, grips and foot an application's shell is framed by.
 - `Overlays` *(lazy)* - OVERLAYS, as the floor's look draws them until a look says otherwise: the shade everything that stands over the screen stands on, the sheet itself - which a confirmation, a choice's options, a context menu, a drill and a moment all wear - a drawer at the window's edge, a quick view, a context menu's items and the command palette's sheet and entries.
 - `Paint` *(lazy)* - The painters: what a flat box cannot draw - a dashed edge, corner brackets, a rule along one side, a hatch, a gradient, a bevel - each a function of (canvas item, rect, theme) for a layered box (look.gd) to draw in its turn.
 - `PaintedBox` *(lazy)* - A stylebox drawn by layers: each a stylebox of the engine's drawn at an offset, or a painter given the canvas, the rect and the theme, in order, so a look that needs two shadows, a bracketed corner, a dashed edge or a bevel is made of the engine's own boxes and a few lines, never a texture.

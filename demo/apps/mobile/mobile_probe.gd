@@ -218,7 +218,7 @@ func _navigation() -> void:
 	var sync: Control = _destination(_app.GOES_WAITING)
 	var screen: Control = _hands.place(&"route")
 	var bar: bool = sync.get_global_rect().position.y >= screen.get_global_rect().end.y - 1.0
-	var least := float(sync.get_theme_constant(&"least", GdChime.Touch.TYPE))
+	var least := GdChime.Pressable.least_each_way(sync)
 	var targets: Array = _app.root.get_tree().get_nodes_in_group(GdChime.Touch.TARGETS).filter(func(one: Control) -> bool: return one.is_visible_in_tree() and one.get_combined_minimum_size().y < least)
 	await _hands.tap(sync)
 	var moved: bool = _app.driver.get_top().has(MobileView.WAITING)

@@ -22,6 +22,10 @@ const Language := preload("../../language.gd")
 ## look, its parts or the language changed - and a least is then measured
 ## again the first time the line asks for it. It never follows anything itself: the
 ## line hears what moved.
+##
+## HOW COLUMNS SHARE A ROOM is here too (shared), for a table in frozen
+## panes (frozen_panes.gd): never one under its least, the room shared out
+## only where every least fits in it.
 
 var _samples: Dictionary  # column -> the words it may hold, their measures kept beside them
 var _words_kind: StringName  # the kind of words the cells are in, measured by
@@ -54,3 +58,28 @@ func of(column: StringName, line: Control, pad: float) -> float:
 		held[key] = widest
 	_kept[column] = held[key] + 2.0 * pad
 	return _kept[column]
+
+
+## The widths of columns of these leasts in this room, with this gap
+## between each: every one at its least where they do not all fit;
+## otherwise an equal share each, a column whose least is wider than its
+## share keeping its least while the rest share what remains.
+static func shared(leasts: Array[float], room: float, gap: float) -> Array[float]:
+	var widths: Array[float] = leasts.duplicate()
+	var left: float = room - gap * maxi(leasts.size() - 1, 0)
+	if leasts.reduce(func(sum: float, least: float) -> float: return sum + least, 0.0) >= left:
+		return widths
+	var order: Array = range(leasts.size())
+	# the widest least first, so a column is held before any narrower one is weighed
+	order.sort_custom(func(one: int, other: int) -> bool: return leasts[one] > leasts[other])
+	var sharing := leasts.size()
+	# the columns from the widest least: one wider than an equal share of what is left keeps its least, until one is not
+	for at: int in order:
+		if leasts[at] <= left / sharing:
+			break
+		left -= leasts[at]
+		sharing -= 1
+	# every column at the larger of its least and the share
+	for at: int in leasts.size():
+		widths[at] = maxf(leasts[at], left / sharing)
+	return widths
