@@ -26,9 +26,16 @@ const Hands := preload("res://tests/hands.gd")
 ## and a rail beside a desktop's; and every touch target at least the look's
 ## least. Judged: the stops, a stop, its sheet, a menu and the offline
 ## stops, in every one of SHAPES, for words cut off or drawn over.
+##
+## THE PHONE SHAPE STANDS ON A PHONE'S SCREEN: while the window is PHONE, the
+## app and its shape read PHONE_DPI as the screen's dots to the inch, and
+## the screen's own in every other shape. The room is read in base pixels, so
+## a window of a phone's pixels on a desk's screen is a desk's room.
 
 const SHAPES: Array[Vector2i] = [Vector2i(1920, 1080), Vector2i(1280, 800), Vector2i(1024, 1366), Vector2i(720, 1280)]
 const PHONE := Vector2i(720, 1280)
+## A phone's screen of PHONE's pixels: under the app's least pixel, a compact room of about 714 base pixels across.
+const PHONE_DPI := 320
 
 var _app: SceneTree
 var _said: Dictionary = {}
@@ -57,6 +64,13 @@ func _status(id: int) -> StringName:
 	return _app.route.get_stops().filter(func(stop: Dictionary) -> bool: return stop["id"] == id)[0]["status"]
 
 
+## Stop `id`'s row brought into view as the keys bring it, by its focus: a phone's room shows only some of the stops.
+func _in_view(id: int) -> Control:
+	_row(id).grab_focus()
+	await _hands.frames()
+	return _row(id)
+
+
 ## A frame for what a move sends - it goes as its model rings - then the depot's answers landed.
 func _settle() -> void:
 	await _hands.frames(1)
@@ -67,6 +81,9 @@ func _settle() -> void:
 ## The walk: every claim, then every shape; said, and the application quit on the answer.
 func run() -> void:
 	await _hands.frames(4)
+	var screen := func() -> float: return PHONE_DPI if _app.root.size == PHONE else DisplayServer.screen_get_dpi()
+	_app.app.reads_dpi = screen
+	_app.ui.shape.reads_dpi = screen
 	_app.root.size = PHONE
 	# every run arriving at once: the walk reads where things are, not where they are on their way to
 	_app.ui.motion.still = true
@@ -147,6 +164,8 @@ func _menu_by_keys() -> void:
 
 ## The list pulled down past its top: a refresh, and the depot's later route lands.
 func _pulled_to_refresh() -> void:
+	# the list back at its top, where a pull begins
+	await _in_view(1)
 	var pull: Control = _app.root.find_children("*", "Container", true, false).filter(func(one: Node) -> bool: return one.has_method(&"get_open") and one.is_visible_in_tree())[0]
 	var at := pull.get_global_rect().position + Vector2(pull.size.x * 0.5, 60.0)
 	await _hands.touch(at, true)
@@ -160,7 +179,7 @@ func _pulled_to_refresh() -> void:
 ## No signal: stop 10 delivered at once and marked Awaiting sync; sent as the signal comes back.
 func _offline_awaiting_sync() -> void:
 	_do(MobileDepot.SETS_SIGNAL, {"on": false})
-	await _hands.drawn(_row(10), Vector2(_row(10).size.x * 0.6, 0), 6)
+	await _hands.drawn(await _in_view(10), Vector2(_row(10).size.x * 0.6, 0), 6)
 	await _settle()
 	var waiting: bool = _status(10) == MobileRoute.DELIVERED and _hands.words(_row(10)).has("Awaiting sync") and _app.outbox.get_held() == 1
 	var line: bool = _hands.words().has("Offline: 1 change awaiting sync")
@@ -172,7 +191,7 @@ func _offline_awaiting_sync() -> void:
 ## Stop 9, delivered offline, is refused on sync: back as it was, saying why.
 func _refused_on_sync() -> void:
 	_do(MobileDepot.SETS_SIGNAL, {"on": false})
-	await _hands.drawn(_row(9), Vector2(_row(9).size.x * 0.6, 0), 6)
+	await _hands.drawn(await _in_view(9), Vector2(_row(9).size.x * 0.6, 0), 6)
 	var kept_offline: bool = _status(9) == MobileRoute.DELIVERED
 	_do(MobileDepot.SETS_SIGNAL, {"on": true})
 	await _settle()

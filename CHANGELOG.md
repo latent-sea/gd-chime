@@ -15,6 +15,65 @@ This file must never become a second copy of the history. What was added or
 fixed, and why, is kept by the commits; only what breaks a caller is listed
 here, because that is the one thing a caller has to act on.
 
+## 3.0.0 - 2026-10-16
+
+The responsive round, step 1: the window holds the page, and Back.
+
+- THE APP STANDS IN THE SAFE RECT (`easel.gd`, `easel_canvas.gd`,
+  `safe_area.gd`). The canvas is a container whose least is zero, and it
+  lays the app, every lifted pop-up and the shape in the safe rect: each
+  edge in by the largest of the system's unobscured area (on a handheld
+  only), 0.293 x the look's corner radius `Shape/corner_um` (on a handheld
+  window covering its screen) and the keyboard (at the foot, while a field
+  holds the focus), plus the look's gutter `Shape/edge` on all four sides.
+  The ground still covers the whole canvas. It is worked out again on every
+  resize, turn, look change and focus move into or out of a field, and an
+  app's new reads `reads_safe_area`, `reads_corner_um` and `reads_keyboard`
+  stand beside `reads_dpi` for a host or a test to set.
+  What breaks: an app on a handheld, or under a look naming `Shape/edge`,
+  no longer reaches the edges of its rect, and a lifted pop-up's shade
+  covers the safe rect, the band round it staying the ground. A piece whose
+  least is larger than the safe rect is said once, by its path, as an error
+  in the output, and is no longer refitted for thirty frames after a turn,
+  since nothing it holds is meant to ask for more than its room.
+- THE SCALE IS CAPPED AT THE FLOOR. The look's `Shape/floor` (360 by
+  default) is the least safe short side in base pixels; where the least
+  pixel a look names would leave less, the canvas is drawn smaller than that
+  least pixel, so the type shrinks before the layout breaks. The keyboard
+  is left out of the cap, so typing never redraws the app smaller. What
+  breaks: a look naming `least_pixel_um` no longer promises it in a window
+  too small for the floor.
+- THE SIZE CLASS IS MEASURED ON THE SAFE ROOM IN BASE PIXELS
+  (`shape.size_class`), as its thresholds were always written, where it was
+  measured on real pixels; `whose_window` follows it. Under a look whose
+  `least_pixel_um` is 0, an easel's canvas is never narrower than the base,
+  so a phone-sized window is compact - and `whose_window` a phone's - only
+  under a look naming a least pixel. What breaks: anything choosing an
+  arrangement by `size_class`, `whose_window` or `real_size` may choose
+  another; read the room a piece has instead. `real_size` is a fact about
+  the device, never for layout. New beside it: `safe_size` and `insets` (by
+  the engine's Side), on a bell of their own, and the Bound `touch`, also
+  said on the viewport as the meta TOUCH.
+- BACK IS THE APP'S (`go_back.gd`). Android's go-back request and the cancel
+  key (`ui_cancel`: Escape, pad B) are Back in the app whose easel held the
+  focus last, while that easel is shown: they lower the top pop-up, or else
+  go back a screen, and only where there is nothing to go back to does
+  `ChimeApp.at_root` run - a Callable that does nothing until the host sets
+  one. What breaks: in an app with history behind it, a cancel key no place
+  takes goes back a screen and no longer reaches the host's
+  `_unhandled_input`; at the root, or while the host has the app hidden, it
+  still does. Over a pop-up a model presents with a way out
+  (`ui.pop_up(kind, content, handled_by, way_out)`), every Back - the
+  go-back, the cancel key, the shade, a press going BACK - dispatches the
+  way out to its model and lowers nothing; the model's fact lowers it.
+- THE FRAMEWORK WANTS A FOURTH SETTING,
+  `application/config/quit_on_go_back` off, since the engine otherwise quits
+  on Android's back gesture before an app hears it as Back. An app entering
+  a project that leaves it on says so once, and
+  `GdChime.apply_project_settings(window)` sets it, on the project and on a
+  tree already running. What breaks: a game calling it no longer quits on
+  the back gesture; quitting at the root is the host's, through `at_root`.
+
 ## 2.0.0 - 2026-09-27
 
 The hosting round: the game owns what is global, and an app owns its

@@ -21,6 +21,7 @@ const Ui := preload("components/primitives/ui.gd")
 const Controller := preload("controller.gd")
 const Desc := preload("components/primitives/desc.gd")
 const NeededSettings := preload("needed_settings.gd")
+const GoBack := preload("go_back.gd")
 
 ## An application as a node: added anywhere in a scene, it builds the whole
 ## application under itself, on its own easel, and takes it away when it
@@ -74,7 +75,9 @@ const NeededSettings := preload("needed_settings.gd")
 ##
 ## WHAT EVERY APPLICATION HAD A COPY OF IS A DEFAULT HERE: the frame's
 ## budget, measured against the display's own rate (frame_budget.gd); one
-## job pool reading that budget (jobs.gd); and the probe, made and begun
+## job pool reading that budget (jobs.gd); one Back, the system's go-back
+## and the cancel key, at_root answering it where it has nothing to go back
+## to (go_back.gd); and the probe, made and begun
 ## once the interface stands, so it walks what a reader would find rather
 ## than what describe() was half way through making.
 
@@ -106,6 +109,9 @@ var sounds: Sounds
 var budget: FrameBudget
 var jobs: Jobs
 var ui: Ui
+## What Back does at the app's root, where it has nothing to go back to:
+## nothing, unless the host says - asks before the game quits, say (go_back.gd).
+var at_root: Callable = func() -> void: pass
 var _probe: RefCounted  # held while it walks: a walk waiting on a frame is dropped with whatever was holding it
 
 
@@ -168,7 +174,8 @@ func _notification(what: int) -> void:
 	# the frame measured against the display's own rate, or sixty where it does not say - headless, and some virtual displays
 	budget = FrameBudget.new(chimes, 1000.0 / (rate if rate > 0.0 else FRAME_RATE), FRAME_SHARE, FRAME_RUN)
 	jobs = Jobs.new(chimes, budget, JOBS_AT_ONCE, JOBS_WAITING, false)
-	for node: Node in [driver, commands, prompts, inputs, notifications, sound_bus, sounds, budget, jobs, Shortcuts.new(inputs, driver, commands)]:
+	# every piece beside the app, Back before the shortcuts, so a place's own press on the cancel key is heard first (go_back.gd)
+	for node: Node in [driver, commands, prompts, inputs, notifications, sound_bus, sounds, budget, jobs, GoBack.new(self, driver, commands), Shortcuts.new(inputs, driver, commands)]:
 		ui.also(node)
 	asked.wired(self)
 	ui.start(asked.describe(), asked.broken)

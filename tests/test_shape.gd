@@ -16,6 +16,12 @@ extends SceneTree
 ## NOTIFICATION_WM_SIZE_CHANGED, and no pointer is routed by position. So
 ## whether the words are LEGIBLE at a size is not asserted here; that they
 ## keep the same share of the window's short side either way round is.
+##
+## THE CLASS IS READ ON THE SAFE ROOM IN BASE PIXELS, so most statements here
+## stand on a screen of 254 dots to the inch with a look whose least base
+## pixel is a tenth of a millimetre - a pixel: a window narrower than the
+## base then holds as many base pixels as it has pixels, and its class is
+## read at its own width.
 
 const Fixture := preload("res://tests/fixture.gd")
 const Verdict := preload("res://tests/verdict.gd")
@@ -53,6 +59,10 @@ func _init() -> void:
 	await _verdict.states(_a_base_pixel_is_never_drawn_smaller_than_the_look_says_is_readable)
 	await _verdict.states(_the_turn_ends_arranged_with_nothing_drawn_over_anything_else)
 	await _verdict.states(_reduced_it_is_arranged_at_once)
+	await _verdict.states(_the_class_is_read_on_the_safe_room_in_base_pixels_not_on_the_device)
+	await _verdict.states(_the_gutter_is_part_of_the_room_the_class_is_read_on)
+	await _verdict.states(_the_safe_room_and_its_insets_are_published_and_follow_a_cutout_round)
+	await _verdict.states(_touched_while_the_screen_takes_touch_or_a_finger_pressed_last)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -66,6 +76,8 @@ func _look() -> Theme:
 	made.set_constant(&"phone_under_mm", Shape.TYPE, 110)
 	made.set_constant(&"desk_from_mm", Shape.TYPE, 340)
 	made.set_constant(&"sideways_from", Shape.TYPE, 150)
+	# a tenth of a millimetre: on the screen of 254 dots to the inch the easel stands on, a base pixel is a pixel
+	made.set_constant(&"least_pixel_um", Shape.TYPE, 100)
 	Transition.defaults(made, {&"by_shape": Transition.FADE})
 	return made
 
@@ -92,7 +104,8 @@ func _standing(wide: int, tall: int, declared: Dictionary = {}) -> void:
 	_easel = Easel.new()
 	_easel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_easel.canvas.theme = _look()
-	_easel.reads_dpi = func() -> int: return 72
+	# a screen where the look's least base pixel is a pixel, so a window narrower than the base holds its own width in base pixels
+	_easel.reads_dpi = func() -> int: return 254
 	root.add_child(_easel)
 	root.size = Vector2i(wide, tall)
 	await _a_frame_passes()
@@ -397,4 +410,82 @@ func _reduced_it_is_arranged_at_once() -> void:
 	_verdict.check(_made.ui.motion.get_running() == 1, "what is left of it arriving is a fade")
 	await _step(0.09)
 	_verdict.check(shaped.modulate == Color.WHITE and _made.ui.motion.get_running() == 0, "a short one: %s" % shaped.modulate.a)
+	_done()
+
+
+## The A55: 2340 by 1080 pixels at 450 dots to the inch, where a least base
+## pixel of 120 thousandths of a millimetre is 2.126 pixels, so its canvas is
+## about 508 base pixels across upright and 1101 sideways. Read on its real
+## pixels, as the class once was, upright would be regular and sideways wide.
+func _the_class_is_read_on_the_safe_room_in_base_pixels_not_on_the_device() -> void:
+	await _standing(1080, 2340)
+	_easel.reads_dpi = func() -> int: return 450
+	_easel.canvas.theme.set_constant(&"least_pixel_um", Shape.TYPE, 120)
+	await _a_frame_passes()
+	_verdict.check(_shape.size_class.read() == Shape.COMPACT and _shape.whose_window.read() == Shape.PHONE, "upright, its 1080 pixels across are a safe room of about 508 base pixels: compact, and a phone's: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
+	await _window(2340, 1080)
+	_verdict.check(_shape.size_class.read() == Shape.REGULAR and _shape.whose_window.read() == Shape.DESKTOP, "sideways, its 2340 pixels across are about 1101 base pixels: regular, never wide: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
+	_done()
+
+
+## A window 910 base pixels across is regular; a gutter of 12 on each side
+## leaves 886 of safe room, under the look's compact width of 900.
+func _the_gutter_is_part_of_the_room_the_class_is_read_on() -> void:
+	await _standing(910, 700)
+	_verdict.check(_shape.size_class.read() == Shape.REGULAR and _shape.safe_size.read() == Vector2(910, 700), "with no gutter the safe room is the whole canvas, 910 across, and regular: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
+	_easel.canvas.theme.set_constant(&"edge", Shape.TYPE, 12)
+	await _a_frame_passes()
+	_verdict.check(_shape.safe_size.read() == Vector2(886, 676) and _shape.size_class.read() == Shape.COMPACT, "a gutter of 12 on every side leaves 886 by 676, and 886 across is compact: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
+	_done()
+
+
+## The canvas fitted again by a look worn afresh, the cutout's 89 pixels on
+## one long edge and then the other: the room the same size both times, so
+## only its moving tells the shape anything.
+func _the_safe_room_and_its_insets_are_published_and_follow_a_cutout_round() -> void:
+	await _standing(2340, 1080)
+	var origin := root.position
+	var room_rang := Fixture.Heard.new(_made.chimes, func() -> void: _shape.safe_size.read())
+	_easel.reads_safe_area = func() -> Rect2i: return Rect2i(origin + Vector2i(89, 0), Vector2i(2251, 1080))
+	_easel.canvas.theme = _look()
+	await _a_frame_passes()
+	var safe: Rect2 = _easel.canvas.get_safe()
+	_verdict.check(_shape.safe_size.read() == Vector2(2251, 1080) and _shape.insets.read() == PackedFloat32Array([89, 0, 0, 0]), "the cutout on the left: a safe room of 2251 by 1080, 89 in from the left edge: %s %s" % [_shape.safe_size.read(), _shape.insets.read()])
+	_verdict.check(_shape.safe_size.read() == safe.size and Vector2(_shape.insets.read()[SIDE_LEFT], _shape.insets.read()[SIDE_TOP]) == safe.position, "and it is the canvas's safe rect: %s" % [safe])
+	var rung := room_rang.rung
+	_easel.reads_safe_area = func() -> Rect2i: return Rect2i(origin, Vector2i(2251, 1080))
+	_easel.canvas.theme = _look()
+	await _a_frame_passes()
+	_verdict.check(_shape.safe_size.read() == Vector2(2251, 1080) and _shape.insets.read() == PackedFloat32Array([0, 0, 89, 0]) and room_rang.rung > rung, "turned round, the cutout on the right: the same room, 89 in from the right edge now, and said: %s %s" % [_shape.safe_size.read(), _shape.insets.read()])
+	room_rang.free()
+	_done()
+
+
+## A press on the window: a finger's, which the engine sends as a mouse from
+## the emulated device, or a mouse's own.
+func _pressed(from_device: int) -> void:
+	# the button down, then up
+	for down: bool in [true, false]:
+		var press := InputEventMouseButton.new()
+		press.button_index = MOUSE_BUTTON_LEFT
+		press.pressed = down
+		press.device = from_device
+		press.position = Vector2(100, 100)
+		root.push_input(press)
+		await _a_frame_passes()
+
+
+func _touched_while_the_screen_takes_touch_or_a_finger_pressed_last() -> void:
+	await _standing(1280, 800)
+	_shape.reads_touchscreen = func() -> bool: return false
+	await _window(1281, 800)
+	var said := func() -> bool: return _easel.viewport.get_meta(Shape.TOUCH, false)
+	_verdict.check(not _shape.touch.read() and not said.call(), "a screen that takes no touch, pressed by nothing yet, is not touched, nor said to be")
+	await _pressed(InputEvent.DEVICE_ID_EMULATION)
+	_verdict.check(_shape.touch.read() and said.call(), "a finger's press makes it touched, said on the app's own viewport")
+	await _pressed(0)
+	_verdict.check(not _shape.touch.read() and not said.call(), "a mouse's press after it makes it untouched again")
+	_shape.reads_touchscreen = func() -> bool: return true
+	await _window(1280, 800)
+	_verdict.check(_shape.touch.read() and said.call(), "and on a screen that takes touch it is touched whatever pressed last")
 	_done()

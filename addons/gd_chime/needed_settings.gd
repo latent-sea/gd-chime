@@ -5,14 +5,17 @@ extends RefCounted
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## THREE SETTINGS, and why each: the base size, `display/window/size`, which
+## FOUR SETTINGS, and why each: the base size, `display/window/size`, which
 ## is what an easel draws its canvas at (easel.gd) - a project that never
 ## set it gets the engine's own, and every share of the canvas is a share
 ## of that; the window NOT stretched, `display/window/stretch/mode` left
 ## disabled, since the easel scales the application itself at real pixels
-## and a stretched window would scale it twice, blurring every word; and a
-## pad button on `ui_accept`, since the engine's own accept holds none, so
-## a pad could move the focus and never press (project.godot says which).
+## and a stretched window would scale it twice, blurring every word; a pad
+## button on `ui_accept`, since the engine's own accept holds none, so a pad
+## could move the focus and never press (project.godot says which); and
+## `application/config/quit_on_go_back` off, since the engine otherwise quits
+## on the system's go-back - Android's back gesture - before an app hears it
+## as Back (go_back.gd).
 ##
 ## AN APPLICATION READS AND REPORTS, NEVER WRITES. The window and the input
 ## map belong to the host: an app node entering the tree asks what is
@@ -20,7 +23,7 @@ extends RefCounted
 ## Only apply() writes - the one explicit way, called by a project that
 ## wants the whole window run the framework's way, which is what the demos'
 ## main loop does (application.gd). It writes the settings AND puts them on the
-## running window and input map, so a call at start takes effect at start;
+## running window, its tree and the input map, so a call at start takes effect at start;
 ## it never saves project.godot, which is the editor's to write. An app reads
 ## the base as it enters the tree (easel.gd), so a host's own _ready may call
 ## it and then add the app, with no autoload.
@@ -33,6 +36,7 @@ const WIDTH := "display/window/size/viewport_width"
 const HEIGHT := "display/window/size/viewport_height"
 const STRETCH := "display/window/stretch/mode"
 const ACCEPT := "ui_accept"
+const QUITS := "application/config/quit_on_go_back"
 ## The base the floor's looks are written for, and the pad button that accepts.
 const BASE := Vector2i(1920, 1080)
 const NOT_STRETCHED := "disabled"
@@ -54,6 +58,8 @@ static func missing() -> Array[String]:
 		found.append("%s is \"%s\", and an application scales itself at real pixels, so a stretched window scales it twice; it wants \"%s\"" % [STRETCH, ProjectSettings.get_setting(STRETCH), NOT_STRETCHED])
 	if not _accepts_a_pad():
 		found.append("the action %s has no pad button, so a pad could move the focus and never press; it wants button %d" % [ACCEPT, ACCEPTS])
+	if ProjectSettings.get_setting(QUITS):
+		found.append("%s is true, so the engine quits on the system's go-back before an application hears it as Back; it wants false" % QUITS)
 	return found
 
 
@@ -75,6 +81,10 @@ static func apply(window: Window) -> void:
 	ProjectSettings.set_setting(HEIGHT, BASE.y)
 	ProjectSettings.set_setting(STRETCH, NOT_STRETCHED)
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+	ProjectSettings.set_setting(QUITS, false)
+	# a tree reads the setting only as it starts, so one already running is told; a main loop's own root is not in it yet (measured on 4.6.2)
+	if window.is_inside_tree():
+		window.get_tree().quit_on_go_back = false
 	if not _accepts_a_pad():
 		var button := InputEventJoypadButton.new()
 		button.button_index = ACCEPTS

@@ -8,7 +8,7 @@ extends SceneTree
 ## lower it, the focus back on its opener; and the shade never takes the
 ## focus. Its head says its title over what it holds, the foot below. A
 ## bottom sheet is centred at the look's most share of a desk's window and
-## spans a phone's, whose canvas is wider than any look's compact width.
+## spans a phone's, whose canvas at the look's least pixel is compact.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -48,7 +48,7 @@ func _init() -> void:
 	await _verdict.states(_raised_its_sheet_stands_against_its_edge_the_looks_share_across)
 	await _verdict.states(_its_sheet_slides_in_from_its_edge_while_the_pop_up_fades)
 	await _verdict.states(_its_close_press_the_shade_and_back_each_lower_it_the_focus_back_on_its_opener)
-	await _verdict.states(_a_bottom_sheet_spans_a_phones_window_whose_canvas_is_wider_than_compact)
+	await _verdict.states(_a_bottom_sheet_spans_a_phones_window_whose_canvas_is_compact_at_the_least_pixel)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -109,14 +109,19 @@ func _raised_its_sheet_stands_against_its_edge_the_looks_share_across() -> void:
 	made.done()
 
 
-## A phone's window is compact and on its end, and its CANVAS is wider than
-## any look's compact width: the base the app is drawn at, turned (easel.gd).
-## So a bottom sheet that measured itself capped a phone's sheet in the
-## middle, as it should a desk's. It is the shape that says whose window it is.
-func _a_bottom_sheet_spans_a_phones_window_whose_canvas_is_wider_than_compact() -> void:
+## A phone's window is compact and on its end, measured on its safe room in
+## base pixels (shape.gd): 720 by 1280 pixels at 320 dots to the inch, where
+## the look's least base pixel of 120 thousandths of a millimetre is 1.51
+## pixels, is a canvas about 476 base pixels across, under the look's compact
+## width. It is the shape that says whose window it is.
+func _a_bottom_sheet_spans_a_phones_window_whose_canvas_is_compact_at_the_least_pixel() -> void:
 	var easel := Easel.new()
 	easel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	easel.canvas.theme = root.theme
+	var look: Theme = root.theme
+	# a base pixel at least 120 thousandths of a millimetre, which only an easel reads, put back to none at the end
+	look.set_constant(&"least_pixel_um", Shape.TYPE, 120)
+	easel.canvas.theme = look
+	easel.reads_dpi = func() -> int: return 320
 	root.add_child(easel)
 	root.size = Vector2i(720, 1280)
 	var made := _drawn(Drawer.FROM_BOTTOM, easel.canvas)
@@ -124,13 +129,14 @@ func _a_bottom_sheet_spans_a_phones_window_whose_canvas_is_wider_than_compact() 
 	(made.ui.node_named(&"opener") as Pressable).pressed()
 	await _frames(4)
 	var canvas := easel.viewport.get_visible_rect().size
-	_verdict.check(canvas.x > root.theme.get_constant(&"compact_below", &"Shape") and made.ui.shape.whose_window.read() == Shape.PHONE, "the phone's canvas is wider than the look's compact width, and the shape still calls the window a phone's: %s" % [canvas])
+	_verdict.check(canvas.x < look.get_constant(&"compact_below", Shape.TYPE) and made.ui.shape.whose_window.read() == Shape.PHONE, "the phone's canvas, at the look's least pixel, is narrower than the look's compact width, and the shape calls the window a phone's: %s" % [canvas])
 	var opener: Control = made.ui.node_named(&"opener")
 	_verdict.check(easel.viewport.get_meta(Shape.PHONE, false) and opener.get_combined_minimum_size().y >= easel.canvas.get_theme_constant(&"least", Touch.TYPE), "and says so on the app's own viewport, so a press measures at least the look's touch size: %s" % [opener.get_combined_minimum_size()])
 	var bottom := _sheet(made).get_global_rect()
 	_verdict.check(bottom.position.x == 0.0 and is_equal_approx(bottom.size.x, canvas.x) and is_equal_approx(bottom.end.y, canvas.y), "so the bottom sheet spans the phone's window, edge to edge against its foot: %s of %s" % [bottom, canvas])
 	made.done()
 	easel.free()
+	look.set_constant(&"least_pixel_um", Shape.TYPE, 0)
 	root.size = WIDE
 
 

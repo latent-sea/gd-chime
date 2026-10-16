@@ -30,14 +30,15 @@ extends "controller.gd"
 ## same here).
 ##
 ## WHAT A WRITE GUARANTEES. The file is written whole to <file>.writing
-## beside it, then renamed over it with the engine's DirAccess.rename, which
-## replaces an existing file on Windows (checked on 4.6.2): a write that stops
-## part way - the process killed, the disk full, the rename refused - leaves
-## the file as it was, and one that fails is said out loud, its .writing
-## removed, and the run goes on. What is NOT guaranteed: whether the engine
-## replaces the file in one step is the engine's, not ours; and nothing is
-## forced to the disk before the rename, so after a power cut the file holds
-## either write only as far as the operating system's own journal keeps it.
+## beside it, its folder made first where it is not there yet, then renamed
+## over it with the engine's DirAccess.rename, which replaces an existing
+## file on Windows (checked on 4.6.2): a write that stops part way - the
+## process killed, the disk full, the rename refused - leaves the file as
+## it was, and one that fails is said out loud, its .writing removed, and
+## the run goes on. What is NOT guaranteed: whether the engine replaces the
+## file in one step is the engine's, not ours; and nothing is forced to the
+## disk before the rename, so after a power cut the file holds either write
+## only as far as the operating system's own journal keeps it.
 ##
 ## The file is JSON, since every section is already strings, numbers, lists
 ## and dictionaries - no format of its own. Where it lives is the
@@ -118,6 +119,8 @@ func write() -> void:
 	for section: String in _kept:
 		_held[section] = _kept[section].saved()
 	var writing := _path + ".writing"
+	# the folder made first, since a file cannot be opened in one that is not there - a fresh user:// holds none of the application's
+	DirAccess.make_dir_recursive_absolute(_path.get_base_dir())
 	var file := FileAccess.open(writing, FileAccess.WRITE)
 	if file == null:
 		push_error("the settings could not be written to %s: %s; it holds what it held" % [writing, error_string(FileAccess.get_open_error())])

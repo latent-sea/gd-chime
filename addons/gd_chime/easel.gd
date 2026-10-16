@@ -1,10 +1,13 @@
 extends SubViewportContainer
 
 const Themes := preload("theme.gd")
+const SafeArea := preload("safe_area.gd")
+const Canvas := preload("easel_canvas.gd")
 
 ## The easel: the rect a host gives an application, with the application's
 ## canvas drawn at the base size on it and stretched to fit - the window's
-## canvas_items stretch, scoped to one node's rect.
+## canvas_items stretch, scoped to one node's rect - with the safe rect on
+## that canvas, where the app and its pop-ups stand.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -55,21 +58,42 @@ const Themes := preload("theme.gd")
 ## turn re-arranges screens not shown as well as the one that is, and the
 ## engine says nothing of a hidden thing's needs moving.
 ##
+## THE APP STANDS IN THE SAFE RECT. Each time the canvas is fitted, how far
+## in from each edge is safe is worked out (safe_area.gd) from what covers the
+## rect on its screen: the system's unobscured area, which `reads_safe_area`
+## answers - the engine's on a handheld, none on a desk, where the engine's
+## names the taskbar a full screen window covers; the corners' radius, which
+## `reads_corner_um` answers - the look's Shape/corner_um on a handheld window
+## covering its screen, since the engine names no rounded corners; and, while
+## a field holds the focus, the keyboard, which `reads_keyboard` answers. The
+## look's gutter, Shape/edge, is on top on every side. The canvas lays every
+## piece standing on it in what is left (easel_canvas.gd). The keyboard is
+## read every physics frame while a field holds the focus and never
+## otherwise: the engine says nothing as it rises, and focus moving into or
+## out of a field fits the canvas again. On the physics frame, not the drawn
+## one: an app made on the easel has a drawn frame of its own that would
+## stand in its place.
+##
+## NEVER UNDER THE FLOOR. The scale the least pixel asks for is lowered where
+## it would leave the safe room's short side under the look's Shape/floor, in
+## base pixels: on a small window the type is drawn smaller rather than any
+## screen given less room than it is designed at (safe_area.gd).
+##
 ## THE GROUND IS ITS OWN. The canvas paints the look's ground across the
 ## whole rect, so a light look is light to the edge where nothing draws; the
 ## window's clear colour is never touched. The look is the canvas's Theme -
 ## a Theme reaches nothing through a viewport, so it is worn inside it.
 ##
-## Chosen against: reading the window's size and writing its base, which
-## was shape.gd's way and made the window the framework's; a host that has
-## stretched its window scales this twice, which is why the settings the
-## framework needs say the window is not stretched (needed_settings.gd).
+## IT SCALES ONCE: a host that has stretched its window would scale this
+## twice, which is why the settings the framework needs say the window is
+## not stretched (needed_settings.gd); and a rect is measured on its screen
+## in the window's own pixels, which holds while that is so.
 
 ## The project's base: what `display/window/size` says, read as the easel enters the tree.
 const WIDTH := "display/window/size/viewport_width"
 const HEIGHT := "display/window/size/viewport_height"
 
-## The look's type naming the least a base pixel may measure on the screen.
+## The look's type naming the least a base pixel may measure on the screen, the gutter, the corners and the floor.
 const REAL_SIZE := &"Shape"
 
 ## By each window, the easel whose canvas held its focus last, both by
@@ -80,39 +104,17 @@ static var _held_last: Dictionary = {}
 var viewport := SubViewport.new()
 ## The canvas everything is built on, spread over the viewport, wearing the look.
 var canvas := Canvas.new()
-## How many frames after a turn the pages are given the canvas's size again, and how many are left.
-const REFITS_FOR := 30
-var _refitting := 0
 ## The dots to the inch of the screen the rect is on, asked each time the canvas is fitted.
 var reads_dpi: Callable = DisplayServer.screen_get_dpi
+## The system's unobscured area of the screen, in its pixels, asked each time the canvas is fitted; an empty one covers nothing.
+var reads_safe_area: Callable = _unobscured_on_a_handheld
+## The radius of the screen's rounded corners, in thousandths of a millimetre, asked each time the canvas is fitted.
+var reads_corner_um: Callable = _corners_of_a_handheld
+## The keyboard's height up from the window's foot, in pixels, asked each frame while a field holds the focus.
+var reads_keyboard: Callable = _keyboard_on_screen
 var _base: Vector2i  # the project's base, landscape
 var _turned: bool = false  # whether the base stands transposed now
-
-
-## The surface every application stands on: the ground painted from the
-## look it wears, again whenever the look changes. It says what it draws
-## as a face does (get_drawn), so whatever judges words against the ground
-## they stand on (faint_words.gd) reads the canvas's ground and never the
-## window's clear colour, which is the host's and says nothing of the app.
-class Canvas extends Control:
-	var _ground := StyleBoxFlat.new()  # the one box drawn across the whole canvas, the look's ground
-
-	func _draw() -> void:
-		if has_theme_color(&"ground", Themes.LOOK):
-			_ground.bg_color = get_theme_color(&"ground", Themes.LOOK)
-			draw_style_box(_ground, Rect2(Vector2.ZERO, size))
-
-	## The boxes drawn across the whole of this: the ground, where the look gives one.
-	func get_drawn() -> Array[StyleBox]:
-		var drawn: Array[StyleBox] = []
-		if has_theme_color(&"ground", Themes.LOOK):
-			_ground.bg_color = get_theme_color(&"ground", Themes.LOOK)
-			drawn.append(_ground)
-		return drawn
-
-	func _notification(what: int) -> void:
-		if what == NOTIFICATION_THEME_CHANGED:
-			queue_redraw()
+var _keyboard: float = 0.0  # the keyboard's height as last read while a field held the focus; none once it lets go
 
 
 func _init() -> void:
@@ -133,6 +135,24 @@ func get_base() -> Vector2i:
 	return Vector2i(_base.y, _base.x) if _turned else _base
 
 
+## The engine's unobscured area on a handheld, which names its cutout and
+## home bar; none on a desk, where it names the taskbar.
+static func _unobscured_on_a_handheld() -> Rect2i:
+	return DisplayServer.get_display_safe_area() if OS.has_feature("mobile") else Rect2i()
+
+
+## The engine's keyboard height where its screen has a keyboard on it;
+## none where it has none, which the engine would warn of being asked.
+static func _keyboard_on_screen() -> int:
+	return DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
+
+
+## The look's corner radius on a handheld window covering its screen, whose
+## corners are the screen's; none on any other.
+func _corners_of_a_handheld() -> int:
+	return canvas.get_theme_constant(&"corner_um", REAL_SIZE) if OS.has_feature("mobile") and get_window().size == DisplayServer.screen_get_size() else 0
+
+
 ## Whether an event goes on to the canvas: one with a place in the window
 ## reaches the easel under it by itself; any other - a key, a pad - only
 ## while a control of this app holds the window's one focus, or held it last
@@ -146,9 +166,26 @@ func _propagate_input_event(event: InputEvent) -> bool:
 	return viewport.gui_get_focus_owner() != null or (nowhere and _held_last.get(get_window().get_instance_id()) == get_instance_id())
 
 
-## A control of this app took the window's focus: this is the app that held it last.
-func _focused(_on: Control) -> void:
+## A control of this app took the window's focus: this is the app that held
+## it last; and a field taking it has the keyboard followed from now on.
+func _focused(on: Control) -> void:
 	_held_last[get_window().get_instance_id()] = get_instance_id()
+	if on is LineEdit or on is TextEdit:
+		set_physics_process(true)
+
+
+## Each physics frame while a field holds the focus, the keyboard's height
+## read, and the canvas fitted again whenever it moved; the field let go, the
+## keyboard is gone, the canvas fitted without it, and nothing more is read.
+func _physics_process(_delta: float) -> void:
+	var focus := viewport.gui_get_focus_owner()
+	var typing: bool = focus is LineEdit or focus is TextEdit
+	var height: float = float(reads_keyboard.call()) if typing else 0.0
+	if height != _keyboard:
+		_keyboard = height
+		_fit()
+	if not typing:
+		set_physics_process(false)
 
 
 ## Entering the tree, the project's base read - so settings a host applied in
@@ -163,50 +200,42 @@ func _notification(what: int) -> void:
 		_fit()
 
 
-## The canvas fitted to the rect: the base turned with it, and the override
-## grown past the base along the side with room, so one scale covers the rect.
-## A rect of no width or no height fits nothing until it has both: there is
-## no scale that fits a base into nothing.
+## The canvas fitted to the rect: the base turned with it; the scale, the one
+## that fits the base inside the rect, or the least, and never so large the
+## safe room is under the floor; the override grown past the base along the
+## side with room, so one scale covers the rect; and the safe rect handed to
+## the canvas. A rect of no width or no height fits nothing until it has
+## both: there is no scale that fits a base into nothing.
 func _fit() -> void:
 	if size.x == 0.0 or size.y == 0.0:
 		return
 	var turning: bool = (size.y > size.x) != _turned
 	_turned = size.y > size.x
-	var base := Vector2(get_base())
+	var dpi := float(reads_dpi.call())
+	var window := Rect2(Vector2.ZERO, get_window().size)
+	var rect := get_global_rect()
+	var unobscured := Rect2(reads_safe_area.call())
+	# the system's area is given on the screen: moved to be measured, as the window and this rect are, from the window's corner
+	if unobscured.has_area():
+		unobscured.position -= Vector2(get_window().position)
+	var corner := float(reads_corner_um.call())
+	var gutter := float(canvas.get_theme_constant(&"edge", REAL_SIZE))
 	# the least a base pixel may be drawn, in the rect's pixels: 25,400 thousandths of a millimetre to the inch
-	var least: float = canvas.get_theme_constant(&"least_pixel_um", REAL_SIZE) / 25400.0 * float(reads_dpi.call())
-	# the one scale that fits the base inside the rect, or the least; the canvas grows past the base along the other side
-	var scale: float = maxf(minf(size.x / base.x, size.y / base.y), least)
-	viewport.size_2d_override = Vector2i((size / scale).round())
+	var least: float = canvas.get_theme_constant(&"least_pixel_um", REAL_SIZE) / 25400.0 * dpi
+	var steady := SafeArea.covered(window, rect, unobscured, 0.0, corner, dpi)
+	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()), least, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), gutter)
+	viewport.size_2d_override = Vector2i((size / drawn).round())
+	canvas.set_insets(SafeArea.insets(SafeArea.covered(window, rect, unobscured, _keyboard, corner, dpi), drawn, gutter))
 	if turning:
 		_measure_again.call_deferred()
 
 
 ## Once the turn has been laid out, everything on the canvas asked what it
-## needs again - and so re-placed by it, a page as tall as it now needs.
-## DEFERRED, NEVER AWAITED: the deferred call is dropped if this is freed
-## before the end of the frame.
+## needs again, and so laid again in the safe rect by it. DEFERRED, NEVER
+## AWAITED: the deferred call is dropped if this is freed before the end of
+## the frame.
 func _measure_again() -> void:
 	# every piece standing on the canvas
 	for piece: Node in canvas.get_children():
 		if piece is Control:
 			(piece as Control).update_minimum_size()
-
-	_refitting = REFITS_FOR
-	set_physics_process(true)
-
-
-## For a few frames after a turn, every page on the canvas given the canvas's size again, never smaller than it needs:
-## a page grows to what it needs while the canvas turns, its parts taking their new arrangement a frame or two after,
-## and the canvas, which places nothing, would otherwise leave it wider than the canvas it has turned into. The engine
-## says nothing of what a page needs shrinking, so it is looked at each frame, and only for those few. On the physics
-## frame, not the drawn one: an app made on the easel has a drawn frame of its own that would stand in its place.
-func _physics_process(_delta: float) -> void:
-	# every page standing on the canvas: the pieces that place what they hold
-	for piece: Node in canvas.get_children():
-		if piece is Container and (piece as Container).size != canvas.size:
-			# the method, not the property: the property warns of a page spread across the canvas, as every page is
-			(piece as Container).set_size(canvas.size)
-	_refitting -= 1
-	if _refitting <= 0:
-		set_physics_process(false)

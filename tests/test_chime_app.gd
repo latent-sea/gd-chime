@@ -21,8 +21,10 @@ extends SceneTree
 ##
 ## THE SETTINGS are read from the project and the running input map, so a
 ## project that lacks one is told which and what value it wants, once
-## however many apps enter; apply() sets all three and is the only thing
-## here that writes outside a subtree.
+## however many apps enter - the engine quitting on the system's go-back
+## among them, which would quit before any app heard it as Back; apply()
+## sets all four, on the running tree too, and is the only thing here that
+## writes outside a subtree.
 
 const ChimeApp := preload("res://addons/gd_chime/chime_app.gd")
 const Fixture := preload("res://tests/fixture.gd")
@@ -160,8 +162,8 @@ func _pressed_at(where: Vector2) -> void:
 func _two_apps_stand_side_by_side_each_in_its_own_shape_and_look_and_the_window_is_untouched() -> void:
 	var cleared := RenderingServer.get_default_clear_color()
 	await _standing()
-	_verdict.check(_narrow.ui.shape.orientation.read() == Shape.PORTRAIT and _narrow.ui.shape.whose_window.read() == Shape.PHONE, "the narrow app, a quarter of a wide window, is portrait and a phone's: %s %s" % [_narrow.ui.shape.orientation.read(), _narrow.ui.shape.whose_window.read()])
-	_verdict.check(_broad.ui.shape.orientation.read() == Shape.LANDSCAPE and _broad.ui.shape.whose_window.read() == Shape.DESKTOP, "the broad app beside it is landscape and a desk's: %s" % [_broad.ui.shape.orientation.read()])
+	_verdict.check(_narrow.ui.shape.orientation.read() == Shape.PORTRAIT and _narrow.ui.shape.size_class.read() == Shape.REGULAR, "the narrow app, a quarter of a wide window, is portrait, and regular on its canvas of 1080 base pixels across: %s %s" % [_narrow.ui.shape.orientation.read(), _narrow.ui.shape.size_class.read()])
+	_verdict.check(_broad.ui.shape.orientation.read() == Shape.LANDSCAPE and _broad.ui.shape.size_class.read() == Shape.WIDE, "the broad app beside it is landscape, and wide on its canvas of 1920: %s %s" % [_broad.ui.shape.orientation.read(), _broad.ui.shape.size_class.read()])
 	_verdict.check(_narrow.get_base() == Vector2i(1080, 1920) and _broad.get_base() == Vector2i(1920, 1080), "each is drawn at its own base, the narrow one's turned: %s %s" % [_narrow.get_base(), _broad.get_base()])
 	_verdict.check(_narrow.viewport.size_2d_override.x == 1080 and _broad.viewport.size_2d_override.x == 1920, "and each canvas is its base grown past along the side its rect has room on, never shrunk: %s %s" % [_narrow.viewport.size_2d_override, _broad.viewport.size_2d_override])
 	_verdict.check(_narrow.canvas.theme == _narrow.worn and _broad.canvas.theme == _broad.worn and _narrow.worn != _broad.worn, "each wears the look it answered, on its own canvas")
@@ -199,23 +201,31 @@ func _an_app_leaving_the_tree_takes_everything_it_built_and_the_other_goes_on() 
 func _the_settings_it_needs_are_reported_once_and_set_only_on_request() -> void:
 	var stretched: Variant = ProjectSettings.get_setting(NeededSettings.STRETCH)
 	var accepts := InputMap.action_get_events(NeededSettings.ACCEPT)
+	var quits: Variant = ProjectSettings.get_setting(NeededSettings.QUITS)
+	var tree_quits := quit_on_go_back
 	_verdict.check(NeededSettings.missing().is_empty(), "this project has every setting the framework needs: %s" % [NeededSettings.missing()])
 	ProjectSettings.set_setting(NeededSettings.STRETCH, "canvas_items")
 	InputMap.action_erase_events(NeededSettings.ACCEPT)
+	ProjectSettings.set_setting(NeededSettings.QUITS, true)
+	quit_on_go_back = true
 	var missing := NeededSettings.missing()
-	_verdict.check(missing.size() == 2 and missing[0].contains(NeededSettings.STRETCH) and missing[0].contains("\"disabled\"") and missing[1].contains(NeededSettings.ACCEPT) and missing[1].contains("button 0"), "a stretched window and an accept with no pad button are each named with the value wanted: %s" % [missing])
+	_verdict.check(missing.size() == 3 and missing[0].contains(NeededSettings.STRETCH) and missing[0].contains("\"disabled\"") and missing[1].contains(NeededSettings.ACCEPT) and missing[1].contains("button 0"), "a stretched window and an accept with no pad button are each named with the value wanted: %s" % [missing])
+	_verdict.check(missing.size() == 3 and missing[2].contains(NeededSettings.QUITS) and missing[2].contains("go-back") and missing[2].ends_with("it wants false"), "and the engine quitting on the system's go-back is named, with false wanted: %s" % [missing])
 	NeededSettings._said = {}
 	var warned := _hearing.warned.size()
 	var metas := InputMap.get_meta_list()
 	await _standing()
 	_done()
 	var said: Dictionary = NeededSettings._said
-	_verdict.check(said.size() == 2, "two apps entering said each missing setting once, not twice: %d" % said.size())
+	_verdict.check(said.size() == 3, "two apps entering said each missing setting once, not twice: %d" % said.size())
 	_verdict.check(InputMap.get_meta_list() == metas, "and what was said is the floor's to remember, never kept on the input map: %s" % [InputMap.get_meta_list()])
-	_verdict.check(_hearing.warned.size() == warned + 2 and _hearing.warned.slice(warned).all(func(one: String) -> bool: return one.contains("GdChime.apply_project_settings(get_window())")), "and each says the call that sets it, with its argument: %s" % [_hearing.warned.slice(warned)])
-	_verdict.check(ProjectSettings.get_setting(NeededSettings.STRETCH) == "canvas_items" and InputMap.action_get_events(NeededSettings.ACCEPT).is_empty(), "and an app entering set nothing")
+	_verdict.check(_hearing.warned.size() == warned + 3 and _hearing.warned.slice(warned).all(func(one: String) -> bool: return one.contains("GdChime.apply_project_settings(get_window())")), "and each says the call that sets it, with its argument: %s" % [_hearing.warned.slice(warned)])
+	_verdict.check(ProjectSettings.get_setting(NeededSettings.STRETCH) == "canvas_items" and InputMap.action_get_events(NeededSettings.ACCEPT).is_empty() and ProjectSettings.get_setting(NeededSettings.QUITS) == true and quit_on_go_back, "and an app entering set nothing")
 	NeededSettings.apply(root)
 	_verdict.check(NeededSettings.missing().is_empty() and root.content_scale_mode == Window.CONTENT_SCALE_MODE_DISABLED and InputMap.action_get_events(NeededSettings.ACCEPT).size() == 1, "asked to, apply sets all of them, on the project, the window and the input map: %s" % [NeededSettings.missing()])
+	_verdict.check(not quit_on_go_back, "and the running tree is told not to quit on the system's go-back, since it read the setting as it started")
+	ProjectSettings.set_setting(NeededSettings.QUITS, quits)
+	quit_on_go_back = tree_quits
 	ProjectSettings.set_setting(NeededSettings.STRETCH, stretched)
 	InputMap.action_erase_events(NeededSettings.ACCEPT)
 	# the accept action's events put back as they were

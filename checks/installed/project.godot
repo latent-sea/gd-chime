@@ -4,7 +4,7 @@
 ; installation check (checks/installation_test.py) copies this folder to a
 ; temporary place, copies addons/gd_chime/ in beside it - nothing else of the
 ; gd-chime folder - imports it, and runs check.gd headless. The plugin is
-; enabled, as a project that installed gd-chime would have it, and the three
+; enabled, as a project that installed gd-chime would have it, and the four
 ; settings the framework needs are set, as its README says to.
 ;
 ; Godot rewrites this file whenever the editor saves, and drops comments when
@@ -16,6 +16,7 @@ config_version=5
 
 config/name="gd-chime installed"
 config/features=PackedStringArray("4.6", "Forward Plus")
+config/quit_on_go_back=false
 
 [display]
 

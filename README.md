@@ -16,9 +16,9 @@ MIT licensed; see `addons/gd_chime/LICENCE` (and the copy at this folder's root)
 2. Enable the plugin: Project > Project Settings > Plugins > gd-chime. It adds
    no autoload and no editor UI; enabling it is what puts the two names below
    in your project.
-3. Set the three project settings the framework needs, or let it set them:
+3. Set the four project settings the framework needs, or let it set them:
    `GdChime.apply_project_settings(get_window())`, called in your scene's own
-   `_ready` before it adds an app, sets all three - an app reads them as it
+   `_ready` before it adds an app, sets all four - an app reads them as it
    enters the tree, not when it is made, so no autoload is needed. An app
    node entering a project that lacks one says so once, in the output,
    naming the setting, the value it wants and that call.
@@ -28,6 +28,7 @@ MIT licensed; see `addons/gd_chime/LICENCE` (and the copy at this folder's root)
 | `display/window/size/viewport_width`, `viewport_height` | 1920, 1080 | the base an app's canvas is drawn at; the floor's looks are written for it |
 | `display/window/stretch/mode` | `disabled` | an app scales itself, at real pixels; a stretched window would scale it twice |
 | `input/ui_accept` | holds a pad button (A) | the engine's own accept holds none, so a pad could move the focus and never press |
+| `application/config/quit_on_go_back` | `false` | the engine would quit on Android's back gesture before an app hears it as Back |
 
 Two global names are yours after that: `GdChime`, everything the framework
 exports, and `ChimeApp`, the node an application extends. Nothing needs a
@@ -120,6 +121,18 @@ func _ready() -> void:
   `_unhandled_input`, one it leaves does, as in any Godot scene, and a
   second app never hears it. A carry by the keys or the pad stays in the
   app, and in the pop-up it began in.
+- **Back is the app's.** Android's back gesture and the cancel key (Escape,
+  pad B) go to the app that held the focus last: they lower its top pop-up,
+  or else go back a screen. Where it has nothing to go back to, the app's
+  `at_root` runs - a Callable that does nothing until you set one, to ask
+  before the game quits, say - and the cancel key goes on to your scene.
+  While you have the app hidden, both are yours alone.
+- **The app stands in the safe rect.** On a phone or tablet the app is kept
+  clear of the cutout, the rounded corners and the keyboard while a field
+  is typed in, and on every window by the look's gutter, `Shape/edge`; the
+  look's ground still covers the whole rect. What the app reads of the
+  screen (`reads_safe_area`, `reads_corner_um`, `reads_keyboard`,
+  `reads_dpi`) may be set on it by a host that knows its screen better.
 
 ## The demos
 

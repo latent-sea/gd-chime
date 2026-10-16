@@ -5,8 +5,10 @@ extends SceneTree
 ## whichever way the places were built, blocking under an overlay, the
 ## focus given back to the opener - by key, by click, layer by layer, and
 ## to the default when the opener is gone - a state's remembered focus, the
-## panel that blocks nothing, the tokens of a stay, and one bell per
-## transition.
+## panel that blocks nothing, the tokens of a stay, one bell per
+## transition; a place opened onto with the places before it behind it and
+## never entered; and Back over a pop-up whose way out is its model's own
+## telling that model, never lowering it, while one over it is lowered first.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -36,6 +38,8 @@ const HOME := [&"app", &"content", &"home"]
 const COINS := [&"app", &"content", &"ledger", &"coins"]
 const NOTES := [&"app", &"content", &"ledger", &"notes"]
 const OPENS := &"opens_the_ledger"
+## The zoom's way out, where the test makes it its model's own.
+const DISMISSES := &"dismisses_the_zoom"
 
 var _verdict := Verdict.new()
 var _hearing := Hearing.new()
@@ -69,6 +73,19 @@ class Recording extends "res://addons/gd_chime/place.gd":
 
 	func empty() -> void:
 		_log.append([name, "empty"])
+
+
+## The zoom's model: told its way out, and refusing it while it says so.
+class Dismissing extends "res://addons/gd_chime/controller.gd":
+	var told_actions: Array[StringName] = []
+	var refusing: Phrase = null
+
+	func would(_action: StringName, _payload: Dictionary) -> Phrase:
+		return refusing
+
+	func told(action: StringName, _payload: Dictionary) -> Phrase:
+		told_actions.append(action)
+		return null
 
 
 ## Counts the times a bell rang.
@@ -106,6 +123,8 @@ func _init() -> void:
 	await _verdict.states(_a_prompt_about_to_name_an_action_must_have_something_to_press)
 	await _verdict.states(_a_place_filled_with_a_parameter_knows_which_and_state_kept_with_the_entry_survives_a_detour)
 	await _verdict.states(_a_kept_thing_is_let_go_with_its_entry_and_a_node_is_refused_on_the_way_in)
+	await _verdict.states(_a_place_opened_onto_has_the_places_before_it_behind_it_never_entered)
+	await _verdict.states(_back_over_a_pop_up_with_a_way_out_of_its_own_tells_its_model_and_lowers_nothing)
 	OS.remove_logger(_hearing)
 	quit(_verdict.deliver(get_script()))
 
@@ -641,4 +660,44 @@ func _a_kept_thing_is_let_go_with_its_entry_and_a_node_is_refused_on_the_way_in(
 	driver.keep(&"node", node)
 	_verdict.check(_hearing.refusals == before + 1 and driver.kept(&"node") == null, "a Node is refused out loud and not kept")
 	node.free()
+	_done(made)
+
+
+func _a_place_opened_onto_has_the_places_before_it_behind_it_never_entered() -> void:
+	var made := _made(true, false)
+	var driver: Driver = made["driver"]
+	var ear := Ear.new()
+	(made["chimes"] as Chimes).listen(ear, Chimes.GLOBAL, Driver.NAVIGATED)
+	var answer := driver.open_on([&"home", &"notes"])
+	_verdict.check(answer == null and driver.get_top() == NOTES, "opened onto the notes, the reader is at the notes: %s" % [driver.get_top()])
+	_verdict.check(driver.get_state()["history"] == [HOME, NOTES], "with the home behind them in the history, resolved: %s" % [driver.get_state()["history"]])
+	_verdict.check(_log == [[&"app", "fill"], [&"content", "fill"], [&"ledger", "fill"], [&"notes", "fill"]] and ear.rings == 1, "the home never entered on the way, and one bell for the one move: %s, %d" % [_log, ear.rings])
+	_log.clear()
+	_verdict.check(_back(made) == null and driver.get_top() == HOME and _log == [[&"notes", "empty"], [&"ledger", "empty"], [&"home", "fill"]], "Back lands on the home, entered now: %s" % [_log])
+	_go(made, NOTES)
+	var history: Array = driver.get_state()["history"]
+	var again := driver.open_on([&"coins", &"notes"])
+	_verdict.check(str(again) == "Already at notes" and driver.get_state()["history"] == history, "opened onto where the reader is, it is refused as a move there is, and nothing is walked: %s %s" % [again, driver.get_state()["history"]])
+	_done(made)
+
+
+func _back_over_a_pop_up_with_a_way_out_of_its_own_tells_its_model_and_lowers_nothing() -> void:
+	var made := _made()
+	var driver: Driver = made["driver"]
+	var commands: Commands = made["commands"]
+	var model := Dismissing.new(made["chimes"])
+	commands.register(&"zoom", DISMISSES, model)
+	driver.ways_out[&"zoom"] = DISMISSES
+	_go(made, COINS)
+	_raise(made, &"zoom")
+	_verdict.check(_back(made) == null and model.told_actions == [DISMISSES] and driver.get_top() == [&"zoom"], "Back over the zoom tells its model its way out, and the zoom stays up for the model to take down: %s %s" % [model.told_actions, driver.get_top()])
+	_verdict.check(_link(made, &"zoom", &"shades", Driver.BACK) == null and model.told_actions == [DISMISSES, DISMISSES], "a press inside it going back, as its shade does, tells the model too: %s" % [model.told_actions])
+	model.refusing = Phrase.of("Not yet")
+	_verdict.check(str(_back(made)) == "Not yet" and driver.is_raised(), "a way out the model refuses answers Back with its refusal, and the zoom stays: %s" % [driver.get_top()])
+	model.refusing = null
+	_raise(made, &"confirm")
+	_verdict.check(_back(made) == null and driver.get_top() == [&"zoom"] and model.told_actions.size() == 2, "with the confirm over it, Back lowers the confirm by the chart and tells the zoom's model nothing: %s %s" % [driver.get_top(), model.told_actions])
+	_lower(made, &"zoom")
+	_verdict.check(_back(made) == null and driver.get_top() == HOME and model.told_actions.size() == 2, "lowered by its model's move, nothing is up, and Back goes back a screen as ever: %s" % [driver.get_top()])
+	model.free()
 	_done(made)

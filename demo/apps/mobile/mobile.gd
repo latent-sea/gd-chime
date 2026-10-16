@@ -31,6 +31,8 @@ const MobileProbe := preload("res://demo/apps/mobile/mobile_probe.gd")
 
 ## The mobile app's own look, worn unless another is asked for: every application its own.
 const OWN_LOOK := &"material"
+## The least a base pixel may measure on the screen, in thousandths of a millimetre: a pixel of a 320-dot screen, about.
+const LEAST_PIXEL_UM := 80
 const GOES_TODAY := &"goes_to_today"
 const GOES_WAITING := &"goes_to_what_waits"
 const GOES_SETTINGS := &"goes_to_the_settings"
@@ -44,9 +46,14 @@ var menu: GdChime.OpenMenu
 var view: MobileView
 
 
-## The look asked for at launch, or the app's own - material.
+## The look asked for at launch, or the app's own - material - naming the
+## least a base pixel may measure, as an app made for a phone does: the room
+## is read in base pixels (shape.gd), and only a least pixel makes a phone's
+## few millimetres a compact room.
 func look() -> Theme:
-	return Looks.make(Looks.asked(OWN_LOOK))
+	var made := Looks.make(Looks.asked(OWN_LOOK))
+	made.set_constant(&"least_pixel_um", GdChime.Shape.TYPE, LEAST_PIXEL_UM)
+	return made
 
 
 func probe() -> RefCounted:

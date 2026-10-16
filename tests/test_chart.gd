@@ -5,7 +5,8 @@ extends SceneTree
 ## overlays closed top first before an arrival moves the path, moves within
 ## the layer on top, the panel beside it all, the history as a value - every
 ## arrival an entry of its own, Back retracing them, the cap, forgetting - the remembered last
-## tab, GO as the one kind of move, and every refusal. A move to a path here
+## tab, GO as the one kind of move, every refusal, and the history walked
+## through places behind one opened onto. A move to a path here
 ## is a GO to its last name.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
@@ -63,6 +64,7 @@ func _init() -> void:
 	await _verdict.states(_a_refusal_is_a_sentence_with_the_state_and_the_effects_untouched)
 	await _verdict.states(_a_state_left_remembers_the_child_it_was_on_and_entered_again_enters_it)
 	await _verdict.states(_a_link_to_the_screen_the_reader_is_on_lands_on_the_tab_they_are_on)
+	await _verdict.states(_places_walked_through_are_added_to_the_history_as_arrivals_would_add_them_and_nothing_else_moves)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -369,3 +371,15 @@ func _back_and_forward_across_entries_leaves_every_entry_s_parameters_as_walked(
 	var forward := Chart.transition(CHART, back_again["state"], Events.Event.go(&"notes", 2))
 	var forward_again := Chart.transition(CHART, forward["state"], Events.Event.go(&"coins", 3))
 	_verdict.check(forward_again["state"]["history_params"] == walked and back["state"]["history_params"] == walked.slice(0, 2), "forward again, every entry is as walked: %s" % [forward_again["state"]["history_params"]])
+
+
+func _places_walked_through_are_added_to_the_history_as_arrivals_would_add_them_and_nothing_else_moves() -> void:
+	var home := [&"app", &"content", &"home"]
+	var notes := [&"app", &"content", &"ledger", &"notes"]
+	var state: Dictionary = _arrive(_at([]), home)["state"]
+	var walked := Chart.walked_through(CHART, state, [&"home", &"ledger", &"notes"])
+	_verdict.check(walked["history"] == [home, COINS, notes], "the home, the newest already, adds nothing; the ledger lands on its first tab, and the notes after it: %s" % [walked["history"]])
+	_verdict.check(walked["history_ids"] == [1, 2, 3] and walked["serial"] == 3, "each added entry with a serial of its own: %s" % [walked["history_ids"]])
+	_verdict.check(walked["path"] == home and walked["overlays"].is_empty() and state["history"] == [home], "and nothing else moves - the reader is where they were - and the state handed in is untouched: %s %s" % [walked["path"], state["history"]])
+	var on_notes: Dictionary = _arrive(_arrive(state, notes)["state"], home)["state"]
+	_verdict.check(Chart.walked_through(CHART, on_notes, [&"ledger"])["history"] == [home, notes, home, notes], "walked into the ledger again, it lands on the tab it was last on, as an arrival would: %s" % [Chart.walked_through(CHART, on_notes, [&"ledger"])["history"]])

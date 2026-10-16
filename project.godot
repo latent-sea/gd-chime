@@ -12,6 +12,8 @@ config_version=5
 
 config/name="gd-chime"
 config/features=PackedStringArray("4.6", "Forward Plus")
+; the system's go-back is an application's Back (go_back.gd), never the engine quitting
+config/quit_on_go_back=false
 
 [display]
 

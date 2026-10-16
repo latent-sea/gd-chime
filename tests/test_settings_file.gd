@@ -9,7 +9,9 @@ extends SceneTree
 ## file as it was and nothing beside it; a file that is not settings is
 ## moved aside, under a numbered name if one is taken, said out loud once,
 ## and never written over - left where it is if it cannot be moved - while
-## every model starts as it is; and a section that is not a model's is said.
+## every model starts as it is; a section that is not a model's is said; and
+## a file in a folder not there yet - a fresh user:// - has its folder made
+## and is written, never kept only in memory.
 ##
 ## A write made to fail holds the file open, which refuses its replacement on
 ## Windows - the platform this is run on.
@@ -32,6 +34,9 @@ const WRITING := PATH + ".writing"
 const ASIDE := PATH + ".unreadable"
 const ASIDE_AGAIN := PATH + ".unreadable.2"
 const UNREADABLE := "[\"half a list\""
+## A file two folders down, neither of them there before it is written, and the folders.
+const FRESH := "user://test_settings_file_fresh/inner/settings.json"
+const FRESH_FOLDERS: Array[String] = ["user://test_settings_file_fresh/inner", "user://test_settings_file_fresh"]
 
 var _verdict := Verdict.new()
 var _hearing := Hearing.new()
@@ -55,13 +60,13 @@ class Run:
 	var driver: Driver
 	var file: SettingsFile
 
-	func _init(root: Node) -> void:
+	func _init(root: Node, path: String = PATH) -> void:
 		panels = Panels.new(chimes, {&"outer": 0.25}, {&"list": [&"outer", Panels.FIRST], &"page": [&"outer", Panels.SECOND]}, {&"folds_the_list": &"list"})
 		var actions := Actions.new()
 		actions.declare_all({&"runs": ["run", Actions.keys(KEY_F5)]})
 		driver = Driver.new(chimes)
 		inputs = Inputs.new(chimes, actions, driver)
-		file = SettingsFile.new(chimes, PATH)
+		file = SettingsFile.new(chimes, path)
 		for node: Node in [panels, inputs, driver, file]:
 			root.add_child(node)
 		file.keep("panels", panels)
@@ -82,14 +87,16 @@ func _init() -> void:
 	_clear()
 	await _verdict.states(_a_file_that_is_not_settings_is_moved_aside_said_and_never_written_over)
 	_clear()
+	await _verdict.states(_a_file_in_a_folder_not_there_yet_has_the_folder_made_and_is_written)
+	_clear()
 	OS.remove_logger(_hearing)
 	quit(_verdict.deliver(get_script()))
 
 
 ## Every file this test may leave beside the settings, removed.
 func _clear() -> void:
-	# the file, what is written before its rename, and what was moved aside
-	for path: String in [PATH, WRITING, ASIDE, ASIDE_AGAIN]:
+	# the files, what is written before each rename, what was moved aside, and the fresh folders innermost first
+	for path: String in [PATH, WRITING, ASIDE, ASIDE_AGAIN, FRESH, FRESH + ".writing"] + FRESH_FOLDERS:
 		DirAccess.remove_absolute(path)
 
 
@@ -194,4 +201,17 @@ func _a_file_that_is_not_settings_is_moved_aside_said_and_never_written_over() -
 	said = _hearing.said.size()
 	run = Run.new(root)
 	_verdict.check(_hearing.said.size() == said + 1 and run.panels.folded(&"outer").read() == Panels.NEITHER, "a section that is no model's settings is said, and that model starts as it is: %s" % [_hearing.said.slice(said)])
+	run.done()
+
+
+func _a_file_in_a_folder_not_there_yet_has_the_folder_made_and_is_written() -> void:
+	_verdict.check(not DirAccess.dir_exists_absolute(FRESH_FOLDERS[1]), "before the run, neither folder is there")
+	var said := _hearing.said.size()
+	var run := Run.new(root, FRESH)
+	run.panels.told(&"folds_the_list", {})
+	await process_frame
+	await process_frame
+	var written: Variant = JSON.parse_string(FileAccess.get_file_as_string(FRESH))
+	_verdict.check(DirAccess.dir_exists_absolute(FRESH_FOLDERS[0]) and written is Dictionary and written.has("panels") and written.has("keys"), "a model moved, both folders are made and the file is written in them, whole: %s" % [written])
+	_verdict.check(_hearing.said.size() == said and not FileAccess.file_exists(FRESH + ".writing"), "with nothing said and nothing half written beside it: %s" % [_hearing.said.slice(said)])
 	run.done()

@@ -65,4 +65,6 @@ const KINDS := {
 	&"screen": preload("place_builder.gd"),
 	&"tabs": preload("place_builder.gd"),
 	&"pop_up": preload("place_builder.gd"),
+	# the pieces that answer to the room they are given (describe_rooms.gd)
+	&"page_scroll": preload("page_scroll.gd"),
 }

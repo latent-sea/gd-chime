@@ -69,6 +69,10 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 - `tabs` - The places' builder: app, screen, tabs and pop_up made as places (place.gd), declaring what their pressables perform and registering their handler for it.
 - `pop_up` - The places' builder: app, screen, tabs and pop_up made as places (place.gd), declaring what their pressables perform and registering their handler for it.
 
+### the pieces that answer to the room they are given (describe_rooms.gd)
+
+- `page_scroll` - A page that scrolls down and asks for no room across: what it holds is laid at its width inside its padding, or at its own least where that is wider - the engine lays nothing narrower than it needs - so a piece too wide for it is cut inside it and said out loud, never passed up to widen the page, the app or the window.
+
 ## The names an application reads
 
 A name marked *(lazy)* is fetched the first time it is read, so it is read at run time only:
@@ -276,7 +280,7 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 - `RowQuery` *(lazy)* - A query over packed rows (packed_rows.gd): the rows every clause keeps, in the order asked, and where each group of them starts - an answer of row ids, never of rows.
 - `RowSelection` *(lazy)* - Which rows of a queried view (queried_rows.gd) are picked, and where the reader is: the CURSOR, the place of the row they are on, and MOVES_ACROSS, the column in it - so the keys, the pad and the pointer all move one thing, and whatever acts on "this row" asks here which it is.
 - `SaveShape` *(lazy)* - The shape a save must have, declared once, and what makes plain data read back not that shape, in words - for every model that keeps itself between runs (settings_file.gd): the panels, the documents open, the key bindings, an application's own.
-- `Shape` *(lazy)* - The window's shape, as two values anything may bind to: which way round it is, and how much room it has across.
+- `Shape` *(lazy)* - The window's shape, as values anything may bind to: which way round it is, how much room it has across, the safe room itself, and whether it is touched.
 - `Sounds` *(lazy)* - The interface's sounds: a look's sound for each moment, played by hearing the bells that already ring.
 - `SoundBus` *(lazy)* - The bus the interface's sounds play on - the game's, named by the project - with its volume and its mute read as values, and set only by a player's choice told here.
 - `Stretch` *(lazy)* - The stretch of time a filters' date column stands in (filters.gd): the preset a reader picked out of the ones handed in as data, or the days they set by hand, and the stretch as long just before it.

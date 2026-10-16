@@ -29,7 +29,13 @@ const Pressables := preload("../../theme_pressables.gd")
 ## reads of the look - a share of the window - is that place's (current_place()).
 ## EVERY POP-UP OWNS ITS WAY OUT:
 ## CLOSES, declared by the builder once with its words and its inputs, and
-## declared by every pop-up's place going back (place_builder.gd). One
+## declared by every pop-up's place going back (place_builder.gd). A POP-UP
+## A MODEL PRESENTS - up while the model's fact holds (moment.gd) - NAMES ITS
+## WAY OUT, the model's own action: going back would lower it only for the
+## fact to raise it again, so Back over it - the shade going back, the
+## system's go-back, Escape (go_back.gd) - is that action, told to the model
+## in the pop-up's region (driver.gd), and lowering it is the model's. A way
+## out is never a press going back, which would be Back over it again. One
 ## described inside a template would be described again for every item, and
 ## is refused out loud: a pop-up is described once and opened with the item.
 
@@ -84,15 +90,19 @@ func parameter(place: StringName) -> Bound:
 
 ## A place beside the app, raised over it, of this kind: what content
 ## answers for the parameter it is entered as - a bound value reading it,
-## nothing while it is down - its actions answered by this model. It blocks
-## everything beneath; chain blocks_nothing for a panel, which the reader
-## may keep open while working under it (desc.gd).
-func pop_up(kind: StringName, content: Callable, handled_by: Variant = null) -> Desc:
+## nothing while it is down - its actions answered by this model, and its
+## way out: CLOSES, going back, or the model's own action for one the model
+## presents. It blocks everything beneath; chain blocks_nothing for a panel,
+## which the reader may keep open while working under it (desc.gd).
+func pop_up(kind: StringName, content: Callable, handled_by: Variant = null, way_out: StringName = CLOSES) -> Desc:
 	if _templates_running > 0:
 		push_error("a %s was described inside a template; describe it once, outside, and open it with the item" % kind)
 	_issued[kind] = _issued.get(kind, 0) + 1
 	# its name: the kind, and how many of that kind were described before it, so two of one kind never collide
 	var named := StringName("%s %d" % [kind, _issued[kind]])
+	# a way out of the model's own, which Back over the pop-up is from now on
+	if way_out != CLOSES:
+		driver.ways_out[named] = way_out
 	return Desc.new(POP_UP, {"name": named, "handled_by": handled_by, "blocks": true, "content": content})
 
 

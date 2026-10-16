@@ -22,8 +22,8 @@ class_name GdChime
 ##   framework sets what it needs (needed_settings.gd).
 ## - The vocabulary: Ui, the builder, whose descriptions are the kinds
 ##   (floor_kinds.gd - text, image, surface, pressable, field, row, column,
-##   grid, stack, scroll, virtual_list, cells, view, when, each, and the
-##   places: app, screen, pop_up); Desc, a description; Bound, Local,
+##   grid, stack, scroll, page_scroll, virtual_list, cells, view, when, each,
+##   and the places: app, screen, pop_up); Desc, a description; Bound, Local,
 ##   PressLocal, the values a description reads; Places; Areas; Text,
 ##   Pressable, LazyImage, Draggable, Grip, MenuTarget, Layout, Transition,
 ##   SimulatedSight.

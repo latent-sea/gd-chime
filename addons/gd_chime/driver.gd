@@ -4,7 +4,6 @@ const Events := preload("events.gd")
 const Motion := preload("motion.gd")
 const Applier := preload("applier.gd")
 const Queries := preload("queries.gd")
-const Place := preload("place.gd")
 const LeaveGuard := preload("leave_guard.gd")
 const Paths := preload("paths.gd")
 
@@ -24,18 +23,15 @@ const Paths := preload("paths.gd")
 ## action of its own; the startup check reports a button whose action is one
 ## of the four.
 ##
-## WHERE THE READER IS - the index, the state and every read of them, and
-## what is kept with each history entry - is whereabouts.gd's, which this
-## extends; this is the one thing that changes the state. THE INDEX
-## (index.gd) is what exists, kept by the tree; THE STATE is one plain value
-## - the app's path, the overlays, the panel, the remembered tabs and the
-## history - changed only by the chart (chart.gd), whose transition is the
-## one thing that knows what a move does; THE APPLIER (applier.gd) carries
-## the effects out on the tree and keeps the focus each state remembers.
-## NAVIGATED rings once, after every effect. Every other feature is a
-## question over the chart, the declarations and a state (queries.gd), the
-## game's refusals asked of the door: whether an action can be reached, and
-## the way to it, are asked here of this state.
+## WHERE THE READER IS - the index (index.gd), the state and every read of
+## them, and what is kept with each history entry - is whereabouts.gd's,
+## which this extends; this is the one thing that changes the state, and
+## only by the chart (chart.gd), whose transition is the one thing that
+## knows what a move does. THE APPLIER (applier.gd) carries the effects out
+## on the tree and keeps the focus each state remembers; NAVIGATED rings
+## once, after every effect. Every other feature is a question over the
+## chart, the declarations and a state (queries.gd), the game's refusals
+## asked of the door: whether an action can be reached, and the way to it.
 ##
 ## A PLACE THAT ASKS BEFORE IT IS LEFT is the leave guard's (leave_guard.gd):
 ## a move that would empty it while its model refuses the leaving is stopped
@@ -51,11 +47,6 @@ const Paths := preload("paths.gd")
 ## node's own step of the next frame, where a control draws - never in the
 ## ring, so nothing moves the reader from inside heard(). A fact that held
 ## and let go again before that step raises nothing.
-##
-## A place leaving the tree while the path names it is emptied and its
-## token cancelled as it goes, and one entering while the path names it - a
-## screen rebuilt under the player - is reconciled and filled as it enters,
-## so nothing lands in a freed node and nothing is left dark.
 
 const GO := &"go"
 const GOES_BACK := &"go_back"
@@ -74,9 +65,10 @@ const LEAVES := &"leave_the_place"
 ## The key what a settling reads is followed under: every presented fact, and where the reader is.
 const SETTLES := &"settles"
 
-## The door, which tells this it is the mover as it is built; asked for the
-## game's refusals.
+## The door, which tells this it is the mover as it is built; asked for the game's refusals.
 var door: Object
+## Back over a presented pop-up with a way out of its own is that way out: its model's action, by the pop-up's name (describe_places.gd).
+var ways_out: Dictionary = {}
 
 var _applier := Applier.new()
 ## The one clock, handed on to the applier so places are seen to come and go; none, and they switch.
@@ -122,6 +114,11 @@ func goes_to(place: StringName, action: StringName) -> StringName:
 	return index.place_named(place).performs.get(action, &"") if index.has_place(place) else &""
 
 
+## A place opened onto, the places before it walked into the history unentered: refused, nothing walked.
+func open_on(path: Array) -> Phrase:
+	return _run(Events.Event.go(path.back()), Chart.walked_through(index.chart(), _state, path.slice(0, -1)))
+
+
 ## A press that goes somewhere, handed on by the door: the move it means,
 ## with the parameter the press carried - which one of the place's kind; one
 ## going ONWARD carries the move its question stopped, and goes on with it.
@@ -162,14 +159,15 @@ func check_drawn(action: StringName) -> void:
 
 
 ## A place entering the tree while the path names it - a screen rebuilt
-## under the player - reconciled and filled at once.
+## under the player - reconciled and filled at once, so nothing is left dark.
 func entered(place: Node) -> void:
 	if _is_active(place.name):
 		Applier.reconcile(index.by_name(), _state, index.app)
 		Applier.fill(place)
 
 
-## A place leaving the tree while the path names it, emptied as it goes.
+## A place leaving the tree while the path names it, emptied as it goes and
+## its token cancelled, so nothing lands in a freed node.
 func left(place: Node) -> void:
 	if _is_active(place.name):
 		Applier.empty(place)
@@ -228,8 +226,13 @@ func event_of(action: StringName, payload: Dictionary) -> Events.Event:
 	return Events.Event.forget()
 
 
-func _run(event: Events.Event) -> Phrase:
-	var out: Dictionary = Chart.transition(index.chart(), _state, event)
+## A move from this state - where the reader is, or that with places walked behind them - carried out, or its refusal.
+func _run(event: Events.Event, from: Dictionary = _state) -> Phrase:
+	var over: StringName = Paths.top(index.chart(), from)[0]
+	# Back over a pop-up whose way out is its model's own is that action, told in the pop-up's region
+	if event.kind == Events.Kind.BACK and ways_out.has(over):
+		return door.dispatch(over, ways_out[over], {})
+	var out: Dictionary = Chart.transition(index.chart(), from, event)
 	if out["refusal"] != null:
 		return out["refusal"]
 	# the entry left, named before the state moves on, so what is noted as the reader goes is kept with it

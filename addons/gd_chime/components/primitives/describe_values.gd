@@ -1,4 +1,4 @@
-extends "describe_shapes.gd"
+extends "describe_rooms.gd"
 
 const Frames := preload("../../frames.gd")
 const Reads := preload("../../reads.gd")

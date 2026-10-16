@@ -60,6 +60,10 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"sideways_from", &"Shape", 150)
 	# the least a base pixel may measure on the screen, in thousandths of a millimetre: none, so a canvas is only fitted until a look names one
 	theme.set_constant(&"least_pixel_um", &"Shape", 0)
+	# the safe room (safe_area.gd): no gutter round it and no rounded corners until a look names them, in base pixels and thousandths of a millimetre, and the least its short side may be, in base pixels
+	theme.set_constant(&"edge", &"Shape", 0)
+	theme.set_constant(&"corner_um", &"Shape", 0)
+	theme.set_constant(&"floor", &"Shape", 360)
 	# how wide a strip's cover of more beyond an end is, in base pixels
 	theme.set_constant(&"more_room", &"Scroll", 28)
 	# how far beyond a scroll's either end something is near enough to load (nearness.gd), in thousandths of the scroll's height

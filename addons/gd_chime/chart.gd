@@ -65,7 +65,9 @@ const Phrase := preload("phrase.gd")
 ## ledger, home by a link and Back is the ledger. BACK lowers the top
 ## overlay, else takes the newest entry off and arrives at the one beneath
 ## with its parameters, else is refused. FORGET keeps the newest entry
-## alone. Where
+## alone. A place OPENED ONTO stands on the history WALKED THROUGH the
+## places before it, each added as an arrival at it would add it and none
+## entered (driver.gd: open_on), so Back retraces them. Where
 ## the reader is is remembered BEFORE the landing is worked out, so a move
 ## to the screen the reader is on lands on the tab they are on, never one
 ## left long ago. Nothing above the split - the states the old and new path
@@ -87,6 +89,16 @@ static func blank() -> Dictionary:
 ## Whether Back can act on this state: an overlay up, or a path behind.
 static func can_go_back(state: Dictionary) -> bool:
 	return not state["overlays"].is_empty() or state["history"].size() > 1
+
+
+## The history walked through these places of the app in turn, each added
+## as an arrival at it would add it and none of them entered.
+static func walked_through(chart: Dictionary, state: Dictionary, places: Array) -> Dictionary:
+	var behind := state.duplicate()
+	# every place in turn, the path an arrival at it lands on walked into the history
+	for place: StringName in places:
+		behind.merge(Paths.walked(behind, Paths.resolved(chart, behind, Paths.path_to(chart, place)), behind["params"], HISTORY_CAP), true)
+	return behind
 
 
 ## Where the reader is now and what to do, for this event; or a refusal.
