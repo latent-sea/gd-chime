@@ -60,6 +60,8 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"sideways_from", &"Shape", 150)
 	# the least a base pixel may measure on the screen, in thousandths of a millimetre: none, so a canvas is only fitted until a look names one
 	theme.set_constant(&"least_pixel_um", &"Shape", 0)
+	# the real size of a base pixel on the glass, in thousandths of a millimetre: none, so a canvas is fitted, never drawn in real millimetres, until a look names one
+	theme.set_constant(&"um_per_pixel", &"Shape", 0)
 	# the safe room (safe_area.gd): no gutter round it and no rounded corners until a look names them, in base pixels and thousandths of a millimetre, and the least its short side may be, in base pixels
 	theme.set_constant(&"edge", &"Shape", 0)
 	theme.set_constant(&"corner_um", &"Shape", 0)

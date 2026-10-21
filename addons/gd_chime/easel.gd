@@ -4,6 +4,7 @@ const Themes := preload("theme.gd")
 const SafeArea := preload("safe_area.gd")
 const Canvas := preload("easel_canvas.gd")
 const Touch := preload("touch.gd")
+const Handheld := preload("handheld.gd")
 
 ## The easel: the rect a host gives an application, with the application's
 ## canvas drawn at the base size on it and stretched to fit - the window's
@@ -39,6 +40,10 @@ const Touch := preload("touch.gd")
 ## none is only fitted. How big a base pixel is drawn on the glass is said on
 ## the viewport for every finger's target (touch.gd: PIXEL_UM, pressable.gd).
 ##
+## OR IN REAL MILLIMETRES, NEVER FITTED: a look naming `um_per_pixel` under Shape has a base pixel drawn that real
+## size, times the system's zoom (`reads_zoom`, 1 until a host sets another) and scale_by; the canvas holds what the
+## rect has room for, so a big screen shows more, never the same larger. The least, fit and floor go unused.
+##
 ## A KEY GOES TO THE APP HOLDING THE FOCUS. The engine keeps one focus across
 ## every viewport in a window, gives a key to the viewport holding it, and
 ## offers one that viewport leaves untaken to every other container's
@@ -62,12 +67,10 @@ const Touch := preload("touch.gd")
 ##
 ## THE APP STANDS IN THE SAFE RECT. Each time the canvas is fitted, how far
 ## in from each edge is safe is worked out (safe_area.gd) from what covers the
-## rect on its screen: the system's unobscured area, which `reads_safe_area`
-## answers - the engine's on a handheld, none on a desk, where the engine's
-## names the taskbar a full screen window covers; the corners' radius, which
-## `reads_corner_um` answers - the look's Shape/corner_um on a handheld window
-## covering its screen, since the engine names no rounded corners; and, while
-## a field holds the focus, the keyboard, which `reads_keyboard` answers. The
+## rect on its screen (handheld.gd): the system's unobscured area, which
+## `reads_safe_area` answers; the corners' radius, which `reads_corner_um`
+## answers - the look's Shape/corner_um on a handheld window covering its
+## screen; and, while a field holds the focus, `reads_keyboard`'s keyboard. The
 ## look's gutter, Shape/edge, is on top on every side. The canvas lays every
 ## piece standing on it in what is left (easel_canvas.gd). The keyboard is
 ## read every physics frame while a field holds the focus and never
@@ -76,20 +79,20 @@ const Touch := preload("touch.gd")
 ## one: an app made on the easel has a drawn frame of its own that would
 ## stand in its place.
 ##
-## NEVER UNDER THE FLOOR. The scale the least pixel asks for is lowered where
+## THE READER MAY ASK IT LARGER OR SMALLER (scale_by, which multiplies the
+## fitted scale and the least alike), but NEVER UNDER THE FLOOR. The scale the
+## least pixel asks for is lowered where
 ## it would leave the safe room's short side under the look's Shape/floor, in
 ## base pixels: on a small window the type is drawn smaller rather than any
 ## screen given less room than it is designed at (safe_area.gd).
 ##
-## THE GROUND IS ITS OWN. The canvas paints the look's ground across the
-## whole rect, so a light look is light to the edge where nothing draws; the
-## window's clear colour is never touched. The look is the canvas's Theme -
-## a Theme reaches nothing through a viewport, so it is worn inside it.
+## THE GROUND IS ITS OWN. The canvas paints the look's ground across the whole rect, so a light look is light to
+## the edge where nothing draws; the window's clear colour is never touched. The look is the canvas's Theme - a
+## Theme reaches nothing through a viewport, so it is worn inside it.
 ##
-## IT SCALES ONCE: a host that has stretched its window would scale this
-## twice, which is why the settings the framework needs say the window is
-## not stretched (needed_settings.gd); and a rect is measured on its screen
-## in the window's own pixels, which holds while that is so.
+## IT SCALES ONCE: a host that has stretched its window would scale this twice, which is why the settings the
+## framework needs say the window is not stretched (needed_settings.gd); and a rect is measured on its screen in
+## the window's own pixels, which holds while that is so.
 
 ## The project's base: what `display/window/size` says, read as the easel enters the tree.
 const WIDTH := "display/window/size/viewport_width"
@@ -108,12 +111,19 @@ var viewport := SubViewport.new()
 var canvas := Canvas.new()
 ## The dots to the inch of the screen the rect is on, asked each time the canvas is fitted.
 var reads_dpi: Callable = DisplayServer.screen_get_dpi
+## How much larger the system asks everything drawn, 1 at its own size, asked each time a look in real millimetres is fitted.
+var reads_zoom: Callable = func() -> float: return 1.0
 ## The system's unobscured area of the screen, in its pixels, asked each time the canvas is fitted; an empty one covers nothing.
-var reads_safe_area: Callable = _unobscured_on_a_handheld
+var reads_safe_area: Callable = Handheld.unobscured
 ## The radius of the screen's rounded corners, in thousandths of a millimetre, asked each time the canvas is fitted.
 var reads_corner_um: Callable = _corners_of_a_handheld
 ## The keyboard's height up from the window's foot, in pixels, asked each frame while a field holds the focus.
-var reads_keyboard: Callable = _keyboard_on_screen
+var reads_keyboard: Callable = Handheld.keyboard
+## How much larger the reader asks the canvas drawn, 1 as the look draws it; set, it is fitted again.
+var scale_by := 1.0:
+	set(by):
+		scale_by = by
+		_fit()
 var _base: Vector2i  # the project's base, landscape
 var _turned: bool = false  # whether the base stands transposed now
 var _keyboard: float = 0.0  # the keyboard's height as last read while a field held the focus; none once it lets go
@@ -137,22 +147,10 @@ func get_base() -> Vector2i:
 	return Vector2i(_base.y, _base.x) if _turned else _base
 
 
-## The engine's unobscured area on a handheld, which names its cutout and
-## home bar; none on a desk, where it names the taskbar.
-static func _unobscured_on_a_handheld() -> Rect2i:
-	return DisplayServer.get_display_safe_area() if OS.has_feature("mobile") else Rect2i()
-
-
-## The engine's keyboard height where its screen has a keyboard on it;
-## none where it has none, which the engine would warn of being asked.
-static func _keyboard_on_screen() -> int:
-	return DisplayServer.virtual_keyboard_get_height() if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) else 0
-
-
 ## The look's corner radius on a handheld window covering its screen, whose
 ## corners are the screen's; none on any other.
 func _corners_of_a_handheld() -> int:
-	return canvas.get_theme_constant(&"corner_um", REAL_SIZE) if OS.has_feature("mobile") and get_window().size == DisplayServer.screen_get_size() else 0
+	return canvas.get_theme_constant(&"corner_um", REAL_SIZE) if Handheld.covers_screen(get_window()) else 0
 
 
 ## Whether an event goes on to the canvas: one with a place in the window
@@ -225,7 +223,11 @@ func _fit() -> void:
 	# the least a base pixel may be drawn, in the rect's pixels: 25,400 thousandths of a millimetre to the inch
 	var least: float = canvas.get_theme_constant(&"least_pixel_um", REAL_SIZE) / 25400.0 * dpi
 	var steady := SafeArea.covered(window, rect, unobscured, 0.0, corner, dpi)
-	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()), least, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), gutter)
+	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()) / scale_by, least * scale_by, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), gutter)
+	var real_um: int = canvas.get_theme_constant(&"um_per_pixel", REAL_SIZE)
+	# a look in real millimetres: a base pixel drawn its real size, times the system's zoom and the reader's
+	if real_um > 0:
+		drawn = real_um / 25400.0 * dpi * float(reads_zoom.call()) * scale_by
 	viewport.size_2d_override = Vector2i((size / drawn).round())
 	# how big a base pixel is drawn on the glass, said for every finger's target; moved, each is measured again
 	if not is_equal_approx(viewport.get_meta(Touch.PIXEL_UM, 0.0), drawn * 25400.0 / dpi):

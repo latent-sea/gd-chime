@@ -17,7 +17,11 @@ extends SceneTree
 ## keyboard read only while a field holds the focus and laid under the foot,
 ## a piece that needs more than the room said out loud, once, a desk's
 ## window standing away from the screen's corner inset by the gutter alone,
-## and a panel sliding in laid again on its way without being snapped to rest.
+## a panel sliding in laid again on its way without being snapped to rest,
+## and the reader's scale drawing it all larger or smaller at once, a finger's
+## target with it, but never under the floor. And a look in real millimetres:
+## a base pixel its real size on the glass, times the system's zoom, so the
+## canvas holds what the glass has room for, a desk more than a phone.
 ##
 ## THE A55: 2340 by 1080 pixels at 450 dots to the inch, an 89 pixel cutout
 ## on one short edge's side, corners of 128 pixels' radius; at a least base
@@ -32,6 +36,7 @@ const Themes := preload("res://addons/gd_chime/theme.gd")
 const Bound := preload("res://addons/gd_chime/components/primitives/bound.gd")
 const Desc := preload("res://addons/gd_chime/components/primitives/desc.gd")
 const Pressable := preload("res://addons/gd_chime/components/primitives/pressable.gd")
+const Touch := preload("res://addons/gd_chime/touch.gd")
 
 ## The A55's numbers: its screen, its cutout, its dots to the inch, its corners' radius in thousandths of a millimetre, and its base pixel.
 const A55 := Vector2(2340, 1080)
@@ -75,6 +80,8 @@ func _init() -> void:
 	await _verdict.states(_a_piece_needing_more_than_the_safe_room_is_said_once_by_name)
 	await _verdict.states(_a_desk_window_away_from_the_screen_s_corner_is_inset_by_the_gutter_alone)
 	await _verdict.states(_a_panel_laid_again_on_its_way_in_keeps_the_way_it_has_come)
+	await _verdict.states(_the_reader_s_scale_draws_it_larger_or_smaller_at_once_never_under_the_floor)
+	await _verdict.states(_a_look_in_real_millimetres_holds_as_many_base_pixels_as_the_glass_has_room_for)
 	OS.remove_logger(_hearing)
 	quit(_verdict.deliver(get_script()))
 
@@ -336,4 +343,50 @@ func _a_panel_laid_again_on_its_way_in_keeps_the_way_it_has_come() -> void:
 	_made.ui.motion.step(0.5)
 	await _a_frame_passes()
 	_verdict.check(lifted.get_global_rect() == safe, "and it comes to rest in the safe rect: %s" % [lifted.get_global_rect()])
+	_done()
+
+
+## The A55 held sideways, the reader asking it drawn a tenth larger, then a
+## tenth smaller, then three times larger, then as the look draws it.
+func _the_reader_s_scale_draws_it_larger_or_smaller_at_once_never_under_the_floor() -> void:
+	await _standing(int(A55.x), int(A55.y))
+	var as_drawn := Vector2(_easel.viewport.size_2d_override)
+	var pixel_um: float = _easel.viewport.get_meta(Touch.PIXEL_UM)
+	_easel.scale_by = 1.1
+	var larger := Vector2(_easel.viewport.size_2d_override)
+	_verdict.check(absf(larger.x - as_drawn.x / 1.1) <= 1.0 and absf(larger.y - as_drawn.y / 1.1) <= 1.0, "a tenth larger, the canvas holds a tenth fewer base pixels each way, fitted again at once: %s, then %s" % [as_drawn, larger])
+	_verdict.check(is_equal_approx(_easel.viewport.get_meta(Touch.PIXEL_UM), pixel_um * 1.1), "and a base pixel measures a tenth more on the glass, so a finger's target needs fewer of them: %s, then %s" % [pixel_um, _easel.viewport.get_meta(Touch.PIXEL_UM)])
+	_easel.scale_by = 0.9
+	_verdict.check(absf(_easel.viewport.size_2d_override.x - as_drawn.x / 0.9) <= 1.0, "a tenth smaller, it holds more of them: %s" % [_easel.viewport.size_2d_override])
+	_easel.scale_by = 3.0
+	await _a_frame_passes()
+	# the insets are whole base pixels, so the floor is met to within one
+	_verdict.check(absf(_easel.canvas.get_safe().size.y - 360.0) <= 1.0, "three times larger would leave the safe room under the floor: it stands at the floor of 360: %s" % [_easel.canvas.get_safe().size])
+	_easel.scale_by = 1.0
+	_verdict.check(Vector2(_easel.viewport.size_2d_override) == as_drawn, "and back as the look draws it, as it was: %s" % [_easel.viewport.size_2d_override])
+	_done()
+
+
+## A look naming a base pixel 100 thousandths of a millimetre on the glass,
+## a tenth of a millimetre: the A55 held sideways is 132.08 by 60.96 mm, so
+## its canvas holds 1321 by 610 base pixels; the system zooming a quarter
+## larger, a quarter fewer; and a desk's window of 1920 by 1080 at 96 dots to
+## the inch, 508 by 285.75 mm, holds 5080 by 2858, never fitted to the base.
+func _a_look_in_real_millimetres_holds_as_many_base_pixels_as_the_glass_has_room_for() -> void:
+	await _standing(int(A55.x), int(A55.y))
+	_easel.canvas.theme.set_constant(&"um_per_pixel", Shape.TYPE, 100)
+	await _a_frame_passes()
+	_verdict.check(Vector2(_easel.viewport.size_2d_override) == Vector2(1321, 610), "the A55's glass, 132.08 by 60.96 mm, holds 1321 by 610 base pixels of a tenth of a millimetre: %s" % [_easel.viewport.size_2d_override])
+	_verdict.check(is_equal_approx(_easel.viewport.get_meta(Touch.PIXEL_UM), 100.0), "and a base pixel measures 100 thousandths of a millimetre on the glass: %s" % [_easel.viewport.get_meta(Touch.PIXEL_UM)])
+	_easel.reads_zoom = func() -> float: return 1.25
+	_easel.scale_by = 1.0
+	_verdict.check(Vector2(_easel.viewport.size_2d_override) == Vector2(1057, 488), "the system zooming a quarter larger, a quarter fewer each way: %s" % [_easel.viewport.size_2d_override])
+	_verdict.check(is_equal_approx(_easel.viewport.get_meta(Touch.PIXEL_UM), 125.0), "each a quarter larger on the glass: %s" % [_easel.viewport.get_meta(Touch.PIXEL_UM)])
+	_easel.reads_zoom = func() -> float: return 1.0
+	_easel.reads_dpi = func() -> int: return 96
+	_easel.reads_safe_area = func() -> Rect2i: return Rect2i()
+	_easel.reads_corner_um = func() -> int: return 0
+	root.size = Vector2i(1920, 1080)
+	await _a_frame_passes()
+	_verdict.check(Vector2(_easel.viewport.size_2d_override) == Vector2(5080, 2858), "a desk's window of 508 by 285.75 mm holds 5080 by 2858, more than the base, never the base drawn larger: %s" % [_easel.viewport.size_2d_override])
 	_done()
