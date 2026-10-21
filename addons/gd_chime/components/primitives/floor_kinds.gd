@@ -74,6 +74,7 @@ const KINDS := {
 	&"priority_row": preload("priority_row.gd"),
 	&"while_fits": preload("while_fits.gd"),
 	&"capped": preload("capped.gd"),
+	&"planned": preload("../../planned.gd"),
 	&"shade_band": preload("shade_band.gd"),
 	&"frozen_panes": preload("frozen_panes.gd"),
 }

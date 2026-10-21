@@ -72,6 +72,12 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"reach", &"Scroll", 750)
 	# the room a scroll running down keeps inside it either side of what it holds, in base pixels: its indicator stands in the right
 	theme.set_constant(&"pad", &"Scroll", 8)
+	# a planned piece's bars (planned.gd): how thick and how far an arrow or a wheel's notch moves it, in base pixels; each bar the engine's own until a look draws it
+	theme.set_type_variation(&"Planned", &"Control")
+	theme.set_constant(&"bar", &"Planned", 24)
+	theme.set_constant(&"step", &"Planned", 40)
+	theme.set_type_variation(&"PlannedDown", &"VScrollBar")
+	theme.set_type_variation(&"PlannedAcross", &"HScrollBar")
 	# where the reader is in what scrolls down (scroll_indicator.gd): how thick, how far in from the box's edge and the least it is long, in base pixels
 	theme.set_constant(&"thickness", ScrollIndicator.TYPE, 4)
 	theme.set_constant(&"inset", ScrollIndicator.TYPE, 2)

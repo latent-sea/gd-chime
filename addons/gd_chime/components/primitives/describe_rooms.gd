@@ -6,8 +6,9 @@ const PriorityRow := preload("priority_row.gd")
 ## than to what they hold: a page that scrolls down, the same parts in the
 ## first arrangement that fits, as many columns as fit, a slot as wide as
 ## its widest sample, a held line folding by rank, the first of two pieces
-## that fits, a table in frozen panes, a piece capped in the room, and the
-## band of a pop-up's shade round the safe rect.
+## that fits, a table in frozen panes, a piece capped in the room, pieces
+## laid where a plan puts them, and the band of a pop-up's shade round the
+## safe rect.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -97,3 +98,10 @@ func capped(piece: Desc, look: StringName, across: int, down: int) -> Desc:
 ## the pop-up's rect (shade_band.gd): the band round the safe rect darkened.
 func shade_band(style: StringName) -> Desc:
 	return Desc.new(&"shade_band", {"style": style})
+
+
+## Pieces laid where a plan puts them, at the type sizes it gives them, in
+## the room this is given, scrolling with bars and arrows in this look where
+## the plan needs more (planned.gd): plan(room, on) -> {"rects", "types", "size"}.
+func planned(pieces: Array, plan: Callable, look: StringName) -> Desc:
+	return Desc.new(&"planned", {"plan": plan, "look": look}, pieces)
