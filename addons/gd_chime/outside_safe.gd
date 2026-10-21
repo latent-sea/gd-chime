@@ -2,7 +2,9 @@ extends RefCounted
 
 const Going := preload("components/primitives/going.gd")
 const PageScroll := preload("components/primitives/page_scroll.gd")
+const FrozenOffsets := preload("components/primitives/frozen_offsets.gd")
 const WordMeasure := preload("components/primitives/word_measure.gd")
+const Planned := preload("planned.gd")
 
 ## Whether anything in a built tree stands where the room it was given does
 ## not reach: past the safe rect, past a holder that cuts off what it holds
@@ -110,8 +112,14 @@ static func _walk(node: Node, room: Rect2, named: String, moves: Array, findings
 
 ## Which ways a holder that cuts off what it holds moves to bring it in -
 ## across, then down: a scroll each way it scrolls, but a page never across
-## (page_scroll.gd); anything else neither.
+## (page_scroll.gd); a frozen table's heads across and its labels down, as
+## they follow its body, the last of its panes (frozen_panes.gd); a planned
+## piece each way its bar shows (planned.gd); anything else neither.
 static func _moving(holder: Control) -> Array:
+	if holder is Planned:
+		return [(holder as Planned).bars()[1].visible, (holder as Planned).bars()[0].visible]
+	if not holder is ScrollContainer and holder.get_parent().get_child(-1) is FrozenOffsets:
+		return holder.get_parent().get_child(-1).follows(holder)
 	if not holder is ScrollContainer:
 		return [false, false]
 	var scroll := holder as ScrollContainer

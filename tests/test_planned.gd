@@ -7,7 +7,9 @@ extends SceneTree
 ## the plan asked in what is left, the bar shown, and the pieces moved up
 ## as it scrolls by an arrow's step or a wheel's; where it then fits, no bar
 ## shows and no room is lost to one; a piece the plan leaves out is hidden,
-## a height of its own is its least, and a ground may reach past it, unclipped.
+## a height of its own is its least, a ground may reach past it, unclipped,
+## and a piece's words line up as the plan says; and a value its plan read
+## moving lays it out again, with the room unchanged.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -40,6 +42,7 @@ func _init() -> void:
 	await _verdict.states(_taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside)
 	await _verdict.states(_fitting_it_shows_no_bar_and_loses_no_room_to_one)
 	await _verdict.states(_a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reaches_past_it)
+	await _verdict.states(_a_value_its_plan_read_moving_lays_it_out_again)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -130,12 +133,31 @@ func _a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reac
 	var made := Fixture.new(root)
 	var host := _host(Vector2(600, 300))
 	var plan := func(room: Vector2, _on: Control) -> Dictionary:
-		return {"rects": [Rect2(0, 0, 100, 75), Rect2(100, 0, 100, 75)], "types": [0, 0], "size": Vector2(room.x, 75), "shown": [true, false], "ground": Rect2(-30, -30, room.x + 60, 105)}
+		return {"rects": [Rect2(0, 0, 100, 75), Rect2(100, 0, 100, 75)], "types": [0, 0], "size": Vector2(room.x, 75), "shown": [true, false], "ground": Rect2(-30, -30, room.x + 60, 105), "aligns": [HORIZONTAL_ALIGNMENT_CENTER, HORIZONTAL_ALIGNMENT_LEFT]}
 	made.ui.build(made.ui.column([made.ui.planned([made.ui.text("shown", Themes.WORDS).named(&"one"), made.ui.text("left out", Themes.WORDS).named(&"two")], plan, &"Planned", Vector2(0, 75)).named(&"planned"), made.ui.row([]).grow()]), host)
 	await _a_frame_passes()
 	var planned: Control = made.ui.node_named(&"planned")
 	_verdict.check(planned.size.y == 75.0 and planned.get_combined_minimum_size() == Vector2(0, 75), "its own height, 75, is its least, and a column gives it that: %s" % planned.size)
 	_verdict.check(made.ui.node_named(&"one").visible and not made.ui.node_named(&"two").visible, "the piece the plan leaves out is hidden, the other shown")
+	_verdict.check(_words(made.ui.node_named(&"one")).horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "its words centred, as the plan says")
 	_verdict.check(planned.laid()["ground"] == Rect2(-30, -30, 660, 105) and not planned.clip_contents, "its ground reaches 30 past it on three sides, and nothing it draws is clipped while it does not scroll: %s" % planned.laid()["ground"])
+	host.free()
+	made.done()
+
+
+func _a_value_its_plan_read_moving_lays_it_out_again() -> void:
+	var made := Fixture.new(root)
+	var host := _host(Vector2(600, 300))
+	var across: RefCounted = made.ui.local(100.0)
+	var plan := func(room: Vector2, _on: Control) -> Dictionary:
+		return {"rects": [Rect2(0, 0, across.read(), 50)], "types": [0], "size": room}
+	made.ui.build(made.ui.planned([made.ui.text("one", Themes.WORDS).named(&"one")], plan, &"Planned"), host)
+	await _a_frame_passes()
+	var one: Control = made.ui.node_named(&"one")
+	var before := one.size.x
+	across.set_value(250.0)
+	await _a_frame_passes()
+	await _a_frame_passes()
+	_verdict.check(before == 100.0 and one.size.x == 250.0, "the width its plan reads moving from 100 to 250, the piece is laid again at 250 in the same room: %s then %s" % [before, one.size.x])
 	host.free()
 	made.done()

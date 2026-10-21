@@ -17,9 +17,12 @@ const Touch := preload("touch.gd")
 ## drawn at, 0 leaving them at their kind's, and "size": all of it}, every
 ## length in base pixels. It is asked again whenever the room moves. It may
 ## also say "shown", whether each piece shows, a piece it leaves out hidden;
+## "aligns", how each piece's words line up across, a HorizontalAlignment;
 ## and "ground", a rect the look's `ground` box is drawn in under the
 ## pieces, which may reach past this into the room round it - a bar's colour
-## running to the window's edges past the safe margin.
+## running to the window's edges past the safe margin. IT FOLLOWS WHAT ITS
+## PLAN READS (chimes.gd, follow): a value the plan read moving - the tab a
+## page shows, a fact's words - lays it out again.
 ##
 ## WHAT DOES NOT FIT SCROLLS, WITH A BAR AND ITS ARROWS SHOWN. Where all of
 ## it is longer than the room on an axis, the bar's thickness (the look's
@@ -51,12 +54,14 @@ var _finger: ScrollFinger
 var _laid: Dictionary = {}  # what the plan said when it was last asked: rects, types and size
 var _placing := false  # whether its pieces are being placed, when the bars' values moving lay nothing again
 var _least: Vector2
+var _chimes: RefCounted
 
 
 func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> void:
 	_plan = plan
 	_look = look
 	_least = least
+	_chimes = ui.chimes
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_to_group(Touch.TAKES)
 	# each bar its look's, behind the pieces in the tree and drawn over them
@@ -122,7 +127,10 @@ func _planned() -> Array:
 	# at most a pass for each axis: each sets aside room on one not yet set aside
 	for _pass: int in 3:
 		room = size - Vector2(set_aside.y, set_aside.x) * thickness
-		asked = _plan.call(room, self)
+		var answer := {}
+		# the plan asked, and followed: what it read moving lays this out again
+		_chimes.follow(self, &"plan", func() -> void: answer["plan"] = _plan.call(room, self), queue_sort)
+		asked = answer["plan"]
 		var over := Vector2(1.0 if asked["size"].x > room.x + 0.5 else 0.0, 1.0 if asked["size"].y > room.y + 0.5 else 0.0)
 		if over.x <= set_aside.x and over.y <= set_aside.y:
 			break
@@ -169,6 +177,9 @@ func _notification(what: int) -> void:
 		var rect: Rect2 = _laid["rects"][at]
 		fit_child_in_rect(held[at], Rect2(rect.position - offset, rect.size))
 		held[at].visible = _laid["shown"][at] if _laid.has("shown") else true
+		# the piece's words lined up as the plan says, where it says
+		for words: Label in labels_in(held[at]) if _laid.has("aligns") else []:
+			words.horizontal_alignment = _laid["aligns"][at]
 	_placing = false
 	queue_redraw()
 
