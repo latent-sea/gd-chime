@@ -12,6 +12,8 @@ extends RefCounted
 ##
 ##     count = max(1, floor((room + gap) / (least + gap)))
 ##
+## and never none: a least of nothing is one column, the whole room.
+##
 ## Shares are worked out by flex_line.gd, because a column taking two shares is
 ## a part growing at two: it starts at what the parts in it need, grows by its
 ## share, and gives nothing back - so a grid whose columns cannot fit overflows
@@ -30,13 +32,13 @@ extends RefCounted
 const FlexLine := preload("flex_line.gd")
 
 
-## How many columns there are. None, where neither shares nor a least width was
-## given, which is a grid nobody finished building.
+## How many columns there are, never fewer than one: with neither shares nor
+## a least width, one column the whole room, since a share of none is endless.
 static func count(shares: Array[float], least_column: float, room: float, gap: float) -> int:
 	if not shares.is_empty():
 		return shares.size()
 	if least_column <= 0.0:
-		return 0
+		return 1
 	return maxi(1, floori((room + gap) / (least_column + gap)))
 
 
@@ -66,8 +68,6 @@ static func widths(spans: Array[int], needs: Array[float], at: Array[Vector2i],
 		shares: Array[float], least_column: float, room: float, gap: float) -> Array[float]:
 	var count := count(shares, least_column, room, gap)
 	var widths: Array[float] = []
-	if count == 0:
-		return widths
 	if shares.is_empty():
 		var each := (room - gap * (count - 1)) / count
 		# every part, by what it needs of each column it covers: its width less the gaps inside it, split between them

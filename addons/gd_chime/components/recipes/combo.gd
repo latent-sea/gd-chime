@@ -54,7 +54,9 @@ static func short(ui: Ui, action: StringName, opens: StringName, options: Dictio
 	return control
 
 
-## A combo over a long list: the closed field wearing the chosen words, and
+## A combo over a long list: the closed field wearing the chosen words,
+## wrapping where it is narrower than they are long and never under their
+## longest word, and
 ## an overlay of the title and a type-ahead over the narrowing, a pick going
 ## back. The type-ahead's options scroll, and a scroll needs no room of its
 ## own, so a sheet only as tall as what it holds would show none of them:
@@ -70,4 +72,4 @@ static func long(ui: Ui, action: StringName, opens: StringName, shown: Bound, op
 	var title: Variant = options["title"]
 	var picker := TypeAhead.make(ui, options["narrowing"], options["types"], action, {then = Driver.BACK, payload = options.get(Options.PAYLOAD, {})})
 	var overlay := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, [ui.text(title, Themes.FACE), picker.grow()], Setting.SHEET))
-	return ui.pressable(opens, {}, [ui.text(shown, Themes.FACE)], options.get(Options.STYLE, Fields.COMBO)).opens(overlay)
+	return ui.pressable(opens, {}, [ui.text(shown, Themes.FACE).wraps()], options.get(Options.STYLE, Fields.COMBO)).opens(overlay)

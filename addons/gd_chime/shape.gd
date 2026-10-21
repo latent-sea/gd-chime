@@ -169,12 +169,9 @@ func arrange() -> void:
 	_touch_said()
 
 
-## Whether it is touched, said on the viewport where it moved, and every touch target measured again.
+## Whether it is touched, said on the viewport, where every touch target reads it as a finger lands.
 func _touch_said() -> void:
-	var touched: bool = touch.read()
-	if touched != get_viewport().get_meta(TOUCH, false):
-		get_viewport().set_meta(TOUCH, touched)
-		get_tree().call_group(Touch.TARGETS, &"update_minimum_size")
+	get_viewport().set_meta(TOUCH, touch.read())
 
 
 ## A press says which pointer is in use: a finger's, or a mouse's.

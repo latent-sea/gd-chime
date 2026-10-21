@@ -3,13 +3,14 @@ extends SceneTree
 ## What must be true of a held line whose parts fold by rank: what folds is
 ## a pure function of the room, the same whatever a slotted figure shows;
 ## it never grows as the room widens, swept a pixel at a time; the least
-## needed take their short forms first, and fold only once every short form
-## is taken, the least needed first; a KEEP part never folds; it needs its
+## needed gives way first, into its short form and then folded, and a part
+## gives nothing while one less needed still can; a KEEP part never folds; it needs its
 ## KEEP parts short, the menu press and the gaps, and would most like every
 ## part full; laid out, it shows exactly what it says folds, on one line,
 ## inside its width, the menu press while a MENU part is folded; it keeps
-## one height whatever folds; and the folded names reach its local in rank
-## order.
+## one height whatever folds; the folded names reach its local in rank
+## order; and a form not shown, holding words that wrap, holds it no taller
+## than those words on one line.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -47,11 +48,12 @@ func _init() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	await _verdict.states(_what_folds_is_a_pure_function_of_the_room_whatever_a_slotted_figure_shows)
 	await _verdict.states(_what_folds_never_grows_as_the_room_widens)
-	await _verdict.states(_the_least_needed_take_short_forms_first_and_fold_only_after_the_least_needed_first)
+	await _verdict.states(_the_least_needed_gives_way_first_and_none_gives_while_a_less_needed_can)
 	await _verdict.states(_a_keep_part_never_folds_and_it_needs_its_keep_parts_short_with_the_menu_and_gaps)
 	await _verdict.states(_laid_out_it_shows_what_it_says_folds_on_one_line_inside_its_width)
 	await _verdict.states(_it_keeps_one_height_whatever_folds)
 	await _verdict.states(_the_folded_names_reach_its_local_in_rank_order)
+	await _verdict.states(_a_short_form_with_words_that_wrap_holds_it_one_line_tall)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -146,25 +148,24 @@ func _what_folds_never_grows_as_the_room_widens() -> void:
 	made.done()
 
 
-func _the_least_needed_take_short_forms_first_and_fold_only_after_the_least_needed_first() -> void:
+func _the_least_needed_gives_way_first_and_none_gives_while_a_less_needed_can() -> void:
 	var made := _made()
 	var built: Array = await _built(made, 2000)
 	var line: Control = built[1]
 	var full: float = line.preferred_size().x
-	var first_short: Dictionary = line.fold_at(full - 1.0)
-	_verdict.check(first_short["short"] == [SETTINGS] and first_short["folded"].is_empty(), "a pixel short of every part full, the least needed with a short form takes it, and nothing folds: %s" % first_short)
-	var all_short: float = full - (made.ui.node_named(&"back full").get_combined_minimum_size().x - made.ui.node_named(&"back short").get_combined_minimum_size().x) - (made.ui.node_named(&"settings full").get_combined_minimum_size().x - made.ui.node_named(&"settings short").get_combined_minimum_size().x)
-	var both_short: Dictionary = line.fold_at(all_short)
-	_verdict.check(both_short["short"] == [BACK, SETTINGS] and both_short["folded"].is_empty(), "at the length of every short form taken, both are short and still nothing folds: %s" % both_short)
-	var first_fold: Dictionary = line.fold_at(all_short - 1.0)
-	_verdict.check(first_fold["folded"] == [MARK], "a pixel shorter, the least needed part folds first, the mark that goes: %s" % first_fold)
-	var order: Array = []
-	# every room down from there, noting each part as it first folds
-	for room: int in range(int(all_short) - 1, NARROWEST - 200, -1):
-		for named: StringName in line.fold_at(room)["folded"]:
-			if not order.has(named):
-				order.append(named)
-	_verdict.check(order == [MARK, CHAPTER, SETTINGS, HOUSE], "and narrowing on, they fold the least needed first: %s" % [order])
+	var first: Dictionary = line.fold_at(full - 1.0)
+	_verdict.check(first["folded"] == [MARK] and first["short"].is_empty(), "a pixel short of every part full, the least needed, the mark, folds, and no part more needed takes its short form: %s" % first)
+	var given: Array = []
+	# every room down from there to nothing, noting each part as it first takes its short form or first folds
+	for room: int in range(int(full) - 1, -1, -1):
+		var now: Dictionary = line.fold_at(room)
+		# every part short or folded here, noted the first time each is
+		for event: String in now["short"].map(func(named: StringName) -> String: return "%s short" % named) + now["folded"].map(func(named: StringName) -> String: return "%s folded" % named):
+			if not given.has(event):
+				given.append(event)
+	var settings_short := given.find("settings short")
+	_verdict.check(given.filter(func(event: String) -> bool: return event.ends_with("folded")) == ["mark folded", "chapter folded", "settings folded", "house folded"], "narrowing on, they fold the least needed first: %s" % [given])
+	_verdict.check(settings_short > given.find("chapter folded") and given.find("back short") > given.find("house folded"), "and a part takes its short form only once every part less needed has folded: settings after the chapter, back after the house: %s" % [given])
 	built[0].free()
 	made.done()
 
@@ -251,5 +252,39 @@ func _the_folded_names_reach_its_local_in_rank_order() -> void:
 	host.size.x = 2000
 	await _a_frame_passes()
 	_verdict.check(folded.read() == [], "and given the room again, none: %s" % [folded.read()])
+	host.free()
+	made.done()
+
+
+## A press kept, whose short form holds its reason under it in words that
+## wrap: shown at the line's least, its reason wraps narrow; given room
+## again the short is not shown, and the line is no taller than the short
+## form with its reason on one line - never as narrow as it last stood.
+func _a_short_form_with_words_that_wrap_holds_it_one_line_tall() -> void:
+	var made := _made()
+	var folded: RefCounted = made.ui.local([])
+	var host := _host(Vector2(1600, 400))
+	var reason: Desc = made.ui.text("choose something to send before this can be pressed", Themes.WORDS).wraps().named(&"reason")
+	var parts := [
+		{"name": BACK, "part": _words(made.ui, "CANCEL", &"back full"), "folds": PriorityRow.KEEP},
+		{"name": CLOCK, "part": _words(made.ui, "SEND THE ORDER", &"place full"), "short": made.ui.column([_words(made.ui, "SEND", &"place short"), reason]).named(&"short form"), "folds": PriorityRow.KEEP},
+	]
+	made.ui.build(made.ui.priority_row(parts, folded, null, Themes.ROW).named(&"line"), host)
+	await _a_frame_passes()
+	var line: Control = made.ui.node_named(&"line")
+	# first at its least, the short form standing with its reason wrapped narrow, then given room again
+	host.size.x = line.get_combined_minimum_size().x
+	await _a_frame_passes()
+	var short_shown: bool = made.ui.node_named(&"short form").visible
+	host.size.x = 1600
+	await _a_frame_passes()
+	await _a_frame_passes()
+	var alone := _host(Vector2(1600, 400))
+	made.ui.build(made.ui.row([made.ui.column([_words(made.ui, "SEND", &"alone short"), made.ui.text("choose something to send before this can be pressed", Themes.WORDS).wraps()]).named(&"alone")]), alone)
+	await _a_frame_passes()
+	var one_line: float = made.ui.node_named(&"alone").get_combined_minimum_size().y
+	_verdict.check(short_shown and not made.ui.node_named(&"short form").visible and made.ui.node_named(&"place full").visible, "at its least the short form stood; with room again, the full form stands and the short does not")
+	_verdict.check(line.get_combined_minimum_size().y <= one_line + 0.5, "and the line is no taller than the short form with its reason on one line, as it stands alone with room: %s of %s" % [line.get_combined_minimum_size().y, one_line])
+	alone.free()
 	host.free()
 	made.done()

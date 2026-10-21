@@ -89,9 +89,10 @@ func lays_columns(least: StringName, most: int, balanced: bool, shares_height: b
 
 
 ## How many columns stand across: as many of at least the least as fit, at
-## most `most` - none, no most - and balanced, the fewest that make the same rows.
+## most `most` - none, no most - and balanced, the fewest that make the same
+## rows; never fewer than one, which a share of the room is divided by.
 static func across(parts: int, fit: int, most: int, balanced: bool) -> int:
-	var count := mini(fit, most) if most > 0 else fit
+	var count := maxi(1, mini(fit, most) if most > 0 else fit)
 	if not balanced:
 		return count
 	# the rows that many columns make, then the fewest columns that make no more rows

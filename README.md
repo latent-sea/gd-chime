@@ -161,7 +161,9 @@ so one description fits a small phone held either way and a wide desk.
   pinned, its body scrolling, capped by the look's `Sheet/margin` and
   `Sheet/most_wide`; `Page.held` keeps a screen's action in hand the same way.
 - **A finger's target is finger-sized** on every touched window, as the
-  look's `Touch/least_um`, in thousandths of a millimetre on the glass.
+  look's `Touch/least_um`, in thousandths of a millimetre on the glass: it
+  reaches past what the press draws, which stays its face's own size, so a
+  phone's screens are laid out as a desk's are.
 
 ## The demos
 

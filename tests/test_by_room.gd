@@ -7,8 +7,9 @@ extends SceneTree
 ## the safe height, it passes over one too tall for it and follows the safe
 ## room as it moves; it chooses again when a part's least moves with
 ## nothing resized; a row marked stacks is the row while it fits and a
-## column of the same parts after; and by the width alone, the same parts
-## need only their narrowest arrangement across.
+## column of the same parts after; by the width alone, the same parts
+## need only their narrowest arrangement across; and holding a row that
+## stacks, given a most share, it settles on one arrangement and keeps it.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -42,6 +43,7 @@ func _init() -> void:
 	await _verdict.states(_it_chooses_again_when_a_part_s_least_moves_with_nothing_resized)
 	await _verdict.states(_a_row_marked_stacks_is_the_row_while_it_fits_and_a_column_of_its_parts_after)
 	await _verdict.states(_by_the_width_alone_the_parts_need_only_their_narrowest_arrangement_across)
+	await _verdict.states(_holding_a_row_that_stacks_it_settles_on_one_arrangement_given_a_most_share)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -176,5 +178,40 @@ func _by_the_width_alone_the_parts_need_only_their_narrowest_arrangement_across(
 	var one: Control = made.ui.node_named(&"one")
 	var two: Control = made.ui.node_named(&"two")
 	_verdict.check(width.get_worn() == &"across" and is_equal_approx(width.get_combined_minimum_size().x, maxf(one.get_combined_minimum_size().x, two.get_combined_minimum_size().x)), "worn across, it needs across only what stacked needs, so whatever holds it may narrow it into that: %s" % width.get_combined_minimum_size().x)
+	host.free()
+	made.done()
+
+
+## A picture beside a row of two words that stacks: beside, the row is
+## narrowed and stacks, too tall for the share; under the picture it has
+## the whole width and stands as a row, short - so the arrangement beside,
+## measured as the one under left its row, looks short. It settles under
+## the picture and stays there frame after frame.
+func _holding_a_row_that_stacks_it_settles_on_one_arrangement_given_a_most_share() -> void:
+	var made := Fixture.new(root)
+	var host := _host(Vector2(1500, 400))
+	made.ui.build(made.ui.row([made.ui.text("LABEL", Themes.WORDS).named(&"label"), made.ui.text("words", Themes.WORDS).named(&"said"), made.ui.text("PICTURE", Themes.WORDS).named(&"drawn")]).named(&"measure"), host)
+	await _a_frame_passes()
+	var label: Control = made.ui.node_named(&"label")
+	var said: Control = made.ui.node_named(&"said")
+	var line := label.get_combined_minimum_size().y
+	var as_row := label.get_combined_minimum_size().x + GAP + said.get_combined_minimum_size().x
+	var drawn: float = made.ui.node_named(&"drawn").get_combined_minimum_size().x
+	host.free()
+	# beside the picture the words have twenty short of their row; under it, the whole width
+	host = _host(Vector2(1500, 400))
+	var picture: Desc = made.ui.text("PICTURE", Themes.WORDS).named(&"picture")
+	var words: Desc = made.ui.row([made.ui.text("LABEL", Themes.WORDS), made.ui.text("words", Themes.WORDS)]).stacks().named(&"words")
+	var share: float = (line + 0.5 * GAP) / made.ui.shape.safe_size.read().y
+	made.ui.build(made.ui.by_room({&"picture": picture, &"words": words}, [made.ui.row_of([&"picture", &"words"]), made.ui.column_of([&"picture", &"words"])], share).named(&"room"), host)
+	await process_frame
+	host.size.x = drawn + GAP + as_row - 20.0
+	var worn: Array = []
+	# six frames, for the arrangement worn after each
+	for frame: int in 6:
+		await process_frame
+		worn.append(made.ui.node_named(&"room").get_worn())
+	var inner: Control = made.ui.node_named(&"words")
+	_verdict.check(worn.slice(2).all(func(key: StringName) -> bool: return key == &"1") and inner.get_worn() == &"0", "it settles under the picture, its row of words a row across the whole width, and keeps it: %s, the words %s" % [worn, inner.get_worn()])
 	host.free()
 	made.done()

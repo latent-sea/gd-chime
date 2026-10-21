@@ -13,19 +13,20 @@ const PAGE := &"page"
 const GONE := &"gone"
 
 ## A held line whose parts stand in rank order, the first the most needed:
-## where the room runs short its parts take their short forms, the least
-## needed first, and then fold, the least needed first - behind a menu
-## press, to the page, or gone - each as its rank says. It never wraps.
+## where the room runs short its parts give way, the least needed first -
+## each into its short form, then folded behind a menu press, to the page,
+## or gone, as it says - and a part gives nothing while one less needed
+## still can. It never wraps.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
 ## WHAT FOLDS IS A PURE FUNCTION OF THE ROOM (fold_at): every measure is a
 ## part's least width, never what it shows now, so a part whose words
 ## change stands in a slot holding its widest sample (room_for.gd) and
-## what folds at one room is the same whatever the words. Two passes over
-## the parts, the least needed first: the first puts each into its short
-## form while the line is too long; the second folds each that may fold
-## while it still is. A wider room needs fewer of either, so what folds
+## what folds at one room is the same whatever the words. One pass over
+## the parts, the least needed first, while the line is too long: each is
+## put into its short form where it has one, and folded where it may fold
+## and the line still is. A wider room stops the pass sooner, so what folds
 ## never grows as the room widens.
 ##
 ## THE MENU PRESS is shown, and counted, while any part folding behind it
@@ -37,8 +38,10 @@ const GONE := &"gone"
 ## ITS LEAST IS ITS KEEP PARTS IN THEIR SHORT FORMS, with the menu press
 ## where any part folds behind it, and the gaps between them: every other
 ## part may fold. Down, the tallest of every form of every part, shown or
-## not, so the line keeps one height whatever folds. What it would take
-## given all the room it wants is every part in its full form.
+## not, so the line keeps one height whatever folds - each form not shown
+## laid at its preferred width, so words wrapping in it are measured on one
+## line, as a held line stands, and never as narrow as they last were. What
+## it would take given all the room it wants is every part in its full form.
 ##
 ## EVERY FORM IS ONE OF WHAT IT HOLDS (described): each part's full form,
 ## its short form after it where it has one, and the menu press last, so
@@ -84,17 +87,13 @@ func place(part: Control, facts: Dictionary = {}) -> void:
 func fold_at(room: float) -> Dictionary:
 	var short: Array[StringName] = []
 	var folded: Array[StringName] = []
-	# the least needed first, each with a short form put into it while the line is longer than the room
+	# the least needed first while the line is longer than the room: each into its short form, then folded if that is not enough
 	for at: int in range(_ranked.size() - 1, -1, -1):
 		if _length(short, folded) <= room + 0.01:
 			break
 		if _ranked[at]["short"] != null:
 			short.append(_ranked[at]["name"])
-	# the least needed first, each that may fold folded while the line is still longer than the room
-	for at: int in range(_ranked.size() - 1, -1, -1):
-		if _length(short, folded) <= room + 0.01:
-			break
-		if _ranked[at]["folds"] != KEEP:
+		if _ranked[at]["folds"] != KEEP and _length(short, folded) > room + 0.01:
 			folded.append(_ranked[at]["name"])
 	# a part folded after it was made short stands in neither form
 	var still_short: Array[StringName] = short.filter(func(named: StringName) -> bool: return not folded.has(named))
@@ -179,6 +178,11 @@ func _read_look() -> void:
 ## Before its parts are placed, once it holds them all and has a width: the forms for that
 ## width shown and the rest hidden, and the folded names written where they moved.
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_SORT_CHILDREN and _awaited.is_empty():
+		# every form not shown, laid at its preferred width so its height is its one line's
+		for form: Node in get_children():
+			if not (form as Control).visible:
+				fit_child_in_rect(form, Rect2(Vector2.ZERO, Vector2(Preferred.of(form).x, (form as Control).size.y)))
 	if what != NOTIFICATION_PRE_SORT_CHILDREN or size.x <= 0.0 or not _awaited.is_empty():
 		return
 	var now := fold_at(size.x)

@@ -13,10 +13,11 @@ const Text := preload("text.gd")
 ## a label of its own in the kind given, never shown, and the room needed
 ## is the most any of them needs across and down, the box the kind sets
 ## its words in with it. What it holds is laid across the whole of that
-## room and asks for nothing of its own, so what it shows - shorter or
-## longer - never reaches the line it stands in. A sample is the longest
-## the figure may say, and one that says more than its samples is cut at
-## the slot's edge, which the guards report (outside_safe.gd).
+## room, so what it shows moving within its samples never reaches the line
+## it stands in. A sample is the longest the figure may say; where what it
+## holds needs more than every sample - samples that left the longest out,
+## or none given - the slot is as wide as that needs, so it is never drawn
+## over what stands beside it.
 ##
 ## SAMPLES ARE SAID AS WORDS ARE (text.gd): a phrase in the language on,
 ## anything else as it is. Said in another language or dressed in another
@@ -51,13 +52,18 @@ func place(content: Control, _facts: Dictionary) -> void:
 	content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
-## The most any sample needs, across and down.
+## The most any sample needs, across and down, and never less than what it holds needs.
 func _get_minimum_size() -> Vector2:
-	var room := Vector2.ZERO
+	var room := Vector2.ZERO if get_child_count() == _measures.size() else (get_child(get_child_count() - 1) as Control).get_combined_minimum_size()
 	# every sample's label, for the widest and the tallest
 	for measure: Label in _measures:
 		room = room.max(measure.get_minimum_size())
 	return room
+
+
+## What it would take given all the room it wants (preferred.gd): its least, since it never wants more.
+func preferred_size() -> Vector2:
+	return get_combined_minimum_size()
 
 
 ## The samples said in the language on, what that read followed, and the

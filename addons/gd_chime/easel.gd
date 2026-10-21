@@ -229,10 +229,8 @@ func _fit() -> void:
 	if real_um > 0:
 		drawn = real_um / 25400.0 * dpi * float(reads_zoom.call()) * scale_by
 	viewport.size_2d_override = Vector2i((size / drawn).round())
-	# how big a base pixel is drawn on the glass, said for every finger's target; moved, each is measured again
-	if not is_equal_approx(viewport.get_meta(Touch.PIXEL_UM, 0.0), drawn * 25400.0 / dpi):
-		viewport.set_meta(Touch.PIXEL_UM, drawn * 25400.0 / dpi)
-		get_tree().call_group(Touch.TARGETS, &"update_minimum_size")
+	# how big a base pixel is drawn on the glass, said for every finger's target, which reads it as a finger lands
+	viewport.set_meta(Touch.PIXEL_UM, drawn * 25400.0 / dpi)
 	canvas.set_insets(SafeArea.insets(SafeArea.covered(window, rect, unobscured, _keyboard, corner, dpi), drawn, gutter))
 	if turning:
 		_measure_again.call_deferred()

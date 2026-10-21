@@ -2,8 +2,9 @@ extends SceneTree
 
 ## What must be true of a finger on the floor's controls: a press is a tap,
 ## a list scrolls under it and glides on, and on a touched window, in any
-## shape, anything pressed is big enough to hit - while the mouse, the keys
-## and the pad press as they always did.
+## shape, anything pressed is big enough to hit - its reach, though it is
+## drawn no larger - while the mouse, the keys and the pad press as they
+## always did.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -15,7 +16,7 @@ extends SceneTree
 ## pressable of one action, over a slider, in a scroll. The look's least
 ## touch size is 8800 thousandths of a millimetre, and a base pixel is said
 ## to measure 100 of them on the glass (touch.gd: PIXEL_UM), as an easel
-## says it: so a touched press is at least 88 base pixels each way.
+## says it: so a touched press reaches at least 88 base pixels each way.
 
 const Fixture := preload("res://tests/fixture.gd")
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
@@ -45,7 +46,7 @@ func _init() -> void:
 	await _verdict.states(_let_go_moving_the_list_glides_on_the_clock_and_reduced_it_stops_dead)
 	await _verdict.states(_a_list_at_its_top_lets_a_finger_drawn_down_go_by)
 	await _verdict.states(_a_finger_on_a_slider_moves_no_list)
-	await _verdict.states(_on_a_touched_window_a_pressable_is_at_least_the_look_s_least_in_any_shape)
+	await _verdict.states(_on_a_touched_window_a_pressable_reaches_the_look_s_least_in_any_shape)
 	await _verdict.states(_a_press_taller_than_its_words_stands_them_in_its_middle)
 	await _verdict.states(_a_press_gives_under_a_hand_held_on_it_and_springs_back)
 	quit(_verdict.deliver(get_script()))
@@ -74,7 +75,7 @@ func _standing(window: Vector2i = Vector2i(1920, 1080)) -> void:
 func _touched(touched: bool) -> void:
 	_made.ui.shape.reads_touchscreen = func() -> bool: return touched
 	_made.ui.shape.arrange()
-	# the frames the targets' measuring again takes
+	# the frames the window's word that it is touched takes to be said
 	for frame: int in 2:
 		await process_frame
 
@@ -202,25 +203,36 @@ func _a_finger_on_a_slider_moves_no_list() -> void:
 	_done()
 
 
-func _on_a_touched_window_a_pressable_is_at_least_the_look_s_least_in_any_shape() -> void:
+## On a touched window, in any shape, a row of one line is drawn its face's
+## own height; under the last row, where nothing else stands, a finger within
+## the least round its middle presses it; and a finger on the row above
+## another is that row's own, though the other's reach would carry there.
+## No longer touched, a row takes the pointer only on itself.
+func _on_a_touched_window_a_pressable_reaches_the_look_s_least_in_any_shape() -> void:
 	await _standing(Vector2i(1920, 1080))
 	var row: Pressable = _made.ui.node_named(&"row 5")
+	var last: Pressable = _made.ui.node_named(&"row 39")
+	var above: Pressable = _made.ui.node_named(&"row 4")
+	# a point inside the row above, a pixel over its foot, in this row's own space
+	var on_above := func() -> Vector2: return row.get_global_transform().affine_inverse() * Vector2(above.get_global_rect().get_center().x, above.get_global_rect().end.y - 1.0)
 	var least := Pressable.least_each_way(row)
 	var own := row.get_combined_minimum_size()
-	_verdict.check(least == 88.0 and own.y < least, "not touched, a row of one line on a wide window is its face's own height, under the least touch size of %s: %s" % [least, own])
+	# a point this far under the last row's middle, as a share of the least
+	var under := func(share: float) -> Vector2: return Vector2(last.size.x / 2.0, last.size.y / 2.0 + least * share)
+	_verdict.check(least == 88.0 and own.y < least and not last.reaches(under.call(0.49)), "not touched, a row of one line on a wide window is its face's own height, under the least touch size of %s, and takes the pointer only on itself: %s" % [least, own])
 	await _touched(true)
-	var wide := row.get_combined_minimum_size()
-	_verdict.check(wide.y >= least and wide.x >= least, "touched, on the same wide window on its side, it is at least the least each way: %s" % [wide])
+	_verdict.check(row.get_combined_minimum_size() == own and row.size.y == own.y, "touched, on the same wide window on its side, it is drawn at its face's own height still: %s" % [row.get_combined_minimum_size()])
+	_verdict.check(last.reaches(under.call(0.49)) and not last.reaches(under.call(0.51)), "and under the last row, where nothing else stands, a finger within the least round its middle presses it, and one beyond does not")
+	_verdict.check(on_above.call().y > -(least - own.y) / 2.0 and not row.reaches(on_above.call()), "a finger on the row above is that row's own, though this one's reach would carry there: %s" % [on_above.call()])
 	# every shape a touched window may have: a phone's on its end, a narrow window on its side, a tall regular one
 	for window: Vector2i in [Vector2i(720, 1280), Vector2i(800, 700), Vector2i(1000, 1400)]:
 		root.size = window
 		# the frames the window's turn and its measuring again take
 		for frame: int in 4:
 			await process_frame
-		var shaped := row.get_combined_minimum_size()
-		_verdict.check(shaped.y >= least and shaped.x >= least, "touched, a window of %s makes it at least the least each way too: %s" % [window, shaped])
+		_verdict.check(row.get_combined_minimum_size() == own and last.reaches(under.call(0.49)) and not row.reaches(on_above.call()), "touched, a window of %s draws it at its own height too, and it reaches as far: %s" % [window, row.get_combined_minimum_size()])
 	await _touched(false)
-	_verdict.check(row.get_combined_minimum_size().y < least, "no longer touched, live, it needs its face's own height again: %s" % [row.get_combined_minimum_size()])
+	_verdict.check(row.get_combined_minimum_size() == own and not last.reaches(under.call(0.49)), "no longer touched, live, a row takes the pointer only on itself again")
 	root.size = Vector2i(1920, 1080)
 	# the frames the window's turn back takes
 	for frame: int in 4:
@@ -229,13 +241,14 @@ func _on_a_touched_window_a_pressable_is_at_least_the_look_s_least_in_any_shape(
 	_done()
 
 
-## On a touched window a row of one line is the least touch size tall, well
-## over twice its line: its words stand in the middle of the room its box
-## leaves, not at the top of it.
+## A row of one line made three lines tall by what it is asked to be: its
+## words stand in the middle of the room its box leaves, not at the top of it.
 func _a_press_taller_than_its_words_stands_them_in_its_middle() -> void:
 	await _standing(Vector2i(720, 1280))
-	await _touched(true)
 	var row: Pressable = _made.ui.node_named(&"row 5")
+	row.custom_minimum_size.y = row.get_combined_minimum_size().y * 3.0
+	await process_frame
+	await process_frame
 	var label: Label = row.find_children("*", "Label", true, false)[0]
 	var box := row.get_drawn_box()
 	var room := Rect2(row.global_position + Vector2(box.get_margin(SIDE_LEFT), box.get_margin(SIDE_TOP)), row.size - box.get_minimum_size())

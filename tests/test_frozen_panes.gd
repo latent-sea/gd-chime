@@ -8,8 +8,11 @@ extends SceneTree
 ## and the pad walking onto a heading out of sight, the heads stand at the
 ## body's offset across and the labels at its offset down, and the corner
 ## never moves; its least is the corner, one column and one row, whatever
-## its room; and drawn whole down, it is as tall as its rows and scrolls
-## across alone.
+## its room; drawn whole down, it is as tall as its rows and scrolls
+## across alone; and wider and taller than its room, the guard finds
+## nothing past it, the heads and the labels moving as the body does; and
+## the samples it is handed are read and never written, so they may be a
+## constant.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -28,6 +31,7 @@ const Desc := preload("res://addons/gd_chime/components/primitives/desc.gd")
 const Bound := preload("res://addons/gd_chime/components/primitives/bound.gd")
 const FrozenPanes := preload("res://addons/gd_chime/components/primitives/frozen_panes.gd")
 const ColumnLeasts := preload("res://addons/gd_chime/components/primitives/column_leasts.gd")
+const OutsideSafe := preload("res://addons/gd_chime/outside_safe.gd")
 
 const PICKS := &"picks"
 ## The look's least for every column, in base pixels, and how many rows the table has.
@@ -55,6 +59,8 @@ func _init() -> void:
 	await _verdict.states(_the_pad_walking_onto_a_heading_out_of_sight_brings_it_whole_into_view)
 	await _verdict.states(_its_least_is_the_corner_one_column_and_one_row_whatever_its_room)
 	await _verdict.states(_drawn_whole_down_it_is_as_tall_as_its_rows_and_scrolls_across_alone)
+	await _verdict.states(_wider_and_taller_than_its_room_the_guard_finds_nothing_past_it)
+	await _verdict.states(_its_samples_are_read_and_never_written)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -280,4 +286,32 @@ func _drawn_whole_down_it_is_as_tall_as_its_rows_and_scrolls_across_alone() -> v
 	_verdict.check(_body().scroll_vertical == 0, "a wheel turned down over it does not move it down: %s" % _body().scroll_vertical)
 	await _drawn(_middle(&"first") + Vector2(40, 0), [Vector2(-60, 0), Vector2(-80, 0), Vector2(-80, 0)])
 	_verdict.check(_body().scroll_horizontal > 0 and _in_step(), "while a finger along the heads still moves it across: %s" % _offsets())
+	_made.done()
+
+
+## Thirty columns and forty rows in 600 by 400: the heads run past their
+## pane across and the labels past theirs down, as the body's part does,
+## and each follows the body, so nothing stands where its room never moves,
+## at the start or scrolled into the middle.
+func _wider_and_taller_than_its_room_the_guard_finds_nothing_past_it() -> void:
+	await _standing(range(30), Vector2i(600, 400))
+	var safe := Rect2(Vector2.ZERO, Vector2(600, 400))
+	var at_start := OutsideSafe.found(root, safe)
+	_body().get_h_scroll_bar().value = 600.0
+	_body().get_v_scroll_bar().value = 300.0
+	await _frames()
+	var scrolled := OutsideSafe.found(root, safe)
+	_verdict.check((_made.ui.node_named(&"heads") as Control).size.x > 600.0 and (_made.ui.node_named(&"labels") as Control).size.y > 400.0, "the heads run past the room across and the labels down: %s, %s" % [(_made.ui.node_named(&"heads") as Control).size, (_made.ui.node_named(&"labels") as Control).size])
+	_verdict.check(at_start.is_empty() and scrolled.is_empty(), "and nothing is found past its room, at the start or scrolled: %s, %s" % [at_start, scrolled])
+	_made.done()
+
+
+## The samples handed in, a constant here, measured: the table stands with
+## the column at least its widest words, and the samples are as they were.
+func _its_samples_are_read_and_never_written() -> void:
+	var before := str(SAMPLES)
+	await _standing([&"name", &"score", &"total"], Vector2i(1200, 400), func(_ui: RefCounted) -> Dictionary: return {"samples": SAMPLES})
+	var leasts := _table.get_leasts()
+	_verdict.check(leasts.size() == 3 and leasts[0] > float(GRID), "the name column is measured by its words, past the look's least: %s" % [leasts])
+	_verdict.check(str(SAMPLES) == before, "and the samples are what they were: %s" % [SAMPLES])
 	_made.done()

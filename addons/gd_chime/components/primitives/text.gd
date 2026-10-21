@@ -8,7 +8,6 @@ const Phrase := preload("../../phrase.gd")
 const DrawnReach := preload("drawn_reach.gd")
 const GradedWords := preload("graded_words.gd")
 const WordMeasure := preload("word_measure.gd")
-const Preferred := preload("preferred.gd")
 
 ## Words: a phrase, data, or a bound value read again whenever what it read
 ## moves - a phrase said in the language on as it is drawn.

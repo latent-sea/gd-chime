@@ -219,7 +219,9 @@ func _navigation() -> void:
 	var screen: Control = _hands.place(&"route")
 	var bar: bool = sync.get_global_rect().position.y >= screen.get_global_rect().end.y - 1.0
 	var least := GdChime.Pressable.least_each_way(sync)
-	var targets: Array = _app.root.get_tree().get_nodes_in_group(GdChime.Touch.TARGETS).filter(func(one: Control) -> bool: return one.is_visible_in_tree() and one.get_combined_minimum_size().y < least)
+	# every press showing that holds something, whose reach falls short of the least each way round its middle
+	var targets: Array = _app.root.find_children("*", "Control", true, false).filter(func(one: Node) -> bool:
+		return one is GdChime.Pressable and one.is_visible_in_tree() and one.get_child_count() > 0 and not (one.reaches(one.size / 2.0 + Vector2(least, least) * 0.49) and one.reaches(one.size / 2.0 - Vector2(least, least) * 0.49)))
 	await _hands.tap(sync)
 	var moved: bool = _app.driver.get_top().has(MobileView.WAITING)
 	_app.root.size = SHAPES[0]

@@ -45,6 +45,7 @@ func _init() -> void:
 	await _verdict.states(_a_column_is_never_under_the_widest_part_s_least)
 	await _verdict.states(_its_least_is_one_column_whatever_room_it_is_given)
 	await _verdict.states(_rows_share_the_height_left_only_when_every_one_fits)
+	await _verdict.states(_parts_of_no_least_with_none_named_stand_in_one_column_at_least)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -189,4 +190,16 @@ func _rows_share_the_height_left_only_when_every_one_fits() -> void:
 	_verdict.check(not columns._rows_share, "columns say their rows share the height only when told to")
 	columns.lays_columns(&"card", 0, false, true)
 	_verdict.check(columns._rows_share, "and told to, say so to the line placing them")
+	columns.get_parent().free()
+
+
+## Parts that need nothing across, with no least named, stand in at least one
+## column: a count of none would share the room into endless parts and the
+## line would never finish placing them.
+func _parts_of_no_least_with_none_named_stand_in_one_column_at_least() -> void:
+	var columns := _columns(4, &"", 0, true, 0.0)
+	columns.get_parent().size.x = 344
+	await _a_frame_passes()
+	_verdict.check(Layout.across(4, 0, 0, true) == 1 and Layout.across(4, 0, 3, false) == 1, "worked by hand: four that fit none stand in one column: %d, %d" % [Layout.across(4, 0, 0, true), Layout.across(4, 0, 3, false)])
+	_verdict.check(columns.get_children().all(func(part: Control) -> bool: return part.size.x > 0.0 and part.get_rect().end.x <= 344.0), "every part is placed, and inside the room: %s" % [columns.get_children().map(func(part: Control) -> Rect2: return part.get_rect())])
 	columns.get_parent().free()

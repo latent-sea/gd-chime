@@ -17,6 +17,14 @@ extends "by_width.gd"
 ## placed, since a part's least moving - words said again - can leave the
 ## one worn too wide with nothing resized.
 ##
+## HOW TALL AN ARRANGEMENT IS, IT LEARNS BY WEARING IT: its parts' least
+## heights hang on the widths it gives them - a row of them that stacks is
+## taller narrowed - so one not worn is measured as another left them. One
+## not worn is tried while it fits across; worn and found too tall, it is
+## passed over until this width or the safe height moves. Measured as left,
+## two would each look short while the other was worn and be swapped for
+## ever within one frame.
+##
 ## ITS LEAST IS ITS NARROWEST ARRANGEMENT'S (by_width.gd), AND WHAT IT
 ## WOULD TAKE GIVEN ALL THE ROOM IT WANTS IS ITS FIRST'S: the parts at their
 ## preferred widths as the first runs (preferred.gd), so a line holding it
@@ -35,6 +43,7 @@ extends "by_width.gd"
 
 var _order: Array  # the arrangements' keys, in the order they are preferred
 var _most_tall: float  # the share of the safe room's height an arrangement may need down; none, no limit
+var _too_tall: Dictionary = {}  # arrangement -> the width and the height allowed it was found too tall at while worn
 
 
 func _init(ui: RefCounted, names: Array, arrangements: Array, most_tall: float, asked: StringName) -> void:
@@ -60,11 +69,24 @@ func key_now() -> StringName:
 	# every arrangement in the order preferred, for the first that fits, keeping the narrowest for where none does
 	for named: StringName in _order:
 		var across := least_across(_arrangements[named])
-		if across <= size.x + 0.01 and least_down(_arrangements[named]) <= tall:
+		if across <= size.x + 0.01 and _within(named, tall):
 			return named
 		if across < least_across(_arrangements[narrowest]):
 			narrowest = named
 	return narrowest
+
+
+## Whether an arrangement may be as tall as it is: worn, measured, and kept
+## as too tall at this width and height allowed where it is not; not worn,
+## unless it was found too tall at them.
+func _within(named: StringName, tall: float) -> bool:
+	var here := Vector2(size.x, tall)
+	if named != _worn:
+		return _too_tall.get(named, Vector2(-1.0, -1.0)) != here
+	if least_down(_arrangements[named]) <= tall:
+		return true
+	_too_tall[named] = here
+	return false
 
 
 ## What it would take given all the room it wants (preferred.gd): its parts

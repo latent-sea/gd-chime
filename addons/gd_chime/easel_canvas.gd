@@ -23,7 +23,9 @@ const Shift := preload("components/primitives/shift.gd")
 ## on it can make the canvas, the viewport or the window larger. A piece that
 ## needs more than the safe rect is grown past it by the engine, which no
 ## container can refuse; that is said out loud, once for each piece, naming
-## it, since what it draws past the rect is cut off at the window's edge.
+## it, since what it draws past the rect is cut off at the window's edge -
+## while it is shown: an app hidden while its host shows something else, in
+## whatever the window has become meanwhile, draws nothing past anything.
 ##
 ## IT SAYS WHAT IT DRAWS as a face does (get_drawn), so whatever judges words
 ## against the ground they stand on (faint_words.gd) reads the canvas's
@@ -81,7 +83,7 @@ func _notification(what: int) -> void:
 				continue
 			Shift.fit(self, piece as Control, safe)
 			var least := (piece as Control).get_combined_minimum_size()
-			# needing more than the safe rect either way, and not said before
-			if (least.x > safe.size.x or least.y > safe.size.y) and not _said.has(piece.get_instance_id()):
+			# shown, needing more than the safe rect either way, and not said before
+			if piece.is_visible_in_tree() and (least.x > safe.size.x or least.y > safe.size.y) and not _said.has(piece.get_instance_id()):
 				_said[piece.get_instance_id()] = true
 				push_error("%s needs %s, more than the safe room of %s, and is drawn past its edge: something inside it asks for more room than the window has" % [piece.get_path(), least, safe.size])

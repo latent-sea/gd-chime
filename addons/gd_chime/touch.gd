@@ -57,8 +57,6 @@ const TYPE := &"Touch"
 ## The groups: what takes a gesture handed to it, and what reads the finger itself.
 const TAKES := &"takes a finger"
 const HOLDS := &"holds the finger"
-## Everything pressed, which a touched window makes at least the look's least each way (pressable.gd).
-const TARGETS := &"touch targets"
 ## A viewport's meta: how many thousandths of a millimetre a base pixel drawn in it measures on the glass.
 const PIXEL_UM := &"pixel_um"
 ## The two ways a gesture goes.

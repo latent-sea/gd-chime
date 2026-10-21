@@ -1,6 +1,7 @@
 extends "hearing.gd"
 
 const Themes := preload("theme.gd")
+const Preferred := preload("components/primitives/preferred.gd")
 
 ## The key what a draw read is followed under.
 const DRAWN := &"drawn"
@@ -138,9 +139,10 @@ func shows_itself() -> bool:
 
 
 ## What it would take given all the room it wants (preferred.gd): its least,
-## until a piece that knows better answers its own.
+## and as much more as what it holds would take - a press round words that
+## wrap, on one line - until a piece that knows better answers its own.
 func preferred_size() -> Vector2:
-	return get_combined_minimum_size()
+	return Preferred.over(self)
 
 
 ## Arrange whatever this holds within its own rect. Overridden by a subclass

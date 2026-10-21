@@ -9,7 +9,8 @@ extends SceneTree
 ## room returns - its least never the list's; in every state no scroll down
 ## stands inside another, and nothing in a page grows from no basis; and
 ## the line holding the action is found by its place's name, inside the
-## screen with every scroll at its start.
+## screen with every scroll at its start; and the page, scrolling or drawn
+## whole, wears the style given, and a nudge given to follow moves it.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -47,6 +48,7 @@ func _init() -> void:
 	await _verdict.states(_held_the_list_scrolls_itself_while_the_room_shows_its_rows)
 	await _verdict.states(_held_it_falls_back_to_scrolling_with_the_list_drawn_whole_and_back_again)
 	await _verdict.states(_in_every_state_no_scroll_down_stands_inside_another_and_nothing_grows_from_no_basis)
+	await _verdict.states(_the_page_wears_the_style_given_and_a_nudge_moves_it)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -190,6 +192,40 @@ func _in_every_state_no_scroll_down_stands_inside_another_and_nothing_grows_from
 					found.append("%s grows from no basis inside %s at %d" % [part.name, outer.name, tall])
 		_verdict.check(scrolls.size() == 1, "at %d high exactly one scroll down is shown: %s" % [tall, scrolls.map(func(scroll: Node) -> String: return scroll.get_class())])
 	_verdict.check(found.is_empty(), "in neither state does a scroll down stand inside another, or a part grow from no basis inside one: %s" % [found])
+	root.size.y = 800
+	await _a_frame_passes()
+	made.done()
+
+
+## A look's own Scroll, padded wider, and a nudge to follow: the scrolling
+## page wears it and a nudge down moves it; the held page fallen back to
+## scrolling wears it too.
+func _the_page_wears_the_style_given_and_a_nudge_moves_it() -> void:
+	root.theme.set_type_variation(&"RoomyScroll", &"Scroll")
+	var roomy := StyleBoxEmpty.new()
+	roomy.content_margin_left = 30
+	roomy.content_margin_right = 30
+	root.theme.set_stylebox(&"panel", &"RoomyScroll", roomy)
+	var made := _made()
+	var model := Fixture.Model.new(made.chimes)
+	model.set_value(&"nudge", {"by": 0, "count": 0})
+	var options := _lines(made.ui)
+	options.merge({"style": &"RoomyScroll", "nudged": model.of(&"nudge")})
+	await _started(made, Page.scrolling(made.ui, made.ui.column(_rows(made.ui)).named(&"body"), options))
+	var page: ScrollContainer = made.ui.node_named(&"body").get_parent().get_parent()
+	_verdict.check(page.theme_type_variation == &"RoomyScroll" and is_equal_approx(made.ui.node_named(&"body").get_parent().position.x, 30.0), "the scrolling page wears the style given, its padding where what it holds starts: %s, %s" % [page.theme_type_variation, made.ui.node_named(&"body").get_parent().position])
+	model.set_value(&"nudge", {"by": 1, "count": 1})
+	await create_timer(0.5).timeout
+	_verdict.check(page.scroll_vertical > 0, "and a nudge down moves it: %s" % page.scroll_vertical)
+	made.done()
+	model.free()
+	made = _made()
+	var held_options := _lines(made.ui)
+	held_options.merge({"body": _list(made.ui), "whole": made.ui.column(_rows(made.ui)).named(&"whole"), "spill": made.ui.text("what the bar could not hold", Themes.WORDS), "style": &"RoomyScroll"}, true)
+	root.size.y = 160
+	await _started(made, Page.held(made.ui, held_options))
+	var whole: Control = made.ui.node_named(&"whole")
+	_verdict.check(whole.is_visible_in_tree() and (whole.get_parent().get_parent() as Control).theme_type_variation == &"RoomyScroll", "fallen back to scrolling, the page the list is drawn whole in wears it too: %s" % (whole.get_parent().get_parent() as Control).theme_type_variation)
 	root.size.y = 800
 	await _a_frame_passes()
 	made.done()

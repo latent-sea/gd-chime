@@ -27,6 +27,11 @@ const Options := preload("../primitives/options.gd")
 ## name. Each held line is one line: the head and the foot are never
 ## scrolled, and so never grow past the room.
 ##
+## THE PAGE WEARS THE STYLE GIVEN, a look's variation of Scroll - its
+## padding is the room the indicator keeps - and given a bound value to
+## follow, a press at a time moves it (scroll.gd, nudged); a held page's
+## drawn whole wears and follows the same.
+##
 ## A held page builds its spill twice, once beside each list, of which one
 ## stands at a time: so the spill is never a named piece, which would be
 ## two of a name.
@@ -34,12 +39,14 @@ const Options := preload("../primitives/options.gd")
 ## It is a description and nothing else: no node is made here.
 
 ## A page's options: spill, the held bar's lines folded to the head of the
-## page; head and foot, the held lines pinned above and below it.
-const SCROLLING_OPTIONS: Array[String] = ["spill", "head", "foot"]
+## page; head and foot, the held lines pinned above and below it; style,
+## the page's look, Scroll where none is given; nudged, a bound value whose
+## moves scroll it a press at a time.
+const SCROLLING_OPTIONS: Array[String] = ["spill", "head", "foot", "style", "nudged"]
 ## A held page's options, the first two required: body, the list scrolling
 ## itself, its least height the rows it must show; whole, the same list
-## drawn whole; and spill, head and foot as a scrolling page's.
-const HELD_OPTIONS: Array[String] = ["body", "whole", "spill", "head", "foot"]
+## drawn whole; and the rest as a scrolling page's.
+const HELD_OPTIONS: Array[String] = ["body", "whole", "spill", "head", "foot", "style", "nudged"]
 
 
 ## The name of the held line holding a place's action in hand.
@@ -50,7 +57,7 @@ static func in_hand(place: StringName) -> StringName:
 ## The head, the page scrolling down with the spill over the body, and the foot.
 static func scrolling(ui: Ui, body: Desc, options: Dictionary = {}) -> Desc:
 	Options.checked("a scrolling page", options, SCROLLING_OPTIONS)
-	return ui.column(_held_lines(options, ui.page_scroll(ui.column(_spilled(options, body))).grow()))
+	return ui.column(_held_lines(options, _page(ui, options, body).grow()))
 
 
 ## The head and the foot held, the list between them scrolling itself while
@@ -59,8 +66,12 @@ static func scrolling(ui: Ui, body: Desc, options: Dictionary = {}) -> Desc:
 static func held(ui: Ui, options: Dictionary) -> Desc:
 	Options.checked("a held page", options, HELD_OPTIONS)
 	var listed := ui.column(_spilled(options, options["body"].grow()))
-	var drawn_whole := ui.page_scroll(ui.column(_spilled(options, options["whole"])))
-	return ui.column(_held_lines(options, ui.while_fits(listed, drawn_whole).grow()))
+	return ui.column(_held_lines(options, ui.while_fits(listed, _page(ui, options, options["whole"])).grow()))
+
+
+## The page scrolling down, the spill over the body, in the style given and following what it is given to.
+static func _page(ui: Ui, options: Dictionary, body: Desc) -> Desc:
+	return ui.page_scroll(ui.column(_spilled(options, body)), null, options.get("nudged"), options.get("style", &"Scroll"))
 
 
 ## The spill, where there is one, over the body.

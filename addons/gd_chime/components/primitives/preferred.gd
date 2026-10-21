@@ -10,9 +10,15 @@ extends RefCounted
 ## A PART SAYS ITS OWN, through preferred_size(): every piece that draws
 ## has one (presentation.gd), which is its least until it knows better -
 ## words that wrap (text.gd), a line (layout.gd), the same parts in the
-## arrangement they would most like (by_room.gd), a page (page_scroll.gd).
-## A control that answers none - the engine's own, a surface - is its
-## least, since nothing more is known of it.
+## arrangement they would most like (by_room.gd), a page (page_scroll.gd),
+## one of two pieces (when.gd), any other piece that draws round what it
+## holds (presentation.gd: over). A scroll that runs across and never down - a strip
+## of tabs - would take what it holds would take across, with its padding,
+## and its least down. Any other container that answers none - a surface, a
+## stack - holds what it holds laid over one another, and would take its
+## least and as much more as the one of them wanting the most more would
+## (over). A control holding none is its least, since nothing more is known
+## of it.
 ##
 ## IT IS WHERE A PART STARTS (flex_line.gd): a part given no basis starts
 ## along a row at its preferred width, and shrinks from there only to its
@@ -32,7 +38,24 @@ extends RefCounted
 ## What this part would take given all the room it wants: its own answer,
 ## or its least where it gives none.
 static func of(part: Control) -> Vector2:
-	return part.preferred_size() if part.has_method(&"preferred_size") else part.get_combined_minimum_size()
+	if part.has_method(&"preferred_size"):
+		return part.preferred_size()
+	var strip := part as ScrollContainer
+	if strip != null and strip.vertical_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED and strip.get_child_count() > 0:
+		return Vector2(of(strip.get_child(0)).x + strip.get_theme_stylebox(&"panel").get_minimum_size().x, strip.get_combined_minimum_size().y)
+	return over(part) if part is Container else part.get_combined_minimum_size()
+
+
+## What a piece holding these controls laid over one another would take - a
+## surface round its words, a stack, a press round its face: its least, and
+## as much more as the shown one wanting the most more than its own least.
+static func over(part: Control) -> Vector2:
+	var more := Vector2.ZERO
+	# every shown control it holds, for the most any wants beyond its least
+	for held: Node in part.get_children():
+		if held is Control and (held as Control).visible:
+			more = more.max(of(held) - (held as Control).get_combined_minimum_size())
+	return part.get_combined_minimum_size() + more
 
 
 ## Where each part of a line starts along it when it is given no basis,

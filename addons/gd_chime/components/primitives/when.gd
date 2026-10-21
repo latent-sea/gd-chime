@@ -17,7 +17,8 @@ const Transition := preload("transition.gd")
 ## hidden part takes no room. If the piece being freed holds the
 ## focus, the focus is handed to the next control that takes it first, so a
 ## pad is never left with nothing selected. It needs as much room as what
-## it shows.
+## it shows, and would take as much as that would given all it wants
+## (preferred.gd).
 ##
 ## THE SWAP IS A TRANSITION (transition.gd), the one asked for where this
 ## was described or the one the look names for a when: the side arriving
@@ -96,6 +97,11 @@ func _notification(what: int) -> void:
 
 func _get_minimum_size() -> Vector2:
 	return _shown.get_combined_minimum_size() if _shown != null else Vector2.ZERO
+
+
+## What it would take given all the room it wants (preferred.gd): what it shows would.
+func preferred_size() -> Vector2:
+	return Preferred.of(_shown) if _shown != null else Vector2.ZERO
 
 
 static func chimes_of(ui: RefCounted) -> Chimes:

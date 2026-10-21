@@ -10,10 +10,11 @@ const Language := preload("../../language.gd")
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## A MEASURE IS KEPT ON THE SAMPLES, under the font, the size and the
-## language it was taken in. Every line of one table is handed the same
-## samples, so the widest words are drawn once for the whole table, not once
-## a row; and a sample is a phrase, said in the language on, so the same
+## A MEASURE IS KEPT HERE, FOR EVERY TABLE, under the font, the size, the
+## language and the words it was taken of - never written into the samples
+## handed in, which are the caller's and may be a constant. Every line of
+## one table holds the same words, so the widest words are drawn once for
+## the whole table, not once a row; and a sample is a phrase, said in the language on, so the same
 ## words are as wide as that language writes them - measured in English,
 ## never offered to the pseudo-locale's longer words, which would be drawn
 ## over the next column.
@@ -27,7 +28,9 @@ const Language := preload("../../language.gd")
 ## panes (frozen_panes.gd): never one under its least, the room shared out
 ## only where every least fits in it.
 
-var _samples: Dictionary  # column -> the words it may hold, their measures kept beside them
+static var _drawn: Dictionary = {}  # font, size, language and words -> the widest of the words drawn so, for every table
+
+var _samples: Dictionary  # column -> the words it may hold, read and never written
 var _words_kind: StringName  # the kind of words the cells are in, measured by
 var _kept: Dictionary = {}  # column -> its least as last measured for this line
 
@@ -48,15 +51,15 @@ func of(column: StringName, line: Control, pad: float) -> float:
 		return _kept[column]
 	var font := line.get_theme_font(&"font", _words_kind)
 	var font_size := line.get_theme_font_size(&"font_size", _words_kind)
-	var held: Dictionary = _samples[column]
-	var key := "%d:%d:%s" % [font.get_rid().get_id(), font_size, Language.current()]
-	if not held.has(key):
+	var held: Array = _samples[column]["words"]
+	var key := "%d:%d:%s:%s" % [font.get_rid().get_id(), font_size, Language.current(), held]
+	if not _drawn.has(key):
 		var widest := 0.0
 		# every word the column may hold, for the widest drawn
-		for words: Variant in held["words"]:
+		for words: Variant in held:
 			widest = maxf(widest, font.get_string_size(Text.said(words), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
-		held[key] = widest
-	_kept[column] = held[key] + 2.0 * pad
+		_drawn[key] = widest
+	_kept[column] = _drawn[key] + 2.0 * pad
 	return _kept[column]
 
 

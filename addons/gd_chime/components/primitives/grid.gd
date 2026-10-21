@@ -175,8 +175,6 @@ func _arrange() -> void:
 		return
 	var spans := _spans(parts)
 	var count := GridColumns.count(_shares, _least_column, size.x, _gap)
-	if count == 0:
-		return
 	var at := GridColumns.cells(spans, count)
 	var widths := GridColumns.widths(spans, _needs(parts), at, _shares, _least_column, size.x, _gap)
 	var depths := _depths(parts, at)

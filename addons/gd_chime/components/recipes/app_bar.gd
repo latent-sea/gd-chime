@@ -29,10 +29,15 @@ const Setting := preload("setting.gd")
 ## on every screen.
 ##
 ## WHAT THE SCREEN SAYS - its title, or what it asks of the reader - stands
-## last in rank, in a slot of its longest sample in the Title kind: it
-## stays in the bar while that sample fits after the parts before it, and
-## otherwise heads the page, wrapped, through the spill, which each screen
-## puts first on its page (page.gd).
+## last in rank, in a slot of its longest sample in its kind, the Title
+## kind where none is given: it stays in the bar while that sample fits
+## after the parts before it, and otherwise heads the page, wrapped, through
+## the spill, which each screen puts first on its page (page.gd) - or, where
+## it is told to fold GONE, a hint the reader can do without, is not shown.
+## What folds to the page stands along one line in rank order while it fits
+## there, and wraps onto the next where it does not, so two short lines
+## never take the height of two; while nothing folds there the spill is
+## hidden, and takes no gap at the head of the page.
 ##
 ## ITS HEIGHT IS HELD: the tallest form of every part, shown or not, and
 ## the said slot's Title line - each measured from what the part can be,
@@ -58,11 +63,13 @@ const MENU_KIND := &"app_bar_menu"
 const BAR := Navigation.APP_BAR
 const BAR_ROW := Navigation.APP_BAR_ROW
 
-## The bar's options, all but style required: parts, in rank order; said,
+## The bar's options, the first four required: parts, in rank order; said,
 ## what the screen says, words or a bound value reading them; said_samples,
 ## the longest it may say; folded, the local the folded names are written
-## to; and style, the bar's ground.
-const OPTIONS: Array[String] = ["parts", "said", "said_samples", "folded", Options.STYLE]
+## to; style, the bar's ground; said_style, the kind what the screen says is
+## written in, Title where none is given; and said_folds, where it goes
+## where it does not fit, PAGE where none is given.
+const OPTIONS: Array[String] = ["parts", "said", "said_samples", "folded", Options.STYLE, "said_style", "said_folds"]
 
 
 ## The menu press's words, declared once in the register.
@@ -74,11 +81,12 @@ static func declare(register: Actions) -> void:
 static func make(ui: Ui, options: Dictionary) -> Dictionary:
 	Options.checked("an app bar", options, OPTIONS)
 	var folded: Local = options["folded"]
-	var words := ui.text(options["said"], Themes.TITLE)
-	var said := {"name": SAID, "part": ui.room_for(words, options["said_samples"], Themes.TITLE).grow(), "folds": PriorityRow.PAGE, "line": ui.text(options["said"], Themes.TITLE).wraps()}
+	var kind: StringName = options.get("said_style", Themes.TITLE)
+	var said := {"name": SAID, "part": ui.room_for(ui.text(options["said"], kind), options["said_samples"], kind).grow(), "folds": options.get("said_folds", PriorityRow.PAGE), "line": ui.text(options["said"], kind).wraps()}
 	var parts: Array = options["parts"] + [said]
 	var menu_lines: Array = []
 	var page_lines: Array = []
+	var paged: Array = parts.filter(func(part: Dictionary) -> bool: return part["folds"] == PriorityRow.PAGE).map(func(part: Dictionary) -> StringName: return part["name"])
 	# every part in rank order: the line it becomes where it is folded, in the menu or at the head of the page
 	for part: Dictionary in parts:
 		var while_folded := ui.when(folded.map(func(names: Array) -> bool: return names.has(part["name"])), part.get("line", part["part"]))
@@ -88,4 +96,5 @@ static func make(ui: Ui, options: Dictionary) -> Dictionary:
 			page_lines.append(while_folded)
 	var menu := ui.pop_up(MENU_KIND, func(_which: Bound) -> Desc: return Sheet.fitted(ui, {body = ui.column(menu_lines), foot = Sheet.close(ui), style = Setting.SHEET}))
 	var row := ui.priority_row(parts, folded, ui.button(OPENS_MENU, {opens = menu}), BAR_ROW)
-	return {"bar": ui.surface(options.get(Options.STYLE, BAR), [row]), "spill": ui.column(page_lines)}
+	var any_paged: Bound = folded.map(func(names: Array) -> bool: return names.any(func(named: StringName) -> bool: return paged.has(named)))
+	return {"bar": ui.surface(options.get(Options.STYLE, BAR), [row]), "spill": ui.when(any_paged, ui.row(page_lines, Themes.TILES))}

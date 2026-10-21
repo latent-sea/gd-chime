@@ -18,14 +18,21 @@ extends "../../action_control.gd"
 ## cannot be used or why the last press was refused, re-read as this draws.
 ##
 ## A FINGER'S TARGET: on a touched window (shape.gd's meta TOUCH), in any
-## shape and either way round, it is at least the look's least touch size
-## each way, Touch/least_um, in thousandths of a millimetre on the glass,
-## made base pixels by how big a base pixel is drawn there
-## (least_each_way): what the easel fitting the canvas says on its viewport
-## (touch.gd's meta PIXEL_UM), or, on a window with no easel, the window's
-## own pixel at the screen's dots to the inch. Every target is measured
-## again as either moves. One holding nothing - a drawer's shade - is
-## ground, not a target.
+## shape and either way round, a finger anywhere within the look's least
+## touch size each way round its middle presses it, Touch/least_um, in
+## thousandths of a millimetre on the glass, made base pixels by how big a
+## base pixel is drawn there (least_each_way): what the easel fitting the
+## canvas says on its viewport (touch.gd's meta PIXEL_UM), or, on a window
+## with no easel, the window's own pixel at the screen's dots to the inch.
+## IT IS DRAWN AT ITS FACE'S OWN SIZE ALL THE SAME, so a phone's screens
+## are laid out as a desk's are and fit it (design/ui/responsive-screens.md,
+## "Fit first, scroll last"): the target reaches past what is drawn, as a
+## phone's own presses do, but never over anything else that takes the
+## pointer - the row beside it in a list, a press beside it in a bar - save
+## what it stands on, a picture pressed as a whole under its glass. Its
+## reach is measured as the finger lands, so whatever moves either is
+## followed. One holding nothing - a drawer's shade - is ground, not a
+## target, and reaches no further than it is drawn.
 
 const Shape := preload("../../shape.gd")
 
@@ -38,16 +45,58 @@ var current_while: Bound = null  # current while this holds, in place of where i
 func _init(chimes: Chimes, commands: Commands, place: Node, does: StringName, payload: Variant, style: Variant) -> void:
 	super(chimes, commands, place, does, style)
 	_payload = payload
-	add_to_group(Touch.TARGETS)
 
 
-## What the face needs, and on a touched window at least the look's least touch size each way.
-func _get_minimum_size() -> Vector2:
-	var needs := super._get_minimum_size()
-	# a press holding nothing - a shade - is a stretch of ground whatever holds it sizes, not a target
+## Whether a finger or the pointer at this point of its own presses it:
+## inside it, and on a touched window anywhere within the look's least touch
+## size each way round its middle where nothing else that takes the pointer
+## stands - never further for a press holding nothing, which is ground.
+func reaches(point: Vector2) -> bool:
+	var drawn := Rect2(Vector2.ZERO, size)
+	if drawn.has_point(point):
+		return true
 	if get_child_count() == 0 or not is_inside_tree() or not get_viewport().get_meta(Shape.TOUCH, false):
-		return needs
-	return needs.max(Vector2.ONE * least_each_way(self))
+		return false
+	# how far short of the least it is drawn each way, half of it on each side
+	var short := (Vector2.ONE * least_each_way(self) - size).max(Vector2.ZERO) / 2.0
+	var reach := drawn.grow_individual(short.x, short.y, short.x, short.y)
+	return reach.has_point(point) and not _another_takes(get_global_transform() * point, get_global_transform() * reach)
+
+
+## The engine asking where the pointer lands: wherever it reaches.
+func _has_point(point: Vector2) -> bool:
+	return reaches(point)
+
+
+## Whether anything else that takes the pointer stands at this point of the
+## canvas, other than what this stands on: looked for beside this, then
+## beside what holds it, outward until a holder holds the whole of `reach`.
+func _another_takes(at: Vector2, reach: Rect2) -> bool:
+	var mine := get_global_rect()
+	var path: Node = self
+	var holder := get_parent()
+	# outward through what holds this, each holder's other parts looked into
+	while holder is Control:
+		for other: Node in holder.get_children():
+			if other != path and other is Control and _takes(other, at, mine):
+				return true
+		if (holder as Control).get_global_rect().encloses(reach):
+			return false
+		path = holder
+		holder = holder.get_parent()
+	return false
+
+
+## Whether this control, or anything shown in it at this point, takes the
+## pointer there and is not what `mine` stands on - a control whose rect
+## holds the whole of it.
+static func _takes(control: Control, at: Vector2, mine: Rect2) -> bool:
+	var rect := control.get_global_rect()
+	if not control.is_visible_in_tree() or not rect.has_point(at):
+		return false
+	if control.mouse_filter != Control.MOUSE_FILTER_IGNORE and not rect.encloses(mine):
+		return true
+	return control.get_children().any(func(part: Node) -> bool: return part is Control and _takes(part, at, mine))
 
 
 ## The look's least touch size in the base pixels this control is drawn in:

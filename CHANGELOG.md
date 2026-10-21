@@ -15,6 +15,41 @@ This file must never become a second copy of the history. What was added or
 fixed, and why, is kept by the commits; only what breaks a caller is listed
 here, because that is the one thing a caller has to act on.
 
+## 5.0.0 - 2026-10-17
+
+Fit first, scroll last: a phone's screens laid out as a desk's are.
+
+- A FINGER'S TARGET REACHES PAST WHAT IS DRAWN (`pressable.gd`): on a
+  touched window a press is drawn at its face's own size, and a finger
+  anywhere within the look's `Touch/least_um` each way round its middle
+  presses it, wherever nothing else that takes the pointer stands save what
+  it stands on (`Pressable.reaches(point)`, which the engine asks through
+  `_has_point`). It grew to the least each way, which made a phone's screens
+  far larger than a desk's. What breaks: a layout that relied on touched
+  presses being the least tall is laid out at their faces' size; and
+  `Touch.TARGETS`, the group touched presses were measured again by, is
+  gone, since nothing is measured by touch any more. New beside it:
+  `Easel.scale_by`, how much larger than the look draws it the reader asks
+  the canvas drawn - the fitted scale and the least pixel both times it,
+  never under the floor - fitted again as it is set.
+- WHAT FOLDS TO THE PAGE STANDS ALONG ONE LINE (`AppBar`): the spill is a
+  line that wraps (`Themes.TILES`) and is hidden while nothing folds there,
+  where it was a column, one part a line, shown always. New beside it: the
+  options `said_style`, the kind what the screen says is written in, and
+  `said_folds`, where it goes where it does not fit - `PriorityRow.GONE` for
+  a hint the reader can do without.
+- A SLOT IS NEVER NARROWER THAN WHAT IT HOLDS (`ui.room_for`): its least is
+  its widest sample's room or what it holds needs, the more of the two, so
+  samples that left the longest out never let it be drawn over what stands
+  beside it. What breaks: a figure longer than every sample widens its line
+  where it was cut at the slot's edge.
+- EVERY PIECE THAT DRAWS ROUND WHAT IT HOLDS ANSWERS WHAT IT WOULD TAKE
+  (`presentation.gd`, `preferred.gd`): a press, a surface, a stack and a
+  `when` would take their least and as much more as what they hold would -
+  words that wrap, on one line - and a strip of tabs what its flaps would;
+  each answered its least. What breaks: a line placing them by where they
+  start (flex-basis auto, 4.0.0) starts them at their natural length.
+
 ## 4.0.0 - 2026-10-16
 
 The responsive round, steps 2 to 6: honest sizes; held bars and pages;
@@ -106,13 +141,20 @@ pop-ups that fit; collections, tabs and finger sizes; wide tables.
   are gone. New beside it: `Sheet.band`, `Sheet.capped`, `Sheet.LOOK`, and
   the kinds `ui.capped(piece, look, across, down)` and
   `ui.shade_band(style)`, with `Capped.NEEDS`, `SPANS` and `FILLS`.
+- A GRID OR COLUMNS GIVEN NO LEAST STAND IN ONE COLUMN, NEVER NONE
+  (`grid_columns.gd`, `layout.gd`): a grid declaring neither shares nor a
+  least column laid nothing, and columns whose parts needed nothing across,
+  with no least named, shared the room between no columns and never
+  finished placing them. What breaks: such a grid now lays its parts in one
+  column the width of the room.
 - New, breaking nothing: `ui.room_for(content, samples, style)`, a slot as
   wide as its widest sample; `ui.priority_row(parts, folded, menu, style)`,
   a held line folding by rank (`PriorityRow.KEEP`, `MENU`, `PAGE`, `GONE`;
   `fold_at(room)`); `ui.while_fits(first, otherwise)`; the recipes
   `AppBar.make(ui, {parts, said, said_samples, folded, style})` and
   `AppBar.declare(register)` - an app using the bar declares its MENU - and
-  `Page.scrolling`, `Page.held` and `Page.in_hand`; `Tabs.of_presses` and
+  `Page.scrolling`, `Page.held` and `Page.in_hand`, a page wearing the
+  `style` given and following a `nudged`; `Tabs.of_presses` and
   `Tabs.of_local`, flaps sharing a strip while all fit and scrolling across
   whole when they do not; and `ui.frozen_panes(corner, heads, labels, body,
   options)` with `.whole_down()`, a table whose heads and labels follow a

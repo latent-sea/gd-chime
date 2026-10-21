@@ -28,7 +28,7 @@ func _init() -> void:
 	await _verdict.states(_the_gaps_are_counted_in_how_many_columns_fit)
 	await _verdict.states(_an_auto_fitted_column_is_never_narrower_than_the_widest_part)
 	await _verdict.states(_an_auto_fitted_part_covering_several_columns_asks_them_together)
-	await _verdict.states(_a_grid_nobody_finished_building_has_no_columns)
+	await _verdict.states(_with_no_least_and_no_shares_it_is_one_column_never_none)
 	await _verdict.states(_parts_fill_in_order_and_a_hole_stays_a_hole)
 	await _verdict.states(_a_span_wider_than_the_grid_is_held_to_the_grid)
 	await _verdict.states(_a_column_is_never_narrower_than_the_parts_in_it)
@@ -125,12 +125,17 @@ func _an_auto_fitted_part_covering_several_columns_asks_them_together() -> void:
 	_verdict.check(_same(held, [120.0, 120.0, 120.0, 120.0]), "and one asking for eight columns of four asks the four: %s" % [held])
 
 
-## Neither shares nor a least width is a grid nobody finished building, and it
-## says so by having no columns rather than by guessing at one.
-func _a_grid_nobody_finished_building_has_no_columns() -> void:
+## Neither shares nor a least width is one column, the whole room, never
+## none: a room shared between no columns is endless, and a line given an
+## endless length never finishes placing its parts.
+func _with_no_least_and_no_shares_it_is_one_column_never_none() -> void:
 	var none: Array[float] = []
 
-	_verdict.check(GridColumns.count(none, 0.0, 500.0, 0.0) == 0, "no columns to place anything in")
+	_verdict.check(GridColumns.count(none, 0.0, 500.0, 0.0) == 1 and GridColumns.count(none, 0.0, 344.0, 12.0) == 1, "one column to place everything in: %d, %d" % [GridColumns.count(none, 0.0, 500.0, 0.0), GridColumns.count(none, 0.0, 344.0, 12.0)])
+	var spans: Array[int] = [1, 1]
+	var needs: Array[float] = [0.0, 0.0]
+	var widths := GridColumns.widths(spans, needs, GridColumns.cells(spans, 1), none, 0.0, 500.0, 0.0)
+	_verdict.check(_same(widths, [500.0]), "and that column is the whole room: %s" % [widths])
 
 
 ## Parts take the next free cell in the order they were placed. The part

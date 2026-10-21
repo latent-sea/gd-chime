@@ -51,6 +51,12 @@ func _notification(what: int) -> void:
 		keep_in_step()
 
 
+## Which ways a pane standing beside this moves what it holds to follow it -
+## across, then down: the heads across, the labels down, any other neither.
+func follows(pane: Control) -> Array:
+	return [pane == _heads, pane == _labels]
+
+
 ## The heads' part placed at the offset across of what this holds, and the
 ## labels' part at its offset down: run each time this is placed, which it
 ## is as it scrolls.
