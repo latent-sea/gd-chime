@@ -139,6 +139,10 @@ func _planned() -> Array:
 
 
 func _notification(what: int) -> void:
+	# freed, it follows nothing more: a ring after would reach a piece no longer there
+	if what == NOTIFICATION_PREDELETE:
+		_chimes.unfollow(self, &"plan")
+		return
 	# laid out only once it has a room: there is no plan for nothing
 	if what != NOTIFICATION_SORT_CHILDREN or size.x <= 0.0 or size.y <= 0.0:
 		return

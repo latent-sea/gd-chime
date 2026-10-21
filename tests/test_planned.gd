@@ -160,4 +160,7 @@ func _a_value_its_plan_read_moving_lays_it_out_again() -> void:
 	await _a_frame_passes()
 	_verdict.check(before == 100.0 and one.size.x == 250.0, "the width its plan reads moving from 100 to 250, the piece is laid again at 250 in the same room: %s then %s" % [before, one.size.x])
 	host.free()
+	# freed, it follows nothing more: the value moving again reaches no freed piece, which would be said as an error
+	across.set_value(300.0)
+	await _a_frame_passes()
 	made.done()
