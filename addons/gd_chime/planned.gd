@@ -15,7 +15,11 @@ const Touch := preload("touch.gd")
 ## fonts), what stands where: {"rects": a Rect2 for each piece in order,
 ## "types": a type size for each, the size all words in that piece are
 ## drawn at, 0 leaving them at their kind's, and "size": all of it}, every
-## length in base pixels. It is asked again whenever the room moves.
+## length in base pixels. It is asked again whenever the room moves. It may
+## also say "shown", whether each piece shows, a piece it leaves out hidden;
+## and "ground", a rect the look's `ground` box is drawn in under the
+## pieces, which may reach past this into the room round it - a bar's colour
+## running to the window's edges past the safe margin.
 ##
 ## WHAT DOES NOT FIT SCROLLS, WITH A BAR AND ITS ARROWS SHOWN. Where all of
 ## it is longer than the room on an axis, the bar's thickness (the look's
@@ -24,8 +28,10 @@ const Touch := preload("touch.gd")
 ## longer needs gives its room back and is not shown. The arrows step by
 ## the look's `step`; a wheel steps the same, and a finger pans it (touch.gd).
 ##
-## ITS LEAST IS NOTHING: it takes the room it is given and never asks for
-## more, since whatever it holds that does not fit scrolls inside it.
+## ITS LEAST IS WHAT IT IS BUILT WITH, nothing unless a height of its own
+## is given - a bar's: it takes the room it is given and never asks for
+## more, since whatever it holds that does not fit scrolls inside it. It
+## clips what it holds only while it scrolls, so a ground may reach past it.
 ##
 ## IT STANDS WITH THE FLOOR'S OWN MACHINERY, not among the components, as
 ## fitted_text.gd does: it sets the size words are drawn at, which a
@@ -44,12 +50,13 @@ var _across := HScrollBar.new()
 var _finger: ScrollFinger
 var _laid: Dictionary = {}  # what the plan said when it was last asked: rects, types and size
 var _placing := false  # whether its pieces are being placed, when the bars' values moving lay nothing again
+var _least: Vector2
 
 
-func _init(ui: RefCounted, plan: Callable, look: StringName) -> void:
+func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> void:
 	_plan = plan
 	_look = look
-	clip_contents = true
+	_least = least
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_to_group(Touch.TAKES)
 	# each bar its look's, behind the pieces in the tree and drawn over them
@@ -71,7 +78,7 @@ func _scrolled(_to: float) -> void:
 
 
 func _get_minimum_size() -> Vector2:
-	return Vector2.ZERO
+	return _least
 
 
 ## The pieces it lays, in the plan's order: every child but its bars.
@@ -143,6 +150,7 @@ func _notification(what: int) -> void:
 		bar.step = 0.0
 		bar.custom_step = float(get_theme_constant(&"step", _look))
 		bar.value = clampf(bar.value, 0.0, maxf(0.0, all[axis] - room[axis])) if bar.visible else 0.0
+	clip_contents = _down.visible or _across.visible
 	fit_child_in_rect(_down, Rect2(room.x, 0.0, thickness, room.y))
 	fit_child_in_rect(_across, Rect2(0.0, room.y, room.x, thickness))
 	var offset := Vector2(_across.value, _down.value)
@@ -160,7 +168,14 @@ func _notification(what: int) -> void:
 				label.remove_theme_font_size_override(&"font_size")
 		var rect: Rect2 = _laid["rects"][at]
 		fit_child_in_rect(held[at], Rect2(rect.position - offset, rect.size))
+		held[at].visible = _laid["shown"][at] if _laid.has("shown") else true
 	_placing = false
+	queue_redraw()
+
+
+func _draw() -> void:
+	if _laid.has("ground"):
+		draw_style_box(get_theme_stylebox(&"ground", _look), _laid["ground"])
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -192,6 +207,6 @@ func finger_ended(velocity: Vector2) -> void:
 
 
 static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
-	var made: Control = ui.primitive(KIND).new(ui, desc.props["plan"], desc.props["look"])
+	var made: Control = ui.primitive(KIND).new(ui, desc.props["plan"], desc.props["look"], desc.props["least"])
 	ui.attach(made, parent, desc.facts)
 	return made

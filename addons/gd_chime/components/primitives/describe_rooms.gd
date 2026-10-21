@@ -102,6 +102,8 @@ func shade_band(style: StringName) -> Desc:
 
 ## Pieces laid where a plan puts them, at the type sizes it gives them, in
 ## the room this is given, scrolling with bars and arrows in this look where
-## the plan needs more (planned.gd): plan(room, on) -> {"rects", "types", "size"}.
-func planned(pieces: Array, plan: Callable, look: StringName) -> Desc:
-	return Desc.new(&"planned", {"plan": plan, "look": look}, pieces)
+## the plan needs more (planned.gd): plan(room, on) -> {"rects", "types",
+## "size"}, and "shown" and "ground" where it says them; `least`, a height
+## or width of its own it never goes under - a bar's.
+func planned(pieces: Array, plan: Callable, look: StringName, least := Vector2.ZERO) -> Desc:
+	return Desc.new(&"planned", {"plan": plan, "look": look, "least": least}, pieces)
