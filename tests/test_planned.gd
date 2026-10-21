@@ -9,7 +9,8 @@ extends SceneTree
 ## shows and no room is lost to one; a piece the plan leaves out is hidden,
 ## a height of its own is its least, a ground may reach past it, unclipped,
 ## and a piece's words line up as the plan says; and a value its plan read
-## moving lays it out again, with the room unchanged.
+## moving lays it out again, with the room unchanged; and a field's typed
+## words are drawn at the plan's size, as a label's are.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -43,6 +44,7 @@ func _init() -> void:
 	await _verdict.states(_fitting_it_shows_no_bar_and_loses_no_room_to_one)
 	await _verdict.states(_a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reaches_past_it)
 	await _verdict.states(_a_value_its_plan_read_moving_lays_it_out_again)
+	await _verdict.states(_a_field_s_typed_words_are_drawn_at_the_plan_s_size)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -163,4 +165,17 @@ func _a_value_its_plan_read_moving_lays_it_out_again() -> void:
 	# freed, it follows nothing more: the value moving again reaches no freed piece, which would be said as an error
 	across.set_value(300.0)
 	await _a_frame_passes()
+	made.done()
+
+
+func _a_field_s_typed_words_are_drawn_at_the_plan_s_size() -> void:
+	var made := Fixture.new(root, {&"types_a_name": "Type a name"})
+	var host := _host(Vector2(600, 300))
+	var plan := func(room: Vector2, _on: Control) -> Dictionary:
+		return {"rects": [Rect2(0, 0, 400, 60)], "types": [33], "size": room}
+	made.ui.build(made.ui.planned([made.ui.field(&"types_a_name").named(&"typed")], plan, &"Planned"), host)
+	await _a_frame_passes()
+	var typed: LineEdit = Planned.fields_in(made.ui.node_named(&"typed").get_parent())[0]
+	_verdict.check(typed.get_theme_font_size(&"font_size") == 33, "the field's typed words at the plan's size, 33: %s" % typed.get_theme_font_size(&"font_size"))
+	host.free()
 	made.done()

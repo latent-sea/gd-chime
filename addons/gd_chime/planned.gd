@@ -14,7 +14,7 @@ const Touch := preload("touch.gd")
 ## THE PLAN is asked, with the room and this (so it may read the look's
 ## fonts), what stands where: {"rects": a Rect2 for each piece in order,
 ## "types": a type size for each, the size all words in that piece are
-## drawn at, 0 leaving them at their kind's, and "size": all of it}, every
+## drawn at, a field's typed words among them, 0 leaving them at their kind's, and "size": all of it}, every
 ## length in base pixels. It is asked again whenever the room moves. It may
 ## also say "shown", whether each piece shows, a piece it leaves out hidden;
 ## "aligns", how each piece's words line up across, a HorizontalAlignment;
@@ -100,6 +100,17 @@ func bars() -> Array[ScrollBar]:
 	return [_down, _across]
 
 
+## Every field a piece holds, its words typed in sized as a label's are, its own internal ones among them.
+static func fields_in(piece: Node) -> Array[LineEdit]:
+	var found: Array[LineEdit] = []
+	# the piece and everything under it, internal children included
+	for child: Node in piece.get_children(true):
+		if child is LineEdit:
+			found.append(child)
+		found.append_array(fields_in(child))
+	return found
+
+
 ## Every label in a piece, its own internal ones among them: a text keeps the label its words are drawn in inside it.
 static func labels_in(piece: Node) -> Array[Label]:
 	var found: Array[Label] = []
@@ -171,13 +182,12 @@ func _notification(what: int) -> void:
 	for at: int in held.size():
 		var type: int = _laid["types"][at]
 		# every word in the piece, sized as the plan says, or as its kind says where the plan leaves it
-		for words: Label in labels_in(held[at]):
-			var label := words
+		for words: Control in Array(labels_in(held[at])) + Array(fields_in(held[at])):
 			# only where it moves: a size set again tells the words their look moved, which would lay this out again
-			if type > 0 and (not label.has_theme_font_size_override(&"font_size") or label.get_theme_font_size(&"font_size") != type):
-				label.add_theme_font_size_override(&"font_size", type)
-			elif type == 0 and label.has_theme_font_size_override(&"font_size"):
-				label.remove_theme_font_size_override(&"font_size")
+			if type > 0 and (not words.has_theme_font_size_override(&"font_size") or words.get_theme_font_size(&"font_size") != type):
+				words.add_theme_font_size_override(&"font_size", type)
+			elif type == 0 and words.has_theme_font_size_override(&"font_size"):
+				words.remove_theme_font_size_override(&"font_size")
 		var rect: Rect2 = _laid["rects"][at]
 		fit_child_in_rect(held[at], Rect2(rect.position - offset, rect.size))
 		held[at].visible = _laid["shown"][at] if _laid.has("shown") else true
