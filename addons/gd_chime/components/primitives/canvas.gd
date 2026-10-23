@@ -13,10 +13,11 @@ const Bound := preload("bound.gd")
 ## style, a Theme name, never by a palette name. Given no bound value, it
 ## draws once and when resized.
 ##
-## It needs no room of its own but the height its style's look gives as
-## "least_height", in base pixels - none unless a look says - so a drawing
-## laid in a line that takes its parts' least, a trend under a figure, is
-## never drawn at no height at all.
+## It needs no room of its own but the height and width its style's look
+## gives as "least_height" and "least_width", in base pixels - none unless a
+## look says - so a drawing laid in a line that takes its parts' least, a
+## trend under a figure, is never drawn at no height at all, and one at the
+## head of a list that takes its least holds the list open to a width.
 ##
 ## IT TAKES NO PRESS: the pointer goes through a drawing to what it is drawn
 ## on, so an icon drawn on a pressable does not keep the press from it.
@@ -48,7 +49,7 @@ func refresh() -> void:
 
 
 func _get_minimum_size() -> Vector2:
-	return Vector2(0.0, get_theme_constant(&"least_height"))
+	return Vector2(get_theme_constant(&"least_width"), get_theme_constant(&"least_height"))
 
 
 func _draw() -> void:
