@@ -32,12 +32,15 @@ const SHOWN := 0.4
 const DIM_SHARE := 0.6
 ## The canvas layer the dim is drawn on: over everything a screen draws.
 const LAYER := 120
+## The longest a dim may stand, in seconds: past it, it is lifted whatever happened, so no dim ever holds the screen.
+const LONGEST := 3.0
 const ThemeOverlays := preload("theme_overlays.gd")
 
 ## Whether a hand's press is timed and a slow one dimmed: off until an application turns it on.
 static var enabled := false
 static var _slow: Dictionary = {}  # each action found slow, by "region/action"
 static var _dim: ColorRect = null
+static var _shown_at := 0  # when the dim was last shown, on the clock
 
 
 ## The press of `control` done by `does`: at once and timed, or, for an action found slow, after the screen is dimmed.
@@ -53,8 +56,11 @@ static func press(control: Control, does: Callable) -> void:
 		_timed(control.get_tree(), key, began)
 
 
-## How long a press took, to the frame after it, noted as slow where it was.
+## How long a press took, through the frame after it - where what it opened is laid out and drawn, the slow part of a
+## press that opens a screen - to the start of the next, noted as slow where it was (Ian, 2026-11-06: no dim was ever
+## seen, since timing to that frame's start missed all of it).
 static func _timed(tree: SceneTree, key: String, began: int) -> void:
+	await tree.process_frame
 	await tree.process_frame
 	if (Time.get_ticks_usec() - began) / 1e6 > SLOW:
 		_slow[key] = true
@@ -65,8 +71,8 @@ static func _dimmed(control: Control, does: Callable) -> void:
 	var tree := control.get_tree()
 	var shown_at := Time.get_ticks_usec()
 	_show(control, true)
-	# two frames: the dim drawn before the work begins
-	await tree.process_frame
+	# a frame: the dim drawn before the work begins - one, not two, so a press is never lost to its button made again
+	# meanwhile (Ian, 2026-11-06: presses ignored on a tablet)
 	await tree.process_frame
 	if is_instance_valid(control) and control.is_inside_tree():
 		does.call()
@@ -95,3 +101,13 @@ static func _show(control: Control, shown: bool) -> void:
 		layer.add_child(_dim)
 		tree.root.add_child(layer)
 	_dim.visible = shown
+	if shown:
+		_shown_at = Time.get_ticks_usec()
+		_lift_late(_dim.get_tree(), _shown_at)
+
+
+## The dim lifted LONGEST after it was shown, unless it has been lifted, or shown again, since.
+static func _lift_late(tree: SceneTree, shown_at: int) -> void:
+	await tree.create_timer(LONGEST, true, false, true).timeout
+	if _shown_at == shown_at and _dim != null and is_instance_valid(_dim) and _dim.visible:
+		_dim.visible = false
