@@ -2,6 +2,8 @@ extends Container
 
 const ScrollFinger := preload("components/primitives/scroll_finger.gd")
 const Touch := preload("touch.gd")
+## The group every planned is in, so one laying out never reaches into another's words: those are its own plan's.
+const PLANNED := &"gd_chime_planned"
 
 ## Pieces laid where a plan puts them in the room this is given, at the type
 ## sizes it gives them: a screen that works out its own giving way - every
@@ -64,6 +66,7 @@ func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> 
 	_chimes = ui.chimes
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_to_group(Touch.TAKES)
+	add_to_group(PLANNED)
 	# each bar its look's, behind the pieces in the tree and drawn over them
 	for bar: ScrollBar in [_down, _across]:
 		bar.theme_type_variation = DOWN_BAR if bar == _down else ACROSS_BAR
@@ -100,22 +103,29 @@ func bars() -> Array[ScrollBar]:
 	return [_down, _across]
 
 
-## Every field a piece holds, its words typed in sized as a label's are, its own internal ones among them.
+## Every field a piece holds, its words typed in sized as a label's are, its own internal ones among them; none in a
+## planned inside it, whose words its own plan sizes (a nested plan's blocks: an outer pass took their sizes away and
+## the words showed small for a frame, Ian 2026-11-06).
 static func fields_in(piece: Node) -> Array[LineEdit]:
 	var found: Array[LineEdit] = []
-	# the piece and everything under it, internal children included
+	# the piece and everything under it, internal children included, but no planned's inside it
 	for child: Node in piece.get_children(true):
+		if child.is_in_group(PLANNED):
+			continue
 		if child is LineEdit:
 			found.append(child)
 		found.append_array(fields_in(child))
 	return found
 
 
-## Every label in a piece, its own internal ones among them: a text keeps the label its words are drawn in inside it.
+## Every label in a piece, its own internal ones among them: a text keeps the label its words are drawn in inside it;
+## none in a planned inside it, whose words its own plan sizes (fields_in).
 static func labels_in(piece: Node) -> Array[Label]:
 	var found: Array[Label] = []
-	# the piece and everything under it, internal children included
+	# the piece and everything under it, internal children included, but no planned's inside it
 	for child: Node in piece.get_children(true):
+		if child.is_in_group(PLANNED):
+			continue
 		if child is Label:
 			found.append(child)
 		found.append_array(labels_in(child))
@@ -181,8 +191,9 @@ func _notification(what: int) -> void:
 	# each piece at its type size, then where the plan puts it, less how far it is scrolled
 	for at: int in held.size():
 		var type: int = _laid["types"][at]
-		# every word in the piece, sized as the plan says, or as its kind says where the plan leaves it
-		for words: Control in Array(labels_in(held[at])) + Array(fields_in(held[at])):
+		# every word in the piece, sized as the plan says, or as its kind says where the plan leaves it; none of a piece
+		# that is itself planned, whose words its own plan sizes
+		for words: Control in [] if held[at].is_in_group(PLANNED) else Array(labels_in(held[at])) + Array(fields_in(held[at])):
 			# only where it moves: a size set again tells the words their look moved, which would lay this out again
 			if type > 0 and (not words.has_theme_font_size_override(&"font_size") or words.get_theme_font_size(&"font_size") != type):
 				words.add_theme_font_size_override(&"font_size", type)
@@ -192,7 +203,7 @@ func _notification(what: int) -> void:
 		fit_child_in_rect(held[at], Rect2(rect.position - offset, rect.size))
 		held[at].visible = _laid["shown"][at] if _laid.has("shown") else true
 		# the piece's words lined up as the plan says, where it says
-		for words: Label in labels_in(held[at]) if _laid.has("aligns") else []:
+		for words: Label in labels_in(held[at]) if _laid.has("aligns") and not held[at].is_in_group(PLANNED) else []:
 			words.horizontal_alignment = _laid["aligns"][at]
 	_placing = false
 	queue_redraw()

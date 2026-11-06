@@ -1,6 +1,7 @@
 extends Container
 
 const Touch := preload("touch.gd")
+const SlowPresses := preload("slow_presses.gd")
 
 ## What a person does to a control - with a mouse, a key or a pad: each arrives
 ## at one method named for what happened.
@@ -185,10 +186,8 @@ func _press(down: bool) -> void:
 	if _repeat_interval > 0.0:
 		_repeat_left = _repeat_wait
 		set_process_internal(true)
-	# what the control does, and THEN the moment: a press that dispatched has been answered by the time anything hears it
-	pressed()
-	_pressed_on = weakref(self)
-	_ring(PRESSED)
+	# what the control does, and THEN the moment, at once or once a slow one's dim is drawn (slow_presses.gd)
+	SlowPresses.press(self, func() -> void: pressed(); _pressed_on = weakref(self); _ring(PRESSED))
 
 
 ## A frame of a held press: pressed again each time the count runs out.

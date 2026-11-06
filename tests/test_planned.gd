@@ -9,8 +9,11 @@ extends SceneTree
 ## shows and no room is lost to one; a piece the plan leaves out is hidden,
 ## a height of its own is its least, a ground may reach past it, unclipped,
 ## and a piece's words line up as the plan says; and a value its plan read
-## moving lays it out again, with the room unchanged; and a field's typed
-## words are drawn at the plan's size, as a label's are.
+## moving lays it out again, with the room unchanged; a field's typed
+## words are drawn at the plan's size, as a label's are; and a planned inside
+## another keeps its own words' sizes when the one round it lays out again,
+## leaving that piece's words to its kind (Ian, 2026-11-06: a nested plan's
+## words went small for a moment as an entry was picked).
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -45,6 +48,7 @@ func _init() -> void:
 	await _verdict.states(_a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reaches_past_it)
 	await _verdict.states(_a_value_its_plan_read_moving_lays_it_out_again)
 	await _verdict.states(_a_field_s_typed_words_are_drawn_at_the_plan_s_size)
+	await _verdict.states(_a_planned_inside_another_keeps_its_words_sizes_as_the_outer_lays_out_again)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -177,5 +181,27 @@ func _a_field_s_typed_words_are_drawn_at_the_plan_s_size() -> void:
 	await _a_frame_passes()
 	var typed: LineEdit = Planned.fields_in(made.ui.node_named(&"typed").get_parent())[0]
 	_verdict.check(typed.get_theme_font_size(&"font_size") == 33, "the field's typed words at the plan's size, 33: %s" % typed.get_theme_font_size(&"font_size"))
+	host.free()
+	made.done()
+
+
+func _a_planned_inside_another_keeps_its_words_sizes_as_the_outer_lays_out_again() -> void:
+	var made := Fixture.new(root)
+	var host := _host(Vector2(600, 300))
+	var across: RefCounted = made.ui.local(400.0)
+	var inner := func(room: Vector2, _on: Control) -> Dictionary:
+		return {"rects": [Rect2(0, 0, room.x, 50)], "types": [37], "size": room}
+	var outer := func(room: Vector2, _on: Control) -> Dictionary:
+		return {"rects": [Rect2(0, 0, across.read(), 200)], "types": [0], "size": room}
+	var held: Desc = made.ui.planned([made.ui.text("inside", Themes.WORDS).named(&"inside")], inner, &"Planned")
+	made.ui.build(made.ui.planned([held], outer, &"Planned").named(&"outer"), host)
+	await _a_frame_passes()
+	var words := _words(made.ui.node_named(&"inside"))
+	var before := words.get_theme_font_size(&"font_size")
+	across.set_value(500.0)
+	# the outer laid out again at once, before the inner has had a frame to lay out itself
+	made.ui.node_named(&"outer").notification(Container.NOTIFICATION_SORT_CHILDREN)
+	_verdict.check(before == 37 and words.has_theme_font_size_override(&"font_size") and words.get_theme_font_size(&"font_size") == 37,
+		"the inner's words at its plan's 37 before and still as the outer, leaving its piece's words to their kind, lays out again: %s, then %s" % [before, words.get_theme_font_size(&"font_size")])
 	host.free()
 	made.done()
