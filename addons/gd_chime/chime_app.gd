@@ -111,7 +111,8 @@ var jobs: Jobs
 var ui: Ui
 ## What Back does at the app's root, where it has nothing to go back to:
 ## nothing, unless the host says - asks before the game quits, say (go_back.gd).
-var at_root: Callable = func() -> void: pass
+## None by default, so a Back press can be hidden where it has nowhere to go.
+var at_root: Callable = Callable()
 var _probe: RefCounted  # held while it walks: a walk waiting on a frame is dropped with whatever was holding it
 
 

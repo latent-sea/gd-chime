@@ -68,7 +68,8 @@ func _unhandled_input(event: InputEvent) -> void:
 ## had somewhere to go.
 func _go_back() -> bool:
 	if not _driver.can_go_back():
-		_app.at_root.call()
+		if _app.at_root.is_valid():
+			_app.at_root.call()
 		return false
 	_commands.dispatch(_driver.get_top().back(), Driver.GOES_BACK, {})
 	return true

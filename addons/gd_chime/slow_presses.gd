@@ -1,7 +1,15 @@
 extends RefCounted
 
-## A press that takes a while answered before it is done: the screen dimmed
-## first, the press then done, and the dim lifted when it is.
+## A press answered before it is done: EVERY PRESS SHOWS FIRST - its face held
+## down, a frame drawn, then its work - so the player sees it landed whatever
+## the work costs (Ian, 2026-11-06: "pressing buttons and having no indication
+## anything has happened"); one that takes a while has the screen dimmed too.
+##
+## THE FACE HELD DOWN (interaction.gd's held_down, face_give.gd) is drawn in the
+## frame before the work starts, so a slow press freezes the screen on its own
+## button pressed, and it stays down HELD at the least, so a quick tap is seen:
+## a finger's tap otherwise lets go in the very event it lands in, and nothing
+## pressed is ever drawn.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -14,7 +22,7 @@ extends RefCounted
 ## for at least SHOWN, so it never flashes; it takes every pointer and finger
 ## that lands while it shows, so a press made while waiting reaches nothing
 ## (Ian, 2026-11-06: "the user needs to know to not press anything else"). A
-## press of an action not yet slow is done at once, as it always was.
+## press of an action not yet slow is not dimmed: it shows by its face alone.
 ##
 ## Only a hand's press goes through this (interaction.gd): a press made by a
 ## script - a test's, a walk's - is done at once and is never timed. IT IS
@@ -28,6 +36,8 @@ extends RefCounted
 const SLOW := 0.2
 ## The least time a dim shows, in seconds, so it never flashes.
 const SHOWN := 0.4
+## The least time a pressed face stays down, in seconds, so a tap is seen.
+const HELD := 0.15
 ## How strong the dim is: the theme's shade (theme_overlays.gd, its Shade) at this share of its own strength.
 const DIM_SHARE := 0.6
 ## The canvas layer the dim is drawn on: over everything a screen draws.
@@ -43,17 +53,54 @@ static var _dim: ColorRect = null
 static var _shown_at := 0  # when the dim was last shown, on the clock
 
 
-## The press of `control` done by `does`: at once and timed, or, for an action found slow, after the screen is dimmed.
+## The press of `control` done by `does`: at once where this is off; else its face shown down first, then the work, timed,
+## and for an action found slow the screen dimmed first too.
 static func press(control: Control, does: Callable) -> void:
+	if not enabled:
+		does.call()
+		return
 	var action: Variant = control.get(&"action")
-	var key := "" if not enabled or action == null or action == &"" else "%s/%s" % [control.get(&"region"), action]
+	var key := "" if action == null or action == &"" else "%s/%s" % [control.get(&"region"), action]
 	if key != "" and _slow.has(key):
 		_dimmed(control, does)
 		return
+	_shown_first(control, does, key)
+
+
+## The face down, drawn, the work done and timed, the face up again once HELD has passed.
+static func _shown_first(control: Control, does: Callable, key: String) -> void:
+	var tree := control.get_tree()
+	var down_at := Time.get_ticks_usec()
+	# deferred: a finger's lift lets the face up in the same event that pressed it, after this
+	(func() -> void: _hold(control, true)).call_deferred()
+	await tree.process_frame
 	var began := Time.get_ticks_usec()
-	does.call()
+	if is_instance_valid(control) and control.is_inside_tree():
+		does.call()
 	if key != "":
-		_timed(control.get_tree(), key, began)
+		_timed(tree, key, began)
+	# each frame until the face has been down HELD on the clock
+	while (Time.get_ticks_usec() - down_at) / 1e6 < HELD:
+		await tree.process_frame
+	_hold(control, false)
+
+
+## `control`'s face held down or let up, where it is still there to show it: down AT ONCE, at the look's press scale,
+## so the frame drawn before the work shows it - a motion run would step only in the next frame, after the work began.
+static func _hold(control: Control, down: bool) -> void:
+	if not is_instance_valid(control) or not control.is_inside_tree() or not control.has_method(&"held_down"):
+		return
+	if not down:
+		control.held_down(false)
+		return
+	# set at once, and held there by a run from it to itself, which takes over from any run on the face's scale - the
+	# finger's lift starts one back to whole - so nothing undoes it before it is drawn
+	var pressed := Vector2.ONE * control.get_theme_constant(&"press_scale", &"Motion") / 1000.0
+	control.pivot_offset_ratio = Vector2(0.5, 0.5)
+	control.scale = pressed
+	var motion: Variant = control.get(&"motion")
+	if motion != null:
+		motion.drive(control, &"scale", pressed, pressed, &"restyle", control.set_scale)
 
 
 ## How long a press took, through the frame after it - where what it opened is laid out and drawn, the slow part of a
@@ -71,6 +118,7 @@ static func _dimmed(control: Control, does: Callable) -> void:
 	var tree := control.get_tree()
 	var shown_at := Time.get_ticks_usec()
 	_show(control, true)
+	(func() -> void: _hold(control, true)).call_deferred()
 	# a frame: the dim drawn before the work begins - one, not two, so a press is never lost to its button made again
 	# meanwhile (Ian, 2026-11-06: presses ignored on a tablet)
 	await tree.process_frame
@@ -81,6 +129,7 @@ static func _dimmed(control: Control, does: Callable) -> void:
 	while (Time.get_ticks_usec() - shown_at) / 1e6 < SHOWN:
 		await tree.process_frame
 	_show(control, false)
+	_hold(control, false)
 
 
 ## The dim over the whole window, made the first time it is asked for, in the shade of the theme `control` is drawn
