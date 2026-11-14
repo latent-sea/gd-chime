@@ -107,6 +107,9 @@ func _taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside() -> void:
 	var down: ScrollBar = planned.bars()[0]
 	_verdict.check(_asked.has(Vector2(600 - BAR, 300)) and two.size.x == 600 - BAR, "400 high in 300, the plan asked again 24 narrower, for the bar's room: %s; laid %s" % [_asked, two.size])
 	_verdict.check(down.visible and down.get_rect() == Rect2(600 - BAR, 0, BAR, 300), "the bar shows down the right, 24 thick, the room's height: %s" % down.get_rect())
+	var drawn: Array[Node] = planned.get_children(true)
+	_verdict.check(drawn[drawn.size() - 2] == planned.bars()[0] and drawn[drawn.size() - 1] == planned.bars()[1] and drawn.find(two) < drawn.find(down),
+		"and both bars are drawn after every piece, over any piece scrolled into their room: %s" % [drawn.map(func(child: Node) -> String: return child.name)])
 	down.value += down.custom_step
 	await _a_frame_passes()
 	_verdict.check(is_equal_approx(two.position.y, 200.0 - STEP), "an arrow's step moves the pieces up by 40: %s" % two.position)

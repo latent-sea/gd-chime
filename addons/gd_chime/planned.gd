@@ -30,7 +30,8 @@ const PLANNED := &"gd_chime_planned"
 ## it is longer than the room on an axis, the bar's thickness (the look's
 ## `bar`) is set aside on that axis and the plan asked again in what is
 ## left, at most once for each axis; a bar set aside that the plan no
-## longer needs gives its room back and is not shown. The arrows step by
+## longer needs gives its room back and is not shown. A bar is drawn over
+## the pieces, so a piece scrolled into its room never hides it. The arrows step by
 ## the look's `step`; a wheel steps the same, and a finger pans it (touch.gd).
 ##
 ## ITS LEAST IS WHAT IT IS BUILT WITH, nothing unless a height of its own
@@ -67,13 +68,13 @@ func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> 
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_to_group(Touch.TAKES)
 	add_to_group(PLANNED)
-	# each bar its look's, behind the pieces in the tree and drawn over them
+	# each bar its look's, after the pieces in the tree, so it is drawn over them and pressed before them
 	for bar: ScrollBar in [_down, _across]:
 		bar.theme_type_variation = DOWN_BAR if bar == _down else ACROSS_BAR
 		# filling the rect it is fitted in, never shrunk to the engine's least
 		bar.size_flags_horizontal = Control.SIZE_FILL
 		bar.size_flags_vertical = Control.SIZE_FILL
-		add_child(bar, false, Node.INTERNAL_MODE_FRONT)
+		add_child(bar, false, Node.INTERNAL_MODE_BACK)
 	_down.value_changed.connect(_scrolled)
 	_across.value_changed.connect(_scrolled)
 	_finger = ScrollFinger.new(self, ui.motion, _down, _across)
