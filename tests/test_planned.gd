@@ -44,6 +44,7 @@ func _init() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	await _verdict.states(_each_piece_stands_at_the_plan_s_rect_at_its_type_size)
 	await _verdict.states(_taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside)
+	await _verdict.states(_wider_and_taller_both_bars_show_and_the_square_where_they_meet_is_covered)
 	await _verdict.states(_fitting_it_shows_no_bar_and_loses_no_room_to_one)
 	await _verdict.states(_a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reaches_past_it)
 	await _verdict.states(_a_value_its_plan_read_moving_lays_it_out_again)
@@ -108,8 +109,9 @@ func _taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside() -> void:
 	_verdict.check(_asked.has(Vector2(600 - BAR, 300)) and two.size.x == 600 - BAR, "400 high in 300, the plan asked again 24 narrower, for the bar's room: %s; laid %s" % [_asked, two.size])
 	_verdict.check(down.visible and down.get_rect() == Rect2(600 - BAR, 0, BAR, 300), "the bar shows down the right, 24 thick, the room's height: %s" % down.get_rect())
 	var drawn: Array[Node] = planned.get_children(true)
-	_verdict.check(drawn[drawn.size() - 2] == planned.bars()[0] and drawn[drawn.size() - 1] == planned.bars()[1] and drawn.find(two) < drawn.find(down),
-		"and both bars are drawn after every piece, over any piece scrolled into their room: %s" % [drawn.map(func(child: Node) -> String: return child.name)])
+	_verdict.check(drawn.find(planned.bars()[0]) > drawn.find(two) and drawn.find(planned.bars()[1]) > drawn.find(two) and not drawn.back().visible,
+		"and both bars are drawn after every piece, over any piece scrolled into their room; the corner, after them, shows only where both do: %s"
+			% [drawn.map(func(child: Node) -> String: return child.name)])
 	down.value += down.custom_step
 	await _a_frame_passes()
 	_verdict.check(is_equal_approx(two.position.y, 200.0 - STEP), "an arrow's step moves the pieces up by 40: %s" % two.position)
@@ -121,6 +123,22 @@ func _taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside() -> void:
 	planned._gui_input(wheel)
 	await _a_frame_passes()
 	_verdict.check(is_equal_approx(two.position.y, 200.0 - 100.0), "a wheel steps it on, and never past the end, 100 down: %s" % two.position)
+	host.free()
+	made.done()
+
+
+func _wider_and_taller_both_bars_show_and_the_square_where_they_meet_is_covered() -> void:
+	var made := Fixture.new(root)
+	var host := _host(Vector2(600, 300))
+	var plan := func(room: Vector2, _on: Control) -> Dictionary:
+		return {"rects": [Rect2(0, 0, 900, 500)], "types": [0], "size": Vector2(900, 500)}
+	made.ui.build(made.ui.planned([made.ui.text("wide", Themes.WORDS).named(&"wide")], plan, &"Planned").grow().named(&"planned"), host)
+	await _a_frame_passes()
+	var planned: Control = made.ui.node_named(&"planned")
+	var corner: Control = planned.get_children(true).back()
+	var shown: Array = planned.bars().filter(func(bar: ScrollBar) -> bool: return bar.visible)
+	_verdict.check(shown.size() == 2 and corner.visible and corner.get_rect() == Rect2(600 - BAR, 300 - BAR, BAR, BAR) and corner.mouse_filter == Control.MOUSE_FILTER_STOP,
+		"900 by 500 in 600 by 300: both bars show, and the square where they meet is covered, after them, taking presses: %s" % corner.get_rect())
 	host.free()
 	made.done()
 

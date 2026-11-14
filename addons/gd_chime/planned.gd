@@ -1,6 +1,7 @@
 extends Container
 
 const ScrollFinger := preload("components/primitives/scroll_finger.gd")
+const PlannedBars := preload("components/primitives/planned_bars.gd")
 const Touch := preload("touch.gd")
 ## The group every planned is in, so one laying out never reaches into another's words: those are its own plan's.
 const PLANNED := &"gd_chime_planned"
@@ -31,7 +32,8 @@ const PLANNED := &"gd_chime_planned"
 ## `bar`) is set aside on that axis and the plan asked again in what is
 ## left, at most once for each axis; a bar set aside that the plan no
 ## longer needs gives its room back and is not shown. A bar is drawn over
-## the pieces, so a piece scrolled into its room never hides it. The arrows step by
+## the pieces, so a piece scrolled into its room never hides it, and so is
+## the square where both meet (planned_bars.gd). The arrows step by
 ## the look's `step`; a wheel steps the same, and a finger pans it (touch.gd).
 ##
 ## ITS LEAST IS WHAT IT IS BUILT WITH, nothing unless a height of its own
@@ -53,6 +55,7 @@ var _plan: Callable
 var _look: StringName
 var _down := VScrollBar.new()
 var _across := HScrollBar.new()
+var _corner := PlannedBars.new(_down)  # the square where the bars meet, which ranges them
 var _finger: ScrollFinger
 var _laid: Dictionary = {}  # what the plan said when it was last asked: rects, types and size
 var _placing := false  # whether its pieces are being placed, when the bars' values moving lay nothing again
@@ -75,6 +78,7 @@ func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> 
 		bar.size_flags_horizontal = Control.SIZE_FILL
 		bar.size_flags_vertical = Control.SIZE_FILL
 		add_child(bar, false, Node.INTERNAL_MODE_BACK)
+	add_child(_corner, false, Node.INTERNAL_MODE_BACK)
 	_down.value_changed.connect(_scrolled)
 	_across.value_changed.connect(_scrolled)
 	_finger = ScrollFinger.new(self, ui.motion, _down, _across)
@@ -174,16 +178,7 @@ func _notification(what: int) -> void:
 	var all: Vector2 = _laid["size"]
 	var thickness := float(get_theme_constant(&"bar", _look))
 	_placing = true
-	_down.visible = all.y > room.y + 0.5
-	_across.visible = all.x > room.x + 0.5
-	# each bar along its edge, its length the room's on its axis, its range what overflows
-	for bar: ScrollBar in [_down, _across]:
-		var axis: int = 1 if bar == _down else 0
-		bar.max_value = all[axis]
-		bar.page = room[axis]
-		bar.step = 0.0
-		bar.custom_step = float(get_theme_constant(&"step", _look))
-		bar.value = clampf(bar.value, 0.0, maxf(0.0, all[axis] - room[axis])) if bar.visible else 0.0
+	_corner.ranged(bars(), room, all, float(get_theme_constant(&"step", _look)), thickness)
 	clip_contents = _down.visible or _across.visible
 	fit_child_in_rect(_down, Rect2(room.x, 0.0, thickness, room.y))
 	fit_child_in_rect(_across, Rect2(0.0, room.y, room.x, thickness))
