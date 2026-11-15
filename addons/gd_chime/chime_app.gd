@@ -113,6 +113,9 @@ var ui: Ui
 ## nothing, unless the host says - asks before the game quits, say (go_back.gd).
 ## None by default, so a Back press can be hidden where it has nowhere to go.
 var at_root: Callable = Callable()
+## Asked first on Back: whether something standing over the app's screens takes it, Back then moving nothing (a
+## dimmed message, which closes itself on the go-back). None takes it by default (go_back.gd).
+var takes_back: Callable = func() -> bool: return false
 var _probe: RefCounted  # held while it walks: a walk waiting on a frame is dropped with whatever was holding it
 
 

@@ -33,6 +33,9 @@ const Commands := preload("commands.gd")
 ## the host's, the key left untaken to go on to it: Back would move a screen
 ## the reader cannot see, or run the app's at_root under what they can.
 ##
+## SOMETHING OVER THE SCREENS MAY TAKE IT: while the app's takes_back says
+## so - a message standing over everything - Back moves no screen.
+##
 ## IT NEVER QUITS THE GAME, and the engine must not either: a project that
 ## leaves application/config/quit_on_go_back on is quit by the engine on the
 ## go-back before any app hears it, which needed_settings.gd reports.
@@ -63,10 +66,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## Back as the reader asks it: through the door in the place taking input,
-## or the app's at_root where there is nothing to go back to; whether it
-## had somewhere to go.
+## Back as the reader asks it: nothing where something over the screens
+## takes it (the app's takes_back), else through the door in the place taking
+## input, or the app's at_root where there is nothing to go back to; whether
+## it was taken or had somewhere to go.
 func _go_back() -> bool:
+	if _app.takes_back.call():
+		return true
 	if not _driver.can_go_back():
 		if _app.at_root.is_valid():
 			_app.at_root.call()
