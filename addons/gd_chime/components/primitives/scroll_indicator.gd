@@ -33,16 +33,21 @@ const Pressable := preload("pressable.gd")
 ## has faded, and never otherwise.
 ##
 ## WHILE IT SHOWS IT CAN BE TAKEN HOLD OF, by a finger or the mouse, and
-## drawn: the view goes where along its track the pointer is, the top the
-## start and the bottom the end, and it stays lit while held. What takes
-## the pointer is a GRIP of its own, a control as tall as the track, from
-## the box's right edge in as far as the mark stands - and on a touched
-## window at least the look's least touch size each way (Touch/least_um, as
-## a press is: pressable.gd), over the words' edge though the mark is thin. The grip holds the finger
-## (touch.gd), so a finger on it pans nothing under it; faded, it takes
-## nothing, and whatever is under it is pressed as ever. Taken, it makes
-## the call it was handed, so whoever holds it stops anything else moving
-## the view.
+## drawn. TAKEN, THE MARK STAYS UNDER THE POINTER WHERE IT WAS TAKEN: the
+## view does not move as it is taken, and drawn, the mark goes as far as the
+## pointer does, so the top of its track is the start and the bottom the
+## end. What takes the pointer is a GRIP of its own. Under a mouse it is the
+## whole track, from the box's right edge in as far as the mark stands, and
+## a press on the track off the mark brings the mark's middle to the
+## pointer. On a touched window it is THE MARK ALONE, grown to the look's
+## least touch size each way (Touch/least_um, as a press is: pressable.gd),
+## over the words' edge though the mark is thin: a finger landing beside
+## the mark pans the list or presses what is under it, as anywhere else,
+## and never throws the view to where along the track it landed. The grip
+## holds the finger (touch.gd), so a finger on it pans nothing under it;
+## faded, it takes nothing, and whatever is under it is pressed as ever.
+## Taken, it makes the call it was handed, so whoever holds it stops
+## anything else moving the view.
 ##
 ## Its look is the theme type ScrollIndicator, read where the control it
 ## stands over is: thickness, inset and least_length in base pixels,
@@ -62,6 +67,7 @@ var _seen: float  # where the bar stood when this last looked
 var _lit_at: float = -INF  # the clock's time the bar last moved, or never
 var _grip := Control.new()  # what takes the pointer, over the mark's track
 var _held: bool = false  # whether the grip is held
+var _held_at: float = 0.0  # how far down the mark the pointer took it, in base pixels
 
 
 func _init(motion: Motion, bar: Range, boxed: Control, box: StringName, when_taken: Callable) -> void:
@@ -116,15 +122,20 @@ func get_mark() -> Rect2:
 	return Rect2(_boxed.size.x - _boxed.get_theme_constant(&"inset", TYPE) - thickness, track.position.y + along * (track.size.y - length), thickness, length)
 
 
-## Where it can be taken hold of, in its own space: down the whole track,
-## from the box's right edge in as far as the mark stands, and on a touched
-## window at least the look's least touch size.
+## Where it can be taken hold of, in its own space: under a mouse the whole
+## track, from the box's right edge in as far as the mark stands; on a
+## touched window the mark alone, grown to the look's least touch size each
+## way about its middle and kept inside the box.
 func get_grip() -> Rect2:
 	var track := _track()
 	var wide := float(_boxed.get_theme_constant(&"thickness", TYPE) + _boxed.get_theme_constant(&"inset", TYPE))
-	if get_viewport().get_meta(Shape.TOUCH, false):
-		wide = maxf(wide, Pressable.least_each_way(_boxed))
-	return Rect2(_boxed.size.x - wide, track.position.y, wide, track.size.y)
+	if not get_viewport().get_meta(Shape.TOUCH, false):
+		return Rect2(_boxed.size.x - wide, track.position.y, wide, track.size.y)
+	var least := Pressable.least_each_way(_boxed)
+	var mark := get_mark()
+	var long := maxf(mark.size.y, least)
+	wide = maxf(wide, least)
+	return Rect2(_boxed.size.x - wide, clampf(mark.get_center().y - long / 2.0, 0.0, maxf(_boxed.size.y - long, 0.0)), wide, long)
 
 
 ## The bar looked at: lit again if it has moved, or while it is held, and
@@ -143,17 +154,24 @@ func _process(_delta: float) -> void:
 		set_process(false)
 
 
-## The pointer on the grip: pressed, it is held and says so; pressed or
-## drawn while held, the view goes where along the track it is.
+## The pointer on the grip: pressed, it is held and says so, where down the
+## mark it was taken kept - its middle, for a press on the track off the
+## mark; drawn while held, the mark goes with the pointer and the view with
+## the mark.
 func _taken(event: InputEvent) -> void:
 	var click := event as InputEventMouseButton
+	var mark := get_mark()
 	if click != null and click.button_index == MOUSE_BUTTON_LEFT:
 		_held = click.pressed
 		if _held:
+			# the pointer in this one's own space, as the mark is
+			var down := _grip.position.y + click.position.y
+			_held_at = down - mark.position.y if down >= mark.position.y and down <= mark.end.y else mark.size.y / 2.0
 			_when_taken.call()
-	if _held and event is InputEventMouse:
-		# how far down the track the pointer is, out of one: 0 at its top, 1 at its bottom
-		var along := clampf((event as InputEventMouse).position.y / _grip.size.y, 0.0, 1.0)
+	var track := _track()
+	if _held and event is InputEventMouse and track.size.y > mark.size.y:
+		# how far down its track the mark's top is under the pointer, out of one: 0 at the start, 1 at the end
+		var along := clampf((_grip.position.y + (event as InputEventMouse).position.y - _held_at - track.position.y) / (track.size.y - mark.size.y), 0.0, 1.0)
 		_bar.value = _bar.min_value + along * (_bar.max_value - _bar.page - _bar.min_value)
 		moved()
 	_grip.accept_event()

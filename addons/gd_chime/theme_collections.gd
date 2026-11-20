@@ -28,8 +28,13 @@ const Flex := preload("components/primitives/flex.gd")
 ## carried is edged, one that would not is ringed in the soft ink and says
 ## why in words; a card's hole is the ground, edged; a thumbnail showing is
 ## ringed; the ground a swipe uncovers is edged thick in the accent when
-## letting go would do it, beside the words its reveal says it in.
+## letting go would do it, beside the words its reveal says it in. The one
+## chosen among many is OUTLINED (outline.gd): a ring in the ink over it,
+## which moves nothing.
 
+## The ring round the one chosen, and how thick it is in base pixels.
+const OUTLINE := &"Outline"
+const OUTLINE_THICK := 4
 ## An infinite collection's cards, its foot's press, the column of both, and a collection of outcomes.
 const CARDS := &"CollectionCards"
 const MORE := &"CollectionMore"
@@ -93,6 +98,13 @@ static func dress(theme: Theme, palette: Dictionary) -> void:
 	# every press: the pressable, until a look dresses it
 	for press: StringName in PRESSES:
 		theme.set_type_variation(press, Themes.PRESSABLE)
+	# the outline round the one chosen: a ring in the ink with no middle, drawn over what it frames
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.border_color = palette[&"ink"]
+	ring.set_border_width_all(OUTLINE_THICK)
+	theme.set_type_variation(OUTLINE, &"Control")
+	theme.set_stylebox(&"panel", OUTLINE, ring)
 	# the card standing where there is nothing to show: a ground, not a press
 	theme.set_type_variation(CARD_EMPTY, Themes.SURFACE)
 	# every kind of words a board's card draws, a Label sized once

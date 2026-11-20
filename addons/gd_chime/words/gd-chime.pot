@@ -192,7 +192,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: addons/gd_chime/components/recipes/app_bar.gd:70
+#: addons/gd_chime/components/recipes/app_bar.gd:77
 msgid "Menu"
 msgstr ""
 

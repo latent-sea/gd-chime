@@ -74,6 +74,8 @@ const DAY := &"CalendarDay"
 const DAY_CHOSEN := &"CalendarDayChosen"
 const DAY_TODAY := &"CalendarDayToday"
 const DAY_OUTSIDE := &"CalendarDayOutside"
+## How thick a typed line's edge is at rest, in base pixels; twice that with the focus.
+const EDGE := 2
 ## How thick a bar or a ring of the form's looks is, in base pixels, as the chosen option's is.
 const MARK := 6
 ## The mark a message begins with, so it is never told by its colour alone.
@@ -105,10 +107,29 @@ static func dress(theme: Theme, palette: Dictionary) -> void:
 	_form(theme, palette)
 
 
-## A text area and code: the raised ground, padded, ringed in the ink while
+## A typed line, EDGED ALL ROUND IN THE INK at rest - a line with no edge
+## is not found on a ground as dark as its own (a name typed on navy) -
+## and ringed twice as thick while it has the focus. A text area and code: the raised ground, padded, ringed in the ink while
 ## it has the focus, and code in the machine's own fixed width until a look
 ## names one.
 static func _typed(theme: Theme, palette: Dictionary) -> void:
+	# a typed line: the raised ground edged all round in the ink, so it is found on any ground, and ringed thicker with the focus
+	var line := _flat(palette[&"raised"])
+	line.border_color = palette[&"ink"]
+	line.set_border_width_all(EDGE)
+	line.set_content_margin_all(8.0)
+	theme.set_stylebox(&"normal", FIELD, line)
+	theme.set_stylebox(&"read_only", FIELD, line)
+	var held := _flat(palette[&"raised"])
+	held.draw_center = false
+	held.border_color = palette[&"ink"]
+	held.set_border_width_all(2 * EDGE)
+	theme.set_stylebox(&"focus", FIELD, held)
+	# its words, its caret and the words chosen in the ink, a selection on the lit ground, what it asks for in the soft ink
+	for ink: StringName in [&"font_color", &"caret_color", &"font_selected_color"]:
+		theme.set_color(ink, FIELD, palette[&"ink"])
+	theme.set_color(&"selection_color", FIELD, palette[&"lit"])
+	theme.set_color(&"font_placeholder_color", FIELD, palette[&"ink_soft"])
 	theme.set_type_variation(TEXT_AREA, &"TextEdit")
 	var ground := _flat(palette[&"raised"])
 	ground.set_content_margin_all(8.0)

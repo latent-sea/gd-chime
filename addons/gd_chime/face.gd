@@ -60,7 +60,7 @@ const FaceGive := preload("face_give.gd")
 ## Deliberately absent: anything a press does.
 
 ## The states it only passes through, drawn but never made room for.
-const PASSING: Array[StringName] = [&"hover", &"glowing", &"lifted", &"accepting", &"refusing"]
+const PASSING: Array[StringName] = [&"hover", &"glowing", &"lifted", &"accepting", &"refusing", &"pending"]
 
 var _lit: bool = false
 var _focused: bool = false

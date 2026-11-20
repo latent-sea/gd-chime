@@ -17,6 +17,7 @@ const KINDS := {
 	&"fitted_text": preload("../../fitted_text.gd"),
 	&"image": preload("image.gd"),
 	&"surface": preload("surface.gd"),
+	&"outline": preload("outline.gd"),
 	&"paragraph": preload("paragraph.gd"),
 	&"pressable": preload("pressable.gd"),
 	&"press_local": preload("press_local.gd"),

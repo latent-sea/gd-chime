@@ -2624,6 +2624,15 @@ msgstr ""
 msgid "Find a fruit"
 msgstr ""
 
+#: demo/gallery/gallery.gd:82
+#: demo/gallery/values_pieces.gd:76
+msgid "Send the order"
+msgstr ""
+
+#: demo/gallery/gallery.gd:82
+msgid "The stall answers"
+msgstr ""
+
 #: demo/gallery/gallery.gd:83
 msgid "Words, links and chips"
 msgstr ""
@@ -3201,27 +3210,31 @@ msgstr ""
 msgid "Yes, throw it away"
 msgstr ""
 
-#: demo/gallery/values_models.gd:43
+#: demo/gallery/values_models.gd:46
 msgid "Small"
 msgstr ""
 
-#: demo/gallery/values_models.gd:43
+#: demo/gallery/values_models.gd:46
 msgid "Middling"
 msgstr ""
 
-#: demo/gallery/values_models.gd:43
+#: demo/gallery/values_models.gd:46
 msgid "Large"
 msgstr ""
 
-#: demo/gallery/values_models.gd:75
+#: demo/gallery/values_models.gd:86
+msgid "No order is waiting for an answer"
+msgstr ""
+
+#: demo/gallery/values_models.gd:89
 msgid "The stall never stacks thirteen crates"
 msgstr ""
 
-#: demo/gallery/values_models.gd:77
+#: demo/gallery/values_models.gd:91
 msgid "Filled past eight tenths, a crate splits"
 msgstr ""
 
-#: demo/gallery/values_models.gd:79
+#: demo/gallery/values_models.gd:93
 msgid "No large crates today"
 msgstr ""
 
@@ -3249,52 +3262,72 @@ msgstr ""
 msgid "%d crates at %d coins: %d coins"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:75
+#: demo/gallery/values_pieces.gd:76
+msgid "Sending…"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:83
 msgid "Slider"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:75
+#: demo/gallery/values_pieces.gd:83
 msgid "Drag it, or left and right; past eight tenths is refused"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:76
+#: demo/gallery/values_pieces.gd:84
 msgid "Number stepper"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:76
+#: demo/gallery/values_pieces.gd:84
 msgid "− and +, or type and Enter; thirteen is refused"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:77
+#: demo/gallery/values_pieces.gd:85
 msgid "Combo, short list"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:77
+#: demo/gallery/values_pieces.gd:85
 msgid "The sizes open over everything; large is refused"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:78
+#: demo/gallery/values_pieces.gd:86
 msgid "Combo, long list"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:78
+#: demo/gallery/values_pieces.gd:86
 msgid "Type to narrow the fruit, then pick one"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:81
+#: demo/gallery/values_pieces.gd:89
 msgid "Radio group"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:81
+#: demo/gallery/values_pieces.gd:89
 msgid "The same size, chosen in place; large is refused"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:82
+#: demo/gallery/values_pieces.gd:90
 msgid "Segmented control"
 msgstr ""
 
-#: demo/gallery/values_pieces.gd:82
+#: demo/gallery/values_pieces.gd:90
 msgid "Switches the view between the order and its price"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:91
+msgid "Pending press"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:91
+msgid "Sent once and awaited; pressed again it asks nothing"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:92
+msgid "Outline"
+msgstr ""
+
+#: demo/gallery/values_pieces.gd:92
+msgid "The size chosen is ringed on every side, and nothing moves"
 msgstr ""
 
 #: demo/grid/grid.gd:59

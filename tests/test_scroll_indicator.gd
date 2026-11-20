@@ -62,6 +62,9 @@ func _init() -> void:
 	await _verdict.states(_a_text_area_s_mark_taken_by_the_mouse_and_drawn_moves_the_words_and_gives_it_no_focus)
 	await _verdict.states(_its_grip_is_the_least_touch_size_on_a_touched_window_and_takes_the_finger_only_while_it_shows)
 	await _verdict.states(_taking_the_mark_stops_a_glide_on_its_way)
+	await _verdict.states(_the_mark_taken_by_the_mouse_stays_under_the_pointer_and_moves_the_view_only_as_far_as_it_is_drawn)
+	await _verdict.states(_on_a_touched_window_a_finger_on_the_track_beside_the_mark_pans_the_list_and_throws_the_view_nowhere)
+	await _verdict.states(_a_scroll_made_taller_and_shorter_keeps_the_view_within_its_ends_and_its_mark_within_its_track)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -414,8 +417,8 @@ func _its_grip_is_the_least_touch_size_on_a_touched_window_and_takes_the_finger_
 
 
 ## A list, and a text area, let go moving up, gliding on on the clock: its
-## mark taken at the top of its track puts the view at the start, and the
-## glide moves it no further as the clock runs on.
+## mark taken by a finger holds the view where it was taken, and the glide
+## moves it no further as the clock runs on.
 func _taking_the_mark_stops_a_glide_on_its_way() -> void:
 	var made := await _listed(200)
 	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
@@ -427,12 +430,12 @@ func _taking_the_mark_stops_a_glide_on_its_way() -> void:
 	var words := await _glide_then_take(written[0], edit, edit.get_v_scroll_bar())
 	(written[3] as Words).free()
 	(written[0] as Fixture).done()
-	_verdict.check(listed[0] > 0.0 and listed[1] == 0.0, "a list gliding on at %.1f, its mark taken at the top of its track holds it at the start as the clock runs on: %.1f" % listed)
-	_verdict.check(words[0] > 0.0 and words[1] == 0.0, "a text area gliding on at %.1f, the same: %.1f" % words)
+	_verdict.check(listed[0] > 0.0 and listed[1] > 0.0 and listed[2] == listed[1], "a list gliding on at %.1f, its mark taken holds it where it was taken, %.1f, as the clock runs on: %.1f" % listed)
+	_verdict.check(words[0] > 0.0 and words[1] > 0.0 and words[2] == words[1], "a text area gliding on at %.1f, the same: %.1f, %.1f" % words)
 
 
-## Flung up, a step of its glide run, then its mark taken at the top of its
-## track and the clock run on: where it was gliding, and where it stands.
+## Flung up, a step of its glide run, then its mark taken and the clock run
+## on: where it was gliding, where it stood as it was taken, and where it stands.
 func _glide_then_take(made: Fixture, over: Control, bar: Range) -> Array:
 	made.ui.motion.still = false
 	var at := over.get_global_rect().get_center() - Vector2(100, 0)
@@ -445,8 +448,109 @@ func _glide_then_take(made: Fixture, over: Control, bar: Range) -> Array:
 	var grip := _grip_of(_indicator_of(over))
 	var top := Vector2(grip.get_center().x, grip.position.y)
 	await _touch(top, true)
+	var as_taken := bar.value
 	made.ui.motion.step(1.0)
 	await _a_frame_passes()
 	var taken := bar.value
 	await _touch(top, false)
-	return [gliding, taken]
+	return [gliding, as_taken, taken]
+
+
+## UI-003 (the QA of 2026-11-20, "scrollbars erratic"): the view at 300, the
+## mouse's button down on the middle of the mark: the view has not moved.
+## Drawn down 50, the mark is 50 further down, and back up 50 it is where
+## it was taken.
+func _the_mark_taken_by_the_mouse_stays_under_the_pointer_and_moves_the_view_only_as_far_as_it_is_drawn() -> void:
+	var made := await _listed(200)
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var bar := scroll.get_v_scroll_bar()
+	var indicator := _indicator_of(scroll)
+	bar.value = 300.0
+	await _a_frame_passes()
+	var before := indicator.get_mark()
+	var on: Vector2 = indicator.get_global_transform() * before.get_center()
+	await _mouse(InputEventMouseMotion.new(), on)
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.button_mask = MOUSE_BUTTON_MASK_LEFT
+	click.pressed = true
+	await _mouse(click, on)
+	var as_taken := bar.value
+	var move := InputEventMouseMotion.new()
+	move.button_mask = MOUSE_BUTTON_MASK_LEFT
+	move.relative = Vector2(0, 50)
+	await _mouse(move, on + Vector2(0, 50))
+	var drawn := indicator.get_mark()
+	move.relative = Vector2(0, -50)
+	await _mouse(move, on)
+	var back := bar.value
+	click.pressed = false
+	click.button_mask = 0
+	await _mouse(click, on)
+	_verdict.check(absf(as_taken - 300.0) < 0.5, "taken on its mark the view does not move: %.1f" % as_taken)
+	_verdict.check(absf(drawn.position.y - before.position.y - 50.0) < 0.5, "drawn down 50 the mark is 50 further down: %.1f to %.1f" % [before.position.y, drawn.position.y])
+	_verdict.check(absf(back - 300.0) < 0.5, "and drawn back it is where it was taken: %.1f" % back)
+	made.done()
+
+
+## On a window that takes touch, the view at 300 and its mark lit: a finger
+## down in the mark's track well below the mark, then drawn up 60, has
+## thrown the view nowhere as it landed, and pans the list as a finger
+## anywhere on it does.
+func _on_a_touched_window_a_finger_on_the_track_beside_the_mark_pans_the_list_and_throws_the_view_nowhere() -> void:
+	var floor_least := root.theme.get_constant(&"least_um", &"Touch")
+	root.theme.set_constant(&"least_um", &"Touch", 4800)
+	root.set_meta(&"pixel_um", 100.0)
+	var made := await _listed(200)
+	made.ui.shape.reads_touchscreen = func() -> bool: return true
+	made.ui.shape.arrange()
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var bar := scroll.get_v_scroll_bar()
+	var indicator := _indicator_of(scroll)
+	bar.value = 300.0
+	await _a_frame_passes()
+	var grip := _grip_of(indicator)
+	var beside := Vector2(grip.get_center().x, grip.end.y + 200.0)
+	await _touch(beside, true)
+	var as_landed := bar.value
+	await _finger_to(beside, beside + Vector2(0, -60))
+	var taken := made.ui.touch.get_taken()
+	var panned := bar.value
+	await _touch(beside + Vector2(0, -60), false)
+	_verdict.check(beside.y < scroll.get_global_rect().end.y and absf(as_landed - 300.0) < 0.5, "a finger landing in the track beside the mark leaves the view where it was: %.1f" % as_landed)
+	_verdict.check(taken == scroll and panned > 300.0, "and drawn up it pans the list: %s, %.1f" % [taken, panned])
+	root.theme.set_constant(&"least_um", &"Touch", floor_least)
+	root.remove_meta(&"pixel_um")
+	made.done()
+
+
+## The view at its end in a window 600 high: made 900 high, then 300, then
+## 600 again, the view is never past its end nor before its start, what it
+## holds fills the window to its foot, and the mark stands inside its track.
+func _a_scroll_made_taller_and_shorter_keeps_the_view_within_its_ends_and_its_mark_within_its_track() -> void:
+	var made := await _listed(60)
+	var scroll := made.ui.node_named(&"scroll") as ScrollContainer
+	var bar := scroll.get_v_scroll_bar()
+	var indicator := _indicator_of(scroll)
+	var holder := scroll.get_parent() as Control
+	var wrong: Array[String] = []
+	bar.value = bar.max_value
+	await _a_frame_passes()
+	# each height the window is given, the view left at its end before it
+	for high: float in [900.0, 300.0, 600.0, 4000.0, 600.0]:
+		root.size = Vector2i(root.size.x, int(high))
+		await _a_frame_passes()
+		await _a_frame_passes()
+		var piece := made.ui.node_named(&"piece") as Control
+		var end := maxf(bar.max_value - bar.page, 0.0)
+		var mark := indicator.get_mark() if bar.max_value > bar.page else Rect2()
+		if bar.value < 0.0 or bar.value > end + 0.5:
+			wrong.append("%d high the view is at %.1f of %.1f" % [high, bar.value, end])
+		if bar.max_value > bar.page and piece.get_global_rect().end.y < scroll.get_global_rect().end.y - 1.0:
+			wrong.append("%d high what it holds ends at %.1f above the window's foot %.1f" % [high, piece.get_global_rect().end.y, scroll.get_global_rect().end.y])
+		if mark.position.y < -0.5 or mark.end.y > scroll.size.y + 0.5:
+			wrong.append("%d high the mark stands at %s outside %.1f" % [high, mark, scroll.size.y])
+		bar.value = bar.max_value
+		await _a_frame_passes()
+	_verdict.check(holder != null and wrong.is_empty(), "made taller and shorter the view keeps within its ends and its mark within its track: %s" % [wrong])
+	made.done()

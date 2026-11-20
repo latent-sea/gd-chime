@@ -35,6 +35,13 @@ const OUTSIDE := Vector2(300, 300)
 var _verdict := Verdict.new()
 
 
+## A model that asks a host: told, it holds its flag until the answer comes.
+class Asking extends Fixture.Model:
+	func told(action: StringName, payload: Dictionary) -> Phrase:
+		set_value(&"flag", true)
+		return super(action, payload)
+
+
 func _init() -> void:
 	root.theme = Themes.new(Themes.NEUTRAL)
 	await process_frame
@@ -47,6 +54,7 @@ func _init() -> void:
 	await _verdict.states(_its_payload_is_read_as_the_press_lands_and_its_reason_is_read_as_it_draws)
 	await _verdict.states(_a_bell_button_holds_the_words_and_the_reason_hidden_while_empty)
 	await _verdict.states(_one_described_current_while_a_value_holds_is_current_then_and_only_then_wherever_it_goes)
+	await _verdict.states(_one_described_pending_while_a_value_holds_is_drawn_so_in_the_same_room_and_pressed_again_asks_nothing)
 	await _verdict.states(_one_built_into_a_live_list_later_has_its_words_in_its_state_s_ink)
 	await _verdict.states(_a_press_inside_a_press_keeps_its_own_ink)
 	quit(_verdict.deliver(get_script()))
@@ -347,4 +355,49 @@ func _a_press_inside_a_press_keeps_its_own_ink() -> void:
 	_verdict.check(mine.get_theme_color(&"font_color") == glowing and glowing != outer_ink, "the outer press drawn again inks the words it holds itself: %s" % mine.get_theme_color(&"font_color").to_html(false))
 	_verdict.check(held.get_theme_color(&"font_color") == Color.RED, "and it does not reach through the press inside it, whose words stand on that press's own box: %s" % held.get_theme_color(&"font_color").to_html(false))
 	root.theme.set_color(&"font_color_normal", Pressables.BUTTON, was)
+	made.done()
+
+
+## BT-001 and UI-002 (the QA of 2026-11-20: two presses that ask a host "seem
+## to do nothing"): a press whose model asks a host and holds a value while the
+## answer is awaited. Pressed once, the model is told once and the press is
+## pending at once - in the look's pending box, its words the content's, in
+## the very room it had at rest. Pressed twice more while pending, the model
+## has still been told once. Answered with a refusal, it is at rest again,
+## says why, and can be pressed again.
+func _one_described_pending_while_a_value_holds_is_drawn_so_in_the_same_room_and_pressed_again_asks_nothing() -> void:
+	var made := Fixture.new(root, {&"joins": "join"})
+	var ui := made.ui
+	var model := Asking.new(made.chimes, &"app")
+	model.answering = [&"joins"]
+	made.commands.register(&"here", &"joins", model)
+	var words: Bound = model.of(&"flag", false).map(func(asked: Variant) -> String: return "joining" if asked else "join")
+	ui.start(ui.app(&"app", [ui.screen(&"here", [ui.row([
+		ui.pressable(&"joins", {}, [ui.text(words), ui.reason()]).pending_while(model.of(&"flag")).named(&"it").basis(0.4), ui.surface(Themes.SURFACE).grow()])])]))
+	await _a_frame_passes()
+	var press: Pressable = ui.node_named(&"it")
+	var at_rest := press.get_global_rect()
+	var on := at_rest.get_center()
+	_click(on)
+	await _a_frame_passes()
+	var said: Array = _texts_under(press).map(func(text: Text) -> String: return text.get_text())
+	_verdict.check(model.told_actions.size() == 1 and press.is_pending() and press.get_state() == &"pending", "pressed once the model is told once and the press is pending: %d, %s" % [model.told_actions.size(), press.get_state()])
+	_verdict.check(press._last_box == root.theme.get_stylebox(&"pending", Themes.PRESSABLE) and press._last_box != root.theme.get_stylebox(&"normal", Themes.PRESSABLE) and said.has("joining"), "it is drawn in the look's pending box, not the one at rest, saying what its content says meanwhile: %s" % [said])
+	_verdict.check(press.get_global_rect().size == at_rest.size, "pending it stands in the room it had at rest, so nothing beside it moves: %s, %s" % [at_rest.size, press.get_global_rect().size])
+	_click(on)
+	_click(on)
+	await _a_frame_passes()
+	_verdict.check(model.told_actions.size() == 1, "pressed twice more while pending, the model has been told once: %d" % model.told_actions.size())
+	# the host's answer: no, in words
+	model.set_value(&"flag", false)
+	model.refuse(&"joins", Phrase.of("That name is taken"))
+	await _a_frame_passes()
+	said = _texts_under(press).map(func(text: Text) -> String: return text.get_text())
+	_verdict.check(not press.is_pending() and press.get_state() == &"inert" and said.has("That name is taken"), "answered no, it is pending no longer and says why: %s %s" % [press.get_state(), said])
+	model.refuse_nothing()
+	await _a_frame_passes()
+	_click(on)
+	await _a_frame_passes()
+	_verdict.check(model.told_actions.size() == 2 and press.is_pending(), "and once it may be asked again, a press asks again: %d" % model.told_actions.size())
+	model.free()
 	made.done()

@@ -37,7 +37,8 @@ const Local := preload("local.gd")
 ## field's {"value"}, the payload every other control setting that value
 ## carries, one payload however the value was put in. And LEAVES,
 ## an action dispatched with {"line"} as the focus leaves the line - an
-## answer checked once the reader has moved on from it.
+## answer checked once the reader has moved on from it. And NUMBER, for a
+## line that is a number: a phone raises its keyboard of digits for it.
 ##
 ## Deliberately absent: history, more than one line, an on-screen
 ## keyboard.
@@ -69,6 +70,8 @@ func _init(chimes: Chimes, commands: Commands, action: StringName, style: String
 	_refused = options["refused"]
 	if style != &"":
 		_line.theme_type_variation = style
+	if options["number"]:
+		_line.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
 	_line.keep_editing_on_text_submit = true
 	add_child(_line)
 	_line.text_submitted.connect(_submitted)

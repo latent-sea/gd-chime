@@ -69,7 +69,7 @@ static func make(ui: Ui, action: StringName, value: Bound, options: Dictionary =
 	var step: float = options["step"]
 	var typed := func(line: String) -> Dictionary: return {"value": held(line.to_float(), minimum, maximum, step) if line.is_valid_float() else value.read()}
 	var shown: Bound = value.map(func(now: Variant) -> String: return String.num(float(now), step_decimals(step)))
-	var number := ui.field(action, Fields.FIELD, {"shows": shown, "carries": typed})
+	var number := ui.field(action, Fields.FIELD, {"shows": shown, "carries": typed, "number": true})
 	var away := func(by: float) -> Bound: return value.map(func(now: Variant) -> Dictionary: return {"value": held(float(now) + by, minimum, maximum, step)})
 	return steps(ui, action, {shows = number.grow(), carries = away, step = step, style = options.get(Options.STYLE, Fields.STEPPER)})
 

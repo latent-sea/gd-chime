@@ -39,13 +39,13 @@ func drop_target(action: StringName, content: Array = [], style: Variant = &"Pre
 ## that is typed into as it is built. Its options (field.gd): changes, the
 ## action every keystroke goes to; shows, a bound value it holds; carries,
 ## what a dispatch carries besides the line; leaves, the action a move away
-## goes to; and refused, a local keeping its refusal in place of its reason
-## under it.
-const FIELD_OPTIONS: Array[String] = ["changes", "shows", "carries", "leaves", "refused"]
+## goes to; refused, a local keeping its refusal in place of its reason
+## under it; and number, true for a line a phone types with its digits.
+const FIELD_OPTIONS: Array[String] = ["changes", "shows", "carries", "leaves", "refused", "number"]
 
 func field(action: StringName, style: StringName = &"", options: Dictionary = {}) -> Desc:
 	Options.checked("a line", options, FIELD_OPTIONS)
-	return Desc.new(&"field", {"action": action, "style": style, "takes_focus": false, "changes": options.get("changes", &""), "shows": options.get("shows"), "carries": options.get("carries", Callable()), "leaves": options.get("leaves", &""), "refused": options.get("refused")})
+	return Desc.new(&"field", {"action": action, "style": style, "takes_focus": false, "changes": options.get("changes", &""), "shows": options.get("shows"), "carries": options.get("carries", Callable()), "leaves": options.get("leaves", &""), "refused": options.get("refused"), "number": options.get("number", false)})
 
 
 ## Words typed over many lines, every change dispatched as the action, the

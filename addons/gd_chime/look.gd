@@ -102,7 +102,9 @@ static func dress(theme: Theme, script: String) -> void:
 ## and by option the ink per state and the focus box drawn over whichever
 ## shows - both required - and the type it varies, the pressable's own
 ## unless given. A look that draws no selected - a local press's chosen
-## one - has it drawn as its glowing.
+## one - has it drawn as its glowing, and a pending it does not draw is
+## drawn as its hover: a press whose answer is awaited is lit under every
+## look, in words that look already reads on that ground.
 static func pressable(theme: Theme, type: StringName, boxes: Dictionary, options: Dictionary) -> void:
 	Options.checked("a pressable's look", options, ["inks", "focus", "base"])
 	var inks: Dictionary = options["inks"]
@@ -114,6 +116,9 @@ static func pressable(theme: Theme, type: StringName, boxes: Dictionary, options
 	if boxes.has(&"glowing") and not boxes.has(&"selected"):
 		theme.set_stylebox(&"selected", type, boxes[&"glowing"])
 		theme.set_color(&"font_color_selected", type, inks[&"glowing"])
+	if boxes.has(&"hover") and not boxes.has(&"pending"):
+		theme.set_stylebox(&"pending", type, boxes[&"hover"])
+		theme.set_color(&"font_color_pending", type, inks[&"hover"])
 	theme.set_stylebox(&"focus", type, options["focus"])
 
 
@@ -193,6 +198,12 @@ static func field(theme: Theme, type: StringName, boxes: Dictionary, ink: Color)
 	theme.set_stylebox(&"read_only", type, boxes["normal"])
 	theme.set_color(&"font_color", type, ink)
 	theme.set_color(&"caret_color", type, ink)
+
+
+## An outline: the ring drawn over the one chosen, under this type (outline.gd).
+static func outline(theme: Theme, type: StringName, ring: StyleBox) -> void:
+	_vary(theme, type, &"Outline")
+	theme.set_stylebox(&"panel", type, ring)
 
 
 ## A ground: a surface drawing this box, blurring what is behind it by so much.

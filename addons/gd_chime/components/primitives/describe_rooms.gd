@@ -7,8 +7,8 @@ const PriorityRow := preload("priority_row.gd")
 ## first arrangement that fits, as many columns as fit, a slot as wide as
 ## its widest sample, a held line folding by rank, the first of two pieces
 ## that fits, a table in frozen panes, a piece capped in the room, pieces
-## laid where a plan puts them, and the band of a pop-up's shade round the
-## safe rect.
+## laid where a plan puts them, the band of a pop-up's shade round the
+## safe rect, and an outline round whatever room it is laid across.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -19,6 +19,13 @@ const PriorityRow := preload("priority_row.gd")
 ## a slot's and a held line's least never grow with what they show, so one
 ## wide piece inside cannot widen what holds it - the page, the app or the
 ## window.
+
+
+## An outline (outline.gd): the style's ring drawn over what it is laid
+## across, last among it, taking no room and no press - drawn only while
+## `shown`, a bound value, holds, where one is given: the one chosen framed.
+func outline(style: Variant = &"Outline", shown: Bound = null) -> Desc:
+	return Desc.new(&"outline", {"style": style, "shown": shown})
 
 
 ## A page that scrolls down (page_scroll.gd): it asks for no room of its

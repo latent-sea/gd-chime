@@ -38,7 +38,7 @@ const PRICE_VIEW := &"price"
 ## What a crate costs, in coins, for the price view.
 const PRICE := 40
 ## The words of this screen's actions, for the gallery's register.
-const ACTIONS := {SHOWS_VALUES: ["Numbers and choices"], OPENS_SIZES: ["Choose a size"], OPENS_FRUIT: ["Choose a fruit"], Values.Order.SETS_CRATES: ["Set the crates"], Values.Order.SETS_FILL: ["Fill the crate"], Values.Order.PICKS_SIZE: ["This size"], Values.Order.PICKS_FRUIT: ["This fruit"], Values.Order.TYPES_FRUIT: ["Find a fruit"]}
+const ACTIONS := {SHOWS_VALUES: ["Numbers and choices"], OPENS_SIZES: ["Choose a size"], OPENS_FRUIT: ["Choose a fruit"], Values.Order.SETS_CRATES: ["Set the crates"], Values.Order.SETS_FILL: ["Fill the crate"], Values.Order.PICKS_SIZE: ["This size"], Values.Order.PICKS_FRUIT: ["This fruit"], Values.Order.TYPES_FRUIT: ["Find a fruit"], Values.Order.SENDS: ["Send the order"], Values.Order.ANSWERS: ["The stall answers"]}
 
 var _screen: Desc
 
@@ -71,6 +71,14 @@ func _values() -> Desc:
 	var priced: Bound = crates.map(func(many: float) -> Phrase: return Phrase.with("%d crates at %d coins: %d coins", [roundi(many), PRICE, roundi(many) * PRICE]))
 	# the view the segments chose, re-read as the local moves
 	var viewing: Desc = ui.when(view.map(func(now: StringName) -> bool: return now == ORDER_VIEW), ui.text(ordered, DemoTheme.READOUT).wraps(), ui.text(priced, DemoTheme.READOUT).wraps())
+	var awaited: Bound = ui.bound(order.is_awaited)
+	# a press whose answer is awaited: pending, saying so, and pressed again asking nothing, until the stall answers
+	var sends: Desc = ui.column([ui.pressable(Values.Order.SENDS, {}, [ui.text(awaited.map(func(waiting: bool) -> Phrase: return Phrase.of("Sending…") if waiting else Phrase.of("Send the order")))]).pending_while(awaited).named(&"sends"),
+		ui.pressable(Values.Order.ANSWERS, {}, [ui.column([ui.text(ui.words(Values.Order.ANSWERS)), ui.reason().hides_empty().wraps()])]).named(&"answers")], DemoTheme.TIGHT)
+	# the sizes again, each a press laid to its block's edges, the one chosen ringed over it
+	var ringed := func(size: Dictionary) -> Desc:
+		return ui.stack([ui.pressable(Values.Order.PICKS_SIZE, {"value": size["value"]}, [ui.text(size["words"])]), ui.outline(&"Outline", ui.bound(order.get_size).map(func(chosen: StringName) -> bool: return chosen == size["value"]))]).grow()
+	var outlined: Desc = ui.row(order.get_sizes().map(ringed), DemoTheme.TIGHT).named(&"outlined")
 	var first := [
 		_shown(Phrase.of("Slider"), Phrase.of("Drag it, or left and right; past eight tenths is refused"), slider),
 		_shown(Phrase.of("Number stepper"), Phrase.of("− and +, or type and Enter; thirteen is refused"), stepper),
@@ -80,5 +88,7 @@ func _values() -> Desc:
 	var second := [
 		_shown(Phrase.of("Radio group"), Phrase.of("The same size, chosen in place; large is refused"), radios),
 		_shown(Phrase.of("Segmented control"), Phrase.of("Switches the view between the order and its price"), ui.column([segments, viewing], DemoTheme.TIGHT)),
+		_shown(Phrase.of("Pending press"), Phrase.of("Sent once and awaited; pressed again it asks nothing"), sends),
+		_shown(Phrase.of("Outline"), Phrase.of("The size chosen is ringed on every side, and nothing moves"), outlined),
 	]
 	return _columns(VALUES, first, second)

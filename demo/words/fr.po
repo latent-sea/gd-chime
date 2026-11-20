@@ -2117,3 +2117,27 @@ msgstr "Entrée coupe la ligne ; seul le bouton l'envoie, et jamais vide"
 
 msgid "Each stands in the tray below, never over anything, sounds, and leaves"
 msgstr "Chacun se tient dans le plateau ci-dessous, jamais par-dessus quoi que ce soit, sonne, et s'en va"
+
+msgid "Send the order"
+msgstr "Envoyer la commande"
+
+msgid "The stall answers"
+msgstr "L'étal répond"
+
+msgid "Sending…"
+msgstr "Envoi…"
+
+msgid "No order is waiting for an answer"
+msgstr "Aucune commande n'attend de réponse"
+
+msgid "Pending press"
+msgstr "Bouton en attente"
+
+msgid "Sent once and awaited; pressed again it asks nothing"
+msgstr "Envoyée une fois et attendue ; pressé de nouveau, il ne demande rien"
+
+msgid "Outline"
+msgstr "Contour"
+
+msgid "The size chosen is ringed on every side, and nothing moves"
+msgstr "La taille choisie est cerclée de tous côtés, et rien ne bouge"

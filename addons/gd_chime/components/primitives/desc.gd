@@ -176,6 +176,13 @@ func current_while(held: RefCounted) -> RefCounted:
 	return self
 
 
+## A pressable pending while this bound value holds - its answer awaited -
+## drawn so, and pressed again meanwhile doing nothing.
+func pending_while(held: RefCounted) -> RefCounted:
+	props["pending_while"] = held
+	return self
+
+
 ## How it arrives and goes, for a thing that swaps - a when, an each: a
 ## transition's name (transition.gd), in place of the one the look names.
 func transition(kind: StringName) -> RefCounted:

@@ -24,8 +24,11 @@ class Order extends Shown:
 	const PICKS_SIZE := &"picks_a_size"
 	const PICKS_FRUIT := &"picks_a_fruit"
 	const TYPES_FRUIT := &"types_a_fruit"
+	## The order sent to the stall, which answers when it answers: asked once, and awaited until then.
+	const SENDS := &"sends_the_order"
+	const ANSWERS := &"answers_the_order"
 	## Every action this is told: the typing is its narrowing's.
-	const COMMANDS: Array[StringName] = [SETS_CRATES, SETS_FILL, PICKS_SIZE, PICKS_FRUIT]
+	const COMMANDS: Array[StringName] = [SETS_CRATES, SETS_FILL, PICKS_SIZE, PICKS_FRUIT, SENDS, ANSWERS]
 	## The one number of crates the stall refuses, and the most a crate is filled.
 	const UNLUCKY := 13.0
 	const FULLEST := 0.8
@@ -47,7 +50,16 @@ class Order extends Shown:
 		# every fact as it is to begin with
 		for action: StringName in FIRST:
 			facts[SET_BY[action]] = FIRST[action]
+		facts[&"awaited"] = false
+		facts[&"sent"] = 0
 		narrowing = Narrowing.new(chimes, Bound.new(get_fruits), 8, TYPES_FRUIT)
+
+	## Whether the order was sent and the stall has not answered yet, and how many times it has been sent.
+	func is_awaited() -> bool:
+		return facts[&"awaited"]
+
+	func get_sent() -> int:
+		return facts[&"sent"]
 
 	func get_crates() -> float:
 		return facts[&"crates"]
@@ -70,6 +82,8 @@ class Order extends Shown:
 	## The refused value of each: a pick with no value - an option not yet
 	## laid out - refuses nothing.
 	func would(action: StringName, payload: Dictionary) -> Phrase:
+		if action == ANSWERS:
+			return null if is_awaited() else Phrase.of("No order is waiting for an answer")
 		var value: Variant = payload.get("value")
 		if action == SETS_CRATES and value == UNLUCKY:
 			return Phrase.of("The stall never stacks thirteen crates")
@@ -80,6 +94,11 @@ class Order extends Shown:
 		return null
 
 	func told(action: StringName, payload: Dictionary) -> Phrase:
+		if action == SENDS or action == ANSWERS:
+			facts[&"sent"] += 1 if action == SENDS else 0
+			facts[&"awaited"] = action == SENDS
+			moved()
+			return null
 		facts[SET_BY[action]] = payload["value"]
 		moved()
 		return null

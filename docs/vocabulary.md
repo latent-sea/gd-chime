@@ -14,6 +14,7 @@ What `ui.<kind>(...)` describes and the builder turns into a node (`floor_kinds.
 - `fitted_text` - Words drawn in their own kind where they fit, and stepped down toward the size of a smaller kind, the floor kind, until they do: a name in a narrow block, written as large as its room allows and never cut.
 - `image` - A picture: a texture, or a bound value read again whenever its bells ring, drawn to fit its room and keeping its shape.
 - `surface` - A ground: a stylebox drawn under whatever it holds, by a Theme name.
+- `outline` - An outline: a look's box drawn OVER whatever stands under it - the frame round the one chosen - taking no room and no press.
 - `paragraph` - Running words: spans one after another, wrapped as a paragraph at the width it is given - phrases, a model's data, and links among them, each link a pressable laid in the line where its words fall.
 - `pressable` - Something pressed: a control performing one of its place's actions, drawn in the state it is in, holding whatever content it was described with.
 - `press_local` - A local press: a face whose press sets a local, and does nothing else.
@@ -188,6 +189,7 @@ A name without the mark is a constant, usable as a type and inside a `const`.
 - `Desc` - A description of a piece of interface: what kind of primitive, what it is given, and what it holds. A recipe returns one; the builder (ui.gd) turns one into nodes, top-down, and does not keep it.
 - `LazyImage` - A picture that loads as the reader nears it: the look's box standing in until it lands, then the picture filling the box - cut to its shape, never stretched - fading in over it.
 - `Local` - A local: a value that belongs to what was built, and to nothing else.
+- `Outline` - An outline: a look's box drawn OVER whatever stands under it - the frame round the one chosen - taking no room and no press.
 - `PressLocal` - A local press: a face whose press sets a local, and does nothing else.
 - `Pressable` - Something pressed: a control performing one of its place's actions, drawn in the state it is in, holding whatever content it was described with.
 - `Ui` - The floor's primitives, each a script with build(ui, desc, parent) (floor_kinds.gd).

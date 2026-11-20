@@ -3,6 +3,7 @@ extends RefCounted
 const Chimes := preload("res://addons/gd_chime/chimes.gd")
 const Pressable := preload("res://addons/gd_chime/components/primitives/pressable.gd")
 const PressLocal := preload("res://addons/gd_chime/components/primitives/press_local.gd")
+const Outline := preload("res://addons/gd_chime/components/primitives/outline.gd")
 const Values := preload("res://demo/gallery/values_models.gd")
 const ValuesPieces := preload("res://demo/gallery/values_pieces.gd")
 const Hands := preload("res://tests/hands.gd")
@@ -24,11 +25,16 @@ const Hands := preload("res://tests/hands.gd")
 ## the pad and by Enter, large inert; a segment clicked, walked to by the
 ## pad and by the keys, the view below following.
 ##
+## The order's press is clicked, and pressed by Enter and the pad's A while
+## its answer is awaited: sent once, pending meanwhile and in the room it
+## had, until the stall's answer; and a size's block clicked is ringed, it
+## alone, with no block moved.
+##
 ## THE ORDER IS PUT BACK AS IT WAS, through the door, and the fruit's typing
 ## cleared, since every place is looked at after this.
 
 ## Every claim this walks.
-const CLAIMS := ["slider_by_mouse_keys_pad", "stepper_by_mouse_keys_pad", "combo_short_by_mouse_keys_pad", "combo_long_by_mouse_keys_pad", "radios_by_mouse_keys_pad", "segments_by_mouse_keys_pad"]
+const CLAIMS := ["slider_by_mouse_keys_pad", "stepper_by_mouse_keys_pad", "combo_short_by_mouse_keys_pad", "combo_long_by_mouse_keys_pad", "radios_by_mouse_keys_pad", "segments_by_mouse_keys_pad", "pending_press_asks_once", "outline_rings_the_chosen_and_moves_nothing"]
 
 var _stall: SceneTree
 var _hands: Hands
@@ -52,6 +58,8 @@ func run() -> Dictionary:
 	await _long()
 	await _radios()
 	await _segments()
+	await _pending()
+	await _outlined()
 	# every fact of the order as it was to begin with, set through the door
 	for action: StringName in Values.Order.FIRST:
 		_stall.commands.dispatch(Chimes.GLOBAL, action, {"value": Values.Order.FIRST[action]})
@@ -173,3 +181,40 @@ func _segments() -> void:
 	await _hands.key(KEY_RIGHT)
 	await _hands.key(KEY_ENTER)
 	_said["segments_by_mouse_keys_pad"] = clicked and padded and _hands.focused() == segments[1] and priced.call()
+
+
+func _pending() -> void:
+	var sends: Pressable = _stall.ui.node_named(&"sends")
+	var answers: Pressable = _stall.ui.node_named(&"answers")
+	var before := order().get_sent()
+	sends.grab_focus()
+	var at_rest := sends.get_global_rect()
+	var refused: bool = not answers.is_usable()
+	await _hands.click(sends)
+	var asked: bool = order().get_sent() == before + 1 and sends.get_state() == &"pending" and _hands.texts(sends) == ["Sending…"] and sends.get_global_rect().size == at_rest.size
+	sends.grab_focus()
+	await _hands.key(KEY_ENTER)
+	await _hands.pad(JOY_BUTTON_A)
+	await _hands.click(sends)
+	var once: bool = order().get_sent() == before + 1 and sends.is_pending()
+	answers.grab_focus()
+	await _hands.click(answers)
+	_said["pending_press_asks_once"] = refused and asked and once and not sends.is_pending() and _hands.texts(sends) == ["Send the order"]
+
+
+func _outlined() -> void:
+	var row: Control = _stall.ui.node_named(&"outlined")
+	var blocks: Array = _hands.presses_of(Values.Order.PICKS_SIZE, {under = row})
+	var rings: Array = row.find_children("*", "Control", true, false).filter(func(part: Node) -> bool: return part is Outline)
+	var stand := func() -> Array: return blocks.map(func(block: Control) -> Rect2: return block.get_global_rect())
+	# the focus on a block first, so a page that scrolls has brought the row into the window before it is clicked
+	(blocks[0] as Control).grab_focus()
+	await _hands.click(blocks[0])
+	var first: Array = stand.call()
+	var shown_first: Array = rings.map(func(ring: Control) -> bool: return ring.is_visible_in_tree())
+	(blocks[1] as Control).grab_focus()
+	await _hands.click(blocks[1])
+	var shown_second: Array = rings.map(func(ring: Control) -> bool: return ring.is_visible_in_tree())
+	# each ring laid across the whole of its block
+	var across: bool = range(rings.size()).all(func(at: int) -> bool: return (rings[at] as Control).get_global_rect().size == (blocks[at] as Control).get_global_rect().size)
+	_said["outline_rings_the_chosen_and_moves_nothing"] = shown_first == [true, false, false] and shown_second == [false, true, false] and stand.call() == first and across and order().get_size() == &"middling"

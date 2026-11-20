@@ -83,6 +83,9 @@ static func dress(theme: Theme, palette: Dictionary) -> void:
 	ring.border_color = palette[&"ink"]
 	ring.set_border_width_all(4)
 	theme.set_stylebox(&"focus", Themes.PRESSABLE, ring)
+	# pending, its answer awaited: the lit ground, in the ink, so it reads as taken and not yet done
+	theme.set_stylebox(&"pending", Themes.PRESSABLE, _flat(palette[&"lit"]))
+	theme.set_color(&"font_color_pending", Themes.PRESSABLE, palette[&"ink"])
 	# the ground it would take what is carried on, and, refusing, a plain ground ringed in the soft ink - the reason itself is in its words
 	theme.set_stylebox(&"accepting", Themes.PRESSABLE, _flat(palette[Themes.GROUNDS[&"glowing"]]))
 	theme.set_color(&"font_color_accepting", Themes.PRESSABLE, palette[Themes.INKS[&"glowing"]])

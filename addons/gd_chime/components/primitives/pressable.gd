@@ -13,7 +13,12 @@ extends "../../action_control.gd"
 ## unavailable, so it draws current, gives no reason, and takes normal's
 ## box and ink where a look defines none - or, described current_while a
 ## bound value, CURRENT while that holds, wherever it goes: the flap of the
-## file in front, a fact of a model and never of navigation;
+## file in front, a fact of a model and never of navigation; PENDING, for
+## one described pending_while a bound value: a press whose answer is still
+## awaited - a host asked - is drawn in the look's pending box, in the room
+## it has at rest, and A PRESS OF IT WHILE IT IS PENDING DOES NOTHING, so
+## what was asked once is never asked twice; what it says meanwhile is its
+## content's, reading the same value;
 ## and its REASON, a bound value the content may read (ui.reason()), why it
 ## cannot be used or why the last press was refused, re-read as this draws.
 ##
@@ -40,6 +45,7 @@ var _payload: Variant
 var _dependents: Array = []  # the controls reading an answer of this, drawn as this is
 var absent_when_refused: bool = false  # gone from the screen, not inert, while the door would refuse it
 var current_while: Bound = null  # current while this holds, in place of where it goes, when described so
+var pending_while: Bound = null  # pending while this holds, its presses doing nothing, when described so
 
 
 func _init(chimes: Chimes, commands: Commands, place: Node, does: StringName, payload: Variant, style: Variant) -> void:
@@ -140,8 +146,21 @@ func is_current() -> bool:
 	return _place.driver.get_parameter(goes_to) == payload().get("parameter")
 
 
+## Whether its last press is still awaiting its answer, as the value it was described with says.
+func is_pending() -> bool:
+	return pending_while != null and pending_while.read() == true
+
+
+## A press while it is pending does nothing: asked once, it is not asked again.
+func pressed() -> void:
+	if not is_pending():
+		super()
+
+
 ## The one state the look draws it in.
 func get_state() -> StringName:
+	if is_pending():
+		return &"pending"
 	if is_glowing():
 		return &"glowing"
 	if is_current():
@@ -180,5 +199,7 @@ static func build(ui: RefCounted, desc: RefCounted, parent: Node) -> Control:
 		made.absent_when_refused = true
 	if desc.props.has("current_while"):
 		made.current_while = desc.props["current_while"]
+	if desc.props.has("pending_while"):
+		made.pending_while = desc.props["pending_while"]
 	ui.attach(made, parent, desc.facts)
 	return made

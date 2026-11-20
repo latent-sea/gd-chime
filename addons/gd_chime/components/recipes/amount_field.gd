@@ -33,7 +33,7 @@ static func make(ui: Ui, action: StringName, mark: String, options: Dictionary =
 	var holds: Variant = options.get("holds")
 	var style: StringName = options.get(Options.STYLE, &"AmountField")
 	if holds == null:
-		return ui.row([ui.text(mark, Themes.FACE), ui.field(action, &"Field").grow()], style)
+		return ui.row([ui.text(mark, Themes.FACE), ui.field(action, &"Field", {"number": true}).grow()], style)
 	var shown: Bound = holds.map(func(held: Variant) -> String: return "" if held == null else held if held is String else String.num(held))
 	var carries := func(line: String) -> Dictionary: return {"value": Question.amount_of(line), "line": line}
-	return ui.row([ui.text(mark, Themes.FACE), ui.field(action, &"Field", {"shows": shown, "changes": action, "carries": carries}).grow()], style)
+	return ui.row([ui.text(mark, Themes.FACE), ui.field(action, &"Field", {"shows": shown, "changes": action, "carries": carries, "number": true}).grow()], style)
