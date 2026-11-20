@@ -211,10 +211,10 @@ func _outlined() -> void:
 	(blocks[0] as Control).grab_focus()
 	await _hands.click(blocks[0])
 	var first: Array = stand.call()
-	var shown_first: Array = rings.map(func(ring: Control) -> bool: return ring.is_visible_in_tree())
+	var shown_first: Array = rings.map(func(ring: Outline) -> bool: return ring.is_shown())
 	(blocks[1] as Control).grab_focus()
 	await _hands.click(blocks[1])
-	var shown_second: Array = rings.map(func(ring: Control) -> bool: return ring.is_visible_in_tree())
+	var shown_second: Array = rings.map(func(ring: Outline) -> bool: return ring.is_shown())
 	# each ring laid across the whole of its block
 	var across: bool = range(rings.size()).all(func(at: int) -> bool: return (rings[at] as Control).get_global_rect().size == (blocks[at] as Control).get_global_rect().size)
 	_said["outline_rings_the_chosen_and_moves_nothing"] = shown_first == [true, false, false] and shown_second == [false, true, false] and stand.call() == first and across and order().get_size() == &"middling"

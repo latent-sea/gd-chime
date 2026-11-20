@@ -20,7 +20,9 @@ const Bound := preload("bound.gd")
 ## Its look is the panel of its style, a variation of Outline: a ring, a
 ## box with no middle (look_boxes.gd's ring). The style may be bound, and
 ## SHOWN, a bound value, has it drawn only while that holds - the one
-## chosen framed, the others not.
+## chosen framed, the others not. Not shown it draws nothing and stays
+## where it is: whether it is visible is its holder's to say, as a plan
+## says it of every piece it lays (planned.gd), and is never set here.
 ##
 ## It must never draw a middle over what it frames: a style whose panel
 ## fills is reported out loud as it is drawn.
@@ -50,11 +52,13 @@ func is_shown() -> bool:
 ## Its style and whether it shows read, so both are followed, and drawn again.
 func _read() -> void:
 	theme_type_variation = Styled.name_of(_style)
-	visible = is_shown()
+	is_shown()
 	queue_redraw()
 
 
 func _draw() -> void:
+	if not is_shown():
+		return
 	var panel := get_theme_stylebox(&"panel")
 	if panel is StyleBoxFlat and (panel as StyleBoxFlat).draw_center:
 		push_error("the outline style %s fills its middle, which would cover what it frames" % theme_type_variation)

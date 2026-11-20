@@ -71,7 +71,7 @@ func _the_one_chosen_is_ringed_on_all_four_sides_over_what_is_laid_to_its_edges(
 	var other: Outline = ui.node_named(&"ring2")
 	var press: Control = ui.node_named(&"press1")
 	var panel := ring.get_theme_stylebox(&"panel") as StyleBoxFlat
-	_verdict.check(ring.is_visible_in_tree() and not other.is_visible_in_tree(), "the one chosen is outlined and the other is not: %s %s" % [ring.visible, other.visible])
+	_verdict.check(ring.is_shown() and not other.is_shown(), "the one chosen is outlined and the other is not: %s %s" % [ring.is_shown(), other.is_shown()])
 	_verdict.check(press.get_global_rect() == block.get_global_rect() and ring.get_global_rect() == block.get_global_rect(), "its outline is laid across the whole of what it frames, which is laid to every edge: %s over %s" % [ring.get_global_rect(), press.get_global_rect()])
 	_verdict.check(ring.get_index() > press.get_index() and ring.z_index >= press.z_index, "and is drawn after it, so over it")
 	_verdict.check(panel != null and not panel.draw_center and [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM].all(func(side: Side) -> bool: return panel.get_border_width(side) > 0 and panel.get_expand_margin(side) <= 0.0), "what it draws is a ring on all four sides, inside its own edges, with no middle")
@@ -92,7 +92,7 @@ func _choosing_moves_nothing_and_what_is_under_the_outline_is_pressed_as_ever() 
 	model.set_value(&"flag", 2)
 	await _a_frame_passes()
 	var chosen: Array = [rects.call(), least.call()]
-	_verdict.check((ui.node_named(&"ring2") as Control).is_visible_in_tree() and chosen == unchosen, "one chosen, every piece stands where it stood and needs the room it needed: %s then %s" % [unchosen[0], chosen[0]])
+	_verdict.check((ui.node_named(&"ring2") as Outline).is_shown() and chosen == unchosen, "one chosen, every piece stands where it stood and needs the room it needed: %s then %s" % [unchosen[0], chosen[0]])
 	# a press on the outline's own edge, a pixel inside the block
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
