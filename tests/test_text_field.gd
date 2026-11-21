@@ -57,6 +57,7 @@ func _init() -> void:
 	await _verdict.states(_a_text_field_reports_an_option_it_does_not_know)
 	await _verdict.states(_the_floor_s_typed_line_is_edged_on_all_four_sides_and_ringed_thicker_with_the_focus)
 	await _verdict.states(_a_line_that_is_a_number_asks_a_phone_for_its_digits_and_any_other_for_its_letters)
+	await _verdict.states(_a_line_keeping_a_local_types_into_it_and_asks_no_door)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -168,4 +169,32 @@ func _a_line_that_is_a_number_asks_a_phone_for_its_digits_and_any_other_for_its_
 	_verdict.check(keyboard.call(&"number") == LineEdit.KEYBOARD_TYPE_NUMBER, "a line that is a number asks for the keyboard of digits: %d" % keyboard.call(&"number"))
 	_verdict.check(keyboard.call(&"words") == LineEdit.KEYBOARD_TYPE_DEFAULT, "any other line asks for the keyboard of letters: %d" % keyboard.call(&"words"))
 	model.free()
+	made.done()
+
+
+## UI-009 (the QA of 2026-11-20): a bid typed into a pop-up whose amount is a local, as its arrows step it.
+func _a_line_keeping_a_local_types_into_it_and_asks_no_door() -> void:
+	var made := Fixture.new(root, {})
+	var ui := made.ui
+	var most := ui.local(165)
+	var shown: Bound = most.map(func(amount: int) -> String: return str(amount))
+	var read := func(line: String) -> int: return line.to_int()
+	ui.start(ui.app(&"app", [ui.screen(&"first", [ui.column([ui.field(&"", Fields.FIELD, {"keeps": most, "shows": shown, "carries": read, "number": true}).named(&"most"),
+		ui.press_local(most, func(now: int) -> int: return now + 10, [ui.text("up")]).named(&"up")])])]))
+	await _a_frame_passes()
+	var field: Field = ui.node_named(&"most")
+	_verdict.check(field.get_line() == "165", "the line shows the local: %s" % field.get_line())
+	var edit: LineEdit = field.find_children("*", "LineEdit", true, false)[0]
+	var before: Dictionary = made.commands.get_last()
+	edit.text = "240"
+	field._changed("240")
+	await _a_frame_passes()
+	_verdict.check(most.read() == 240 and made.commands.get_last() == before, "every change is the local's, read by carries, and no door is asked: %s %s" % [most.read(), made.commands.get_last()])
+	edit.text = "300"
+	field._submitted("300")
+	await _a_frame_passes()
+	_verdict.check(most.read() == 300 and field.get_line() == "300", "Enter keeps the line as the local's, and leaves it standing: %s %s" % [most.read(), field.get_line()])
+	ui.node_named(&"up").pressed()
+	await _a_frame_passes()
+	_verdict.check(field.get_line() == "310", "the local stepped elsewhere is the line's: %s" % field.get_line())
 	made.done()

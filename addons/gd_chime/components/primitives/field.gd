@@ -53,6 +53,7 @@ var _shown: Variant = null  # the value last put in the line
 var _carries: Callable  # the line to the payload Enter dispatches, or none for {"line"}
 var _leaves: StringName  # the action dispatched as the focus leaves the line, or none
 var _refused: Local  # the local the refusal is kept in in place of the reason under the line, or null
+var _keeps: Local  # the local every change and Enter set in place of a dispatch, or null
 var _refusal: Phrase = null  # the door's answer to the last dispatch
 var _dependents: Array = []  # the controls reading its reason, drawn as this is
 
@@ -68,6 +69,7 @@ func _init(chimes: Chimes, commands: Commands, action: StringName, style: String
 	_carries = options["carries"]
 	_leaves = options["leaves"]
 	_refused = options["refused"]
+	_keeps = options["keeps"]
 	if style != &"":
 		_line.theme_type_variation = style
 	if options["number"]:
@@ -143,14 +145,18 @@ func _gap() -> float:
 ## Enter: the line through the door, and cleared once done - or left, for
 ## a field showing the model's own value.
 func _submitted(line: String) -> void:
-	if _answered(_commands.dispatch(region, _action, _carries.call(line) if _carries.is_valid() else {"line": line})) and _shows == null:
+	if _keeps != null:
+		_keeps.set_value(_carries.call(line) if _carries.is_valid() else line)
+	elif _answered(_commands.dispatch(region, _action, _carries.call(line) if _carries.is_valid() else {"line": line})) and _shows == null:
 		_line.clear()
 
 
 ## Every change, through the door under the second action, when one is
 ## given, carrying what Enter would.
 func _changed(line: String) -> void:
-	if _changes != &"":
+	if _keeps != null:
+		_keeps.set_value(_carries.call(line) if _carries.is_valid() else line)
+	elif _changes != &"":
 		_answered(_commands.dispatch(region, _changes, _carries.call(line) if _carries.is_valid() else {"line": line}))
 
 

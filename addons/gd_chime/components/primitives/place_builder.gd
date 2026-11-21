@@ -125,7 +125,8 @@ static func declare(ui: RefCounted, desc: RefCounted, place: Node, lifting: Arra
 		for action: StringName in child.props.get("declares", {}):
 			if place.performs.get(action, &"") == &"":
 				place.performs[action] = child.props["declares"][action]
-		if [&"field", &"key_capture", &"drop_target", &"slider", &"range_slider", &"area", &"grip", &"nearing"].has(child.kind):
+		# a field keeping a local has no action to perform
+		if [&"field", &"key_capture", &"drop_target", &"slider", &"range_slider", &"area", &"grip", &"nearing"].has(child.kind) and child.props["action"] != &"":
 			place.performs[child.props["action"]] = &""
 		if child.kind == &"grip" and child.props["folds"] != &"":
 			place.performs[child.props["folds"]] = &""
