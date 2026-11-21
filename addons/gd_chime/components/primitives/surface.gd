@@ -35,6 +35,7 @@ var motion: Motion = null
 var _style: Variant  # the style described - a name, or a Bound reading one - tried again on every look
 var _chimes: RefCounted  # the chimes a bound style is heard through, or none
 var _reading: bool = false  # while the look is being read, so a fallback set here is not heard as another look
+var _worn: StringName = &""  # the style's name when the look was last read: a ring reading it again restyles nothing
 var _frost: ColorRect  # the blurring rect under the content, or none
 var _moves: bool = false  # whether its style's ground moves, drawn on the clock
 var _drawn_at: float = -1.0  # the clock's time its moving ground was last drawn at
@@ -57,12 +58,13 @@ func get_style() -> StringName:
 	return Styled.name_of(_style)
 
 
-## A bound style read - and, once this is in the tree, the look read again
-## in place, the panel it had left fading over the one it has now
-## (outgoing.gd).
+## A bound style read - and, once this is in the tree and the name it reads
+## has moved, the look read again in place, the panel it had left fading
+## over the one it has now (outgoing.gd). A ring that leaves the name as it
+## was lays nothing out again: a model's one bell rings for all its values.
 func _restyle() -> void:
-	Styled.name_of(_style)
-	if not is_inside_tree():
+	var named: StringName = Styled.name_of(_style)
+	if not is_inside_tree() or named == _worn:
 		return
 	var before := get_theme_stylebox(&"panel")
 	_read_look()
@@ -85,7 +87,8 @@ func _notification(what: int) -> void:
 ## The style it says now, worn; the base where the look does not know it.
 func _read_look() -> void:
 	_reading = true
-	_wear(Styled.name_of(_style))
+	_worn = Styled.name_of(_style)
+	_wear(_worn)
 	if not has_theme_stylebox(&"panel"):
 		_wear(Themes.SURFACE)
 	_frosted(get_theme_constant(&"blur") if has_theme_constant(&"blur") else 0)
