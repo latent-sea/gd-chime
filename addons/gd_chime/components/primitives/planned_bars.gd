@@ -4,7 +4,8 @@ extends Control
 ## is longer than the room on its axis, along its edge, its range what
 ## overflows; and the square where both meet, which this is, covered while
 ## both show, so nothing scrolled under it shows there - drawn in the down
-## bar's track, after the bars, taking any press there from the pieces.
+## bar's track, after the bars, taking any press there from the pieces. A
+## wheel turned over the planned steps whichever bar shows that way (wheeled).
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 
@@ -30,6 +31,22 @@ func ranged(bars: Array[ScrollBar], room: Vector2, all: Vector2, step: float, th
 	visible = bars.all(func(bar: ScrollBar) -> bool: return bar.visible)
 	position = room
 	size = Vector2(thickness, thickness)
+
+
+## A wheel's step on `down` or `across`: down or up, or across with shift or a sideways wheel, on whichever bar shows
+## that way; whether it was taken.
+static func wheeled(event: InputEvent, down: ScrollBar, across: ScrollBar) -> bool:
+	var wheel := event as InputEventMouseButton
+	if wheel == null or not wheel.pressed:
+		return false
+	var steps := {MOUSE_BUTTON_WHEEL_DOWN: 1.0, MOUSE_BUTTON_WHEEL_UP: -1.0, MOUSE_BUTTON_WHEEL_RIGHT: 1.0, MOUSE_BUTTON_WHEEL_LEFT: -1.0}
+	if not steps.has(wheel.button_index):
+		return false
+	var sideways: bool = wheel.button_index in [MOUSE_BUTTON_WHEEL_RIGHT, MOUSE_BUTTON_WHEEL_LEFT] or wheel.shift_pressed or not down.visible
+	var bar: ScrollBar = across if sideways else down
+	if bar.visible:
+		bar.value += steps[wheel.button_index] * bar.custom_step
+	return bar.visible
 
 
 func _draw() -> void:

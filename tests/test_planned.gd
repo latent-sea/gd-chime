@@ -9,7 +9,10 @@ extends SceneTree
 ## shows and no room is lost to one; a piece the plan leaves out is hidden,
 ## a height of its own is its least, a ground may reach past it, unclipped,
 ## and a piece's words line up as the plan says; and a value its plan read
-## moving lays it out again, with the room unchanged; a field's typed
+## moving lays it out again, with the room unchanged; shown again with nothing
+## it read, its room nor its look moved, its pieces stand where the last plan
+## put them and the plan is not asked again (a page come back to), but a piece
+## changed while it was hidden has it asked again; a field's typed
 ## words are drawn at the plan's size, as a label's are; and a planned inside
 ## another keeps its own words' sizes when the one round it lays out again,
 ## leaving that piece's words to its kind (Ian, 2026-11-06: a nested plan's
@@ -48,6 +51,7 @@ func _init() -> void:
 	await _verdict.states(_fitting_it_shows_no_bar_and_loses_no_room_to_one)
 	await _verdict.states(_a_piece_left_out_is_hidden_its_own_height_is_its_least_and_its_ground_reaches_past_it)
 	await _verdict.states(_a_value_its_plan_read_moving_lays_it_out_again)
+	await _verdict.states(_shown_again_with_nothing_moved_its_last_plan_stands)
 	await _verdict.states(_a_field_s_typed_words_are_drawn_at_the_plan_s_size)
 	await _verdict.states(_a_planned_inside_another_keeps_its_words_sizes_as_the_outer_lays_out_again)
 	quit(_verdict.deliver(get_script()))
@@ -190,6 +194,35 @@ func _a_value_its_plan_read_moving_lays_it_out_again() -> void:
 	# freed, it follows nothing more: the value moving again reaches no freed piece, which would be said as an error
 	across.set_value(300.0)
 	await _a_frame_passes()
+	made.done()
+
+
+func _shown_again_with_nothing_moved_its_last_plan_stands() -> void:
+	var made := Fixture.new(root)
+	var host := _host(Vector2(600, 400))
+	_asked.clear()
+	made.ui.build(_stacked(made.ui, 100.0, 37), host)
+	await _a_frame_passes()
+	var planned: Control = made.ui.node_named(&"planned")
+	var two: Control = made.ui.node_named(&"two")
+	var asked := _asked.size()
+	planned.visible = false
+	await _a_frame_passes()
+	planned.visible = true
+	await _a_frame_passes()
+	_verdict.check(asked > 0 and _asked.size() == asked and two.get_rect() == Rect2(0, 100, 600, 100) and _words(made.ui.node_named(&"one")).get_theme_font_size(&"font_size") == 37,
+		"hidden and shown again with nothing moved, the plan is not asked again and the pieces stand where it put them: asked %d then %d, the second at %s" % [asked, _asked.size(), two.get_rect()])
+	# a piece changed while hidden asks for its room as it is shown, which plans it again
+	planned.visible = false
+	await _a_frame_passes()
+	_words(two).text = "the second, longer"
+	planned.visible = true
+	await _a_frame_passes()
+	_verdict.check(_asked.size() > asked, "a piece changed while it was hidden, the plan is asked again as it is shown: asked %d then %d" % [asked, _asked.size()])
+	host.size = Vector2(500, 400)
+	await _a_frame_passes()
+	_verdict.check(_asked.back() == Vector2(500, 400) and two.size.x == 500.0, "its room moving, the plan is asked again: %s, %s" % [_asked.back(), two.size])
+	host.free()
 	made.done()
 
 

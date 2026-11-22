@@ -25,7 +25,9 @@ const PLANNED := &"gd_chime_planned"
 ## pieces, which may reach past this into the room round it - a bar's colour
 ## running to the window's edges past the safe margin. IT FOLLOWS WHAT ITS
 ## PLAN READS (chimes.gd, follow): a value the plan read moving - the tab a
-## page shows, a fact's words - lays it out again.
+## page shows, a fact's words - lays it out again. WHILE HIDDEN AND AS IT IS
+## FIRST SHOWN AGAIN, THE LAST PLAN STANDS where nothing it read, no piece's
+## least room, its size, its scale on the screen nor the look has moved.
 ##
 ## WHAT DOES NOT FIT SCROLLS, WITH A BAR AND ITS ARROWS SHOWN. Where all of
 ## it is longer than the room on an axis, the bar's thickness (the look's
@@ -58,6 +60,10 @@ var _across := HScrollBar.new()
 var _corner := PlannedBars.new(_down)  # the square where the bars meet, which ranges them
 var _finger: ScrollFinger
 var _laid: Dictionary = {}  # what the plan said when it was last asked: rects, types and size
+var _room := Vector2.ZERO  # the room the plan was last asked in, the bars' set aside
+var _asked_in: Array = []  # its size and its scale on the screen when the plan was last asked
+var _stale := true  # whether what the plan read or the look moved since it was last asked
+var _shown_again := false  # whether it has just been shown again, and not laid out since
 var _placing := false  # whether its pieces are being placed, when the bars' values moving lay nothing again
 var _least: Vector2
 var _chimes: RefCounted
@@ -154,8 +160,8 @@ func _planned() -> Array:
 	for _pass: int in 3:
 		room = size - Vector2(set_aside.y, set_aside.x) * thickness
 		var answer := {}
-		# the plan asked, and followed: what it read moving lays this out again
-		_chimes.follow(self, &"plan", func() -> void: answer["plan"] = _plan.call(room, self), queue_sort)
+		# the plan asked, and followed: what it read moving asks it again as this is laid out next
+		_chimes.follow(self, &"plan", func() -> void: answer["plan"] = _plan.call(room, self), func() -> void: _stale = true; queue_sort())
 		asked = answer["plan"]
 		var over := Vector2(1.0 if asked["size"].x > room.x + 0.5 else 0.0, 1.0 if asked["size"].y > room.y + 0.5 else 0.0)
 		if over.x <= set_aside.x and over.y <= set_aside.y:
@@ -170,18 +176,27 @@ func _notification(what: int) -> void:
 		_chimes.unfollow(self, &"plan")
 		return
 	# laid out only once it has a room: there is no plan for nothing
+	_stale = _stale or what == NOTIFICATION_THEME_CHANGED
+	_shown_again = _shown_again or what == NOTIFICATION_VISIBILITY_CHANGED and is_visible_in_tree()
 	if what != NOTIFICATION_SORT_CHILDREN or size.x <= 0.0 or size.y <= 0.0:
 		return
-	var answer: Array = _planned()
-	_laid = answer[0]
-	var room: Vector2 = answer[1]
+	# what the plan stands on beyond what it reads: its size, its scale on the screen, each piece's least room
+	var asked_in: Array = [size, get_global_transform_with_canvas().get_scale(), pieces().map(func(piece: Control) -> Vector2: return piece.get_combined_minimum_size())]
+	# the last plan kept while hidden, and on the first layout after being shown again, nothing it stood on having moved
+	if not ((_shown_again or not is_visible_in_tree()) and not _stale and asked_in == _asked_in):
+		var answer: Array = _planned()
+		_laid = answer[0]
+		_room = answer[1]
+		_asked_in = asked_in
+		_stale = false
+	_shown_again = _shown_again and not is_visible_in_tree()
 	var all: Vector2 = _laid["size"]
 	var thickness := float(get_theme_constant(&"bar", _look))
 	_placing = true
-	_corner.ranged(bars(), room, all, float(get_theme_constant(&"step", _look)), thickness)
+	_corner.ranged(bars(), _room, all, float(get_theme_constant(&"step", _look)), thickness)
 	clip_contents = _down.visible or _across.visible
-	fit_child_in_rect(_down, Rect2(room.x, 0.0, thickness, room.y))
-	fit_child_in_rect(_across, Rect2(0.0, room.y, room.x, thickness))
+	fit_child_in_rect(_down, Rect2(_room.x, 0.0, thickness, _room.y))
+	fit_child_in_rect(_across, Rect2(0.0, _room.y, _room.x, thickness))
 	var offset := Vector2(_across.value, _down.value)
 	var held := pieces()
 	# each piece at its type size, then where the plan puts it, less how far it is scrolled
@@ -211,17 +226,7 @@ func _draw() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	var wheel := event as InputEventMouseButton
-	if wheel == null or not wheel.pressed:
-		return
-	# the wheel a step down or up, or across with shift or a sideways wheel, on whichever bar shows that way
-	var steps := {MOUSE_BUTTON_WHEEL_DOWN: 1.0, MOUSE_BUTTON_WHEEL_UP: -1.0, MOUSE_BUTTON_WHEEL_RIGHT: 1.0, MOUSE_BUTTON_WHEEL_LEFT: -1.0}
-	if not steps.has(wheel.button_index):
-		return
-	var sideways: bool = wheel.button_index in [MOUSE_BUTTON_WHEEL_RIGHT, MOUSE_BUTTON_WHEEL_LEFT] or wheel.shift_pressed or not _down.visible
-	var bar: ScrollBar = _across if sideways else _down
-	if bar.visible:
-		bar.value += steps[wheel.button_index] * bar.custom_step
+	if PlannedBars.wheeled(event, _down, _across):
 		accept_event()
 
 
