@@ -4,7 +4,8 @@ const Frames := preload("../../frames.gd")
 const Reads := preload("../../reads.gd")
 
 ## The values an interface makes for itself, with no model to hold them: a
-## local, an eased value, a value worked out, and one read every frame.
+## local, an eased value, a value worked out, one worked out once per change,
+## and one read every frame.
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -35,6 +36,19 @@ func eased(source: Bound, easing: StringName = Motion.MOVE) -> Bound:
 ## the function read: a blend of models' values, a model's own reading.
 func bound(work: Callable) -> Bound:
 	return Bound.new(work)
+
+
+## A value worked out by this function once, and again only when something
+## it read has moved, however often it is read in between (reads.gd,
+## worked): a list every piece of a page reads, which worked out on every
+## read cost each piece's draw the whole list (the speed audit, 22 Nov:
+## Dynasty's market, 4 s a visit). Whoever reads it follows what the
+## function read, as a bound value's reader does. The function must read
+## everything it depends on through a value: what it reads past one - the
+## clock, a plain field - is not heard, and the value stands as it was.
+func kept(work: Callable) -> Bound:
+	var held: Array = []
+	return Bound.new(func() -> Variant: return Reads.worked(held, work))
 
 
 ## A value worked out by this function again every frame, and on whatever
