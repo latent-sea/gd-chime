@@ -13,8 +13,9 @@ extends SceneTree
 ## a file in a folder not there yet - a fresh user:// - has its folder made
 ## and is written, never kept only in memory.
 ##
-## A write made to fail holds the file open, which refuses its replacement on
-## Windows - the platform this is run on.
+## A write, or a move aside, is made to fail by a folder standing where it
+## would put its file, which refuses it on Linux as on Windows (a file held
+## open refuses its replacement on Windows alone).
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -33,6 +34,7 @@ const PATH := "user://test_settings_file.json"
 const WRITING := PATH + ".writing"
 const ASIDE := PATH + ".unreadable"
 const ASIDE_AGAIN := PATH + ".unreadable.2"
+const ASIDE_THIRD := PATH + ".unreadable.3"
 const UNREADABLE := "[\"half a list\""
 ## A file two folders down, neither of them there before it is written, and the folders.
 const FRESH := "user://test_settings_file_fresh/inner/settings.json"
@@ -96,7 +98,7 @@ func _init() -> void:
 ## Every file this test may leave beside the settings, removed.
 func _clear() -> void:
 	# the files, what is written before each rename, what was moved aside, and the fresh folders innermost first
-	for path: String in [PATH, WRITING, ASIDE, ASIDE_AGAIN, FRESH, FRESH + ".writing"] + FRESH_FOLDERS:
+	for path: String in [PATH, WRITING, ASIDE, ASIDE_AGAIN, ASIDE_THIRD, FRESH, FRESH + ".writing"] + FRESH_FOLDERS:
 		DirAccess.remove_absolute(path)
 
 
@@ -155,13 +157,13 @@ func _a_section_no_model_kept_goes_back_out_as_it_came_in() -> void:
 func _a_write_that_fails_before_its_rename_leaves_the_file_as_it_was() -> void:
 	var before := FileAccess.get_file_as_string(PATH)
 	var run := Run.new(root)
-	# held open, the file refuses to be replaced, so the write stops after .writing is written and before the rename
-	var holding := FileAccess.open(PATH, FileAccess.READ)
+	# a folder where .writing would be written, so the write stops before its rename
+	DirAccess.make_dir_absolute(WRITING)
 	var said := _hearing.said.size()
 	run.panels.told(&"folds_the_list", {})
 	await process_frame
 	await process_frame
-	holding.close()
+	DirAccess.remove_absolute(WRITING)
 	var now := FileAccess.get_file_as_string(PATH)
 	_verdict.check(now == before and JSON.parse_string(now) is Dictionary, "a write refused its rename leaves the file exactly as it was, and still settings: %s" % [now])
 	_verdict.check(not FileAccess.file_exists(WRITING), "and nothing half written beside it")
@@ -187,14 +189,14 @@ func _a_file_that_is_not_settings_is_moved_aside_said_and_never_written_over() -
 	_verdict.check(_hearing.said.size() == said + 1, "and it is said only the once: %s" % [_hearing.said.slice(said)])
 	run.done()
 	_put(PATH, UNREADABLE)
-	# held open, the unreadable file cannot be moved aside
-	var holding := FileAccess.open(PATH, FileAccess.READ)
+	# a folder at the next free name beside it - the two before are taken - so the unreadable file cannot be moved aside
+	DirAccess.make_dir_absolute(ASIDE_THIRD)
 	said = _hearing.said.size()
 	run = Run.new(root)
 	run.panels.told(&"folds_the_list", {})
 	await process_frame
 	await process_frame
-	holding.close()
+	DirAccess.remove_absolute(ASIDE_THIRD)
 	_verdict.check(_hearing.said.size() == said + 1 and FileAccess.get_file_as_string(PATH) == UNREADABLE and not FileAccess.file_exists(WRITING), "one that cannot be moved aside is said once and never written over: %s" % [_hearing.said.slice(said)])
 	run.done()
 	_put(PATH, JSON.stringify({"panels": "wide", "keys": {}}))

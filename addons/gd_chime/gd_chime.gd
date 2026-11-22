@@ -30,7 +30,7 @@ class_name GdChime
 ##   table in frozen panes drawn whole down; Bound, Local, PressLocal, the
 ##   values a description reads; Places; Areas; Text, Pressable, LazyImage,
 ##   Draggable, Grip, MenuTarget, Layout, PriorityRow, Capped, Transition,
-##   SimulatedSight.
+##   SimulatedSight, Outline.
 ## - The look: Themes, the Theme itself; Look and PaintedBox, Paint, which
 ##   dress one; and its families of types - Pressables, Fields, Tables,
 ##   Overlays, Charts, Feedback, Collections, Navigation; MotionTokens.

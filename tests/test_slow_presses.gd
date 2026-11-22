@@ -43,6 +43,8 @@ func _init() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(800, 600)
 	await _verdict.states(_a_slow_press_dims_first_its_work_follows_and_the_dim_lifts)
+	# the dims' longest stands run out before the engine stops, so no lift is still waiting on a timer at exit
+	await create_timer(SlowPresses.LONGEST + 0.1).timeout
 	quit(_verdict.deliver(get_script()))
 
 

@@ -116,7 +116,9 @@ static func _dimmed(control: Control, does: Callable) -> void:
 	# the face stays down HELD at the least, so a tap is seen whatever the dim did
 	while (Time.get_ticks_usec() - shown_at) / 1e6 < HELD:
 		await tree.process_frame
-	_hold(control, false)
+	# the press may have been freed while the dim stood, its screen made again: then it has no face to raise
+	if is_instance_valid(control):
+		_hold(control, false)
 
 
 ## The dim over the whole window, made the first time it is asked for, in the shade of the theme `control` is drawn

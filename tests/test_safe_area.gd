@@ -168,6 +168,14 @@ func _look() -> Theme:
 	return made
 
 
+## Two physics steps and a frame after them: the easel reads the keyboard in its physics step, and a frame alone,
+## drawn faster than one, can pass with no step at all.
+func _physics_steps_pass() -> void:
+	await physics_frame
+	await physics_frame
+	await process_frame
+
+
 ## An easel across a window of this size, every read of its screen answered
 ## as the A55 would - the cutout down the left, or at the top on its end -
 ## and an app on it holding what this makes of the fixture.
@@ -273,13 +281,13 @@ func _the_keyboard_is_read_only_while_a_field_holds_the_focus_and_insets_the_foo
 	await _a_frame_passes()
 	_verdict.check(_keyboard_asked == 0 and _easel.canvas.get_safe().end.y == _easel.canvas.size.y - 30.0, "with a press holding the focus the keyboard is not asked for, and the foot is inset 30: %d %s" % [_keyboard_asked, _easel.canvas.get_safe()])
 	line.grab_focus()
-	await _a_frame_passes()
+	await _physics_steps_pass()
 	_verdict.check(_keyboard_asked > 0 and _easel.canvas.get_safe().end.y == _easel.canvas.size.y - 294.0, "a field taking the focus has the keyboard read, and the foot inset 294, above it: %d %s" % [_keyboard_asked, _easel.canvas.get_safe()])
 	_verdict.check(_app().get_global_rect() == _easel.canvas.get_safe() and _easel.viewport.size_2d_override == drawn, "the app is laid above it, drawn at the same size as before: %s %s %s" % [_app().get_global_rect(), _easel.viewport.size_2d_override, drawn])
 	button.grab_focus()
-	await _a_frame_passes()
+	await _physics_steps_pass()
 	var asked := _keyboard_asked
-	await _a_frame_passes()
+	await _physics_steps_pass()
 	_verdict.check(_easel.canvas.get_safe().end.y == _easel.canvas.size.y - 30.0 and _keyboard_asked == asked, "the field let go, the foot is inset 30 again and the keyboard is asked for no more: %s %d then %d" % [_easel.canvas.get_safe(), asked, _keyboard_asked])
 	_verdict.check(not _easel.is_physics_processing(), "and the easel runs nothing each frame any more")
 	(model[0] as Node).free()

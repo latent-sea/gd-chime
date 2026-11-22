@@ -35,6 +35,11 @@ ui_accept={
 ]
 }
 
+[threading]
+
+; the engine's cap on tasks at their normal priority, a share of its threads: all of them in this folder's own project, so a pool's ceiling (jobs.gd) is what limits it on a machine of four cores as on one of sixteen, and its tests prove the same
+worker_pool/low_priority_thread_ratio=1.0
+
 [rendering]
 
 renderer/rendering_method="forward_plus"
