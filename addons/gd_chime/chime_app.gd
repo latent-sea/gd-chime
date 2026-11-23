@@ -22,6 +22,7 @@ const Controller := preload("controller.gd")
 const Desc := preload("components/primitives/desc.gd")
 const NeededSettings := preload("needed_settings.gd")
 const GoBack := preload("go_back.gd")
+const TakeDown := preload("take_down.gd")
 
 ## An application as a node: added anywhere in a scene, it builds the whole
 ## application under itself, on its own easel, and takes it away when it
@@ -200,6 +201,12 @@ func model(made: Controller) -> Controller:
 	ui.also(made)
 	commands.stand(Chimes.GLOBAL, made)
 	return made
+
+
+## Let go while the game goes on: taken down `budget_msec` of a frame at a time, then freed, where leaving the tree
+## would free all of it in one frame (take_down.gd). Hide it and stop it first; it is not drawn while it goes.
+func let_go(budget_msec: float = 8.0) -> void:
+	TakeDown.over_frames(self, canvas, jobs, chimes, budget_msec)
 
 
 ## The pieces so far, for whoever stands in for this node to hold: nothing, when nobody does.
