@@ -114,6 +114,14 @@ func place(part: Control, facts: Dictionary = {}) -> void:
 	super(part, facts)
 
 
+## What was given for this part, as a copy, its most named by the look's constant where it was: what place() takes.
+func get_facts(part: Control) -> Dictionary:
+	var given := super(part)
+	if _named_most.has(part):
+		given["max"] = _named_most[part]
+	return given
+
+
 ## What it would take given all the room it wants (preferred.gd): its parts
 ## at theirs along a row, the widest of them down a column; never under its least.
 func preferred_size() -> Vector2:

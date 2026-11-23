@@ -98,10 +98,17 @@ func primitive(kind: StringName) -> GDScript:
 
 ## The whole interface built under the root: the app, and every pop-up
 ## described in it lifted beside it; checked and arrived at once the tree
-## has entered.
-func start(application: Desc, on_broken: Callable = Callable()) -> void:
+## has entered, unless `begins` is false: then once begin() is called.
+func start(application: Desc, on_broken: Callable = Callable(), begins: bool = true) -> void:
 	build(application, root)
 	_on_broken = on_broken
+	if begins:
+		_started.call_deferred()
+
+
+## The interface checked and arrived at, where start() was told to wait: an app built over frames, once every part of
+## it has joined the tree (built_over_frames.gd).
+func begin() -> void:
 	_started.call_deferred()
 
 

@@ -23,6 +23,7 @@ const Desc := preload("components/primitives/desc.gd")
 const NeededSettings := preload("needed_settings.gd")
 const GoBack := preload("go_back.gd")
 const TakeDown := preload("take_down.gd")
+const BuiltOverFrames := preload("built_over_frames.gd")
 
 ## An application as a node: added anywhere in a scene, it builds the whole
 ## application under itself, on its own easel, and takes it away when it
@@ -43,54 +44,42 @@ const TakeDown := preload("take_down.gd")
 ## for the application's description and starts it. An application extends
 ## this and answers five questions, each with a default: look(), the Theme
 ## the canvas wears; sources(), the prompts' sources; declare(actions), the
-## register's actions and their words, in one table (actions.gd);
-## describe(), the app's description, where it also makes its models and
-## describes each pop-up where it is used - the builder lifts it beside the
-## app (ui.gd); and probe(), the walk that stands in for a reader. It
-## composes and never listens. The notifications (notifications.gd) are
+## register's actions and words (actions.gd); describe(), the description,
+## where it makes its models and describes each pop-up where it is used
+## (ui.gd); and probe(), the walk standing in for a reader. It never listens. The notifications (notifications.gd) are
 ## made before the sounds that hear one arrive; describe() notifies through
 ## them and draws them where its layout leaves room (notification_tray.gd).
 ##
 ## IT OWNS EXACTLY ITS OWN SUBTREE. It never writes a project setting, the
-## window's stretch mode or base size, the clear colour or the input map:
-## it reads the settings it relies on as it enters and says once what is
-## missing (needed_settings.gd), and GdChime.apply_project_settings() is the
-## one explicit way to set them. So a game hosts one beside its own scenes,
-## and two in one window have nothing to fight over - each on its own
-## easel, in its own shape, wearing its own look.
+## window's stretch or base size, the clear colour or the input map: it says
+## once what it relies on and is missing (needed_settings.gd), and only
+## GdChime.apply_project_settings() sets them. So a game hosts one beside its
+## own scenes, and two in one window, each on its own easel, never fight.
 ##
-## ITS LIFE IS THE NODE'S. It is built as it enters the tree, and leaving
-## the tree takes down everything it built - the job pool's tasks waited
-## out, and everything under the canvas freed; nothing outside was touched,
-## so nothing outside is undone. Coming back, or moved under another
-## parent, it is built afresh, once. A broken description is said out loud
-## and the app stands empty: it never quits the game.
+## ITS LIFE IS THE NODE'S. It is built as it enters the tree - over frames
+## where its host asks (builds_over_msec) - and leaving takes down all it
+## built, the pool's tasks waited out; nothing outside is undone. Coming
+## back, or moved, it is built afresh, once. A broken description is said
+## out loud and the app stands empty: it never quits the game.
 ##
 ## THE QUESTIONS MAY BE ANSWERED BY ANOTHER: `asked` is whoever answers the
-## five, this node unless something stands in - the demos' main loop
-## (application.gd), a SceneTree whose script is the application, so that
-## one implementation serves an app node in a scene and a script run with
-## --script alike. Whoever stands in is told wired() as the pieces come
-## up, before each question that needs them, and broken(faults) where the
-## description's tree is broken.
+## five, this node unless something stands in - the demos' main loop, a
+## SceneTree whose script is the application (application.gd). Whoever
+## stands in is told wired() as the pieces come up, before each question
+## that needs them, and broken(faults) where the tree is broken.
 ##
 ## WHAT EVERY APPLICATION HAD A COPY OF IS A DEFAULT HERE: the frame's
 ## budget, measured against the display's own rate (frame_budget.gd); one
 ## job pool reading that budget (jobs.gd); one Back, the system's go-back
 ## and the cancel key, at_root answering it where it has nothing to go back
-## to (go_back.gd); and the probe, made and begun
-## once the interface stands, so it walks what a reader would find rather
-## than what describe() was half way through making.
+## to (go_back.gd); and the probe, begun once the interface stands.
 
-## How much of a frame the application's own work may take, and how many
-## frames in a row decide it has gone over that or come back within it.
+## How much of a frame the app's own work may take, and how many frames in a row decide it went over or came back.
 const FRAME_SHARE := 0.9
 const FRAME_RUN := 3
 ## The rate the budget is measured against where the display does not say its own.
 const FRAME_RATE := 60.0
-## How many jobs of the application's pool run at once, and how many wait
-## behind them: enough for the heaviest of them - a page of pictures painted
-## as a collection is scrolled - since the budget gates what starts anyway.
+## How many jobs of the pool run at once, and how many wait: enough for a page of pictures painted as it is scrolled.
 const JOBS_AT_ONCE := 3
 const JOBS_WAITING := 64
 ## What may be asked for at launch: a walk in place of a reader.
@@ -117,7 +106,10 @@ var at_root: Callable = Callable()
 ## Asked first on Back: whether something standing over the app's screens takes it, Back then moving nothing (a
 ## dimmed message, which closes itself on the go-back). None takes it by default (go_back.gd).
 var takes_back: Callable = func() -> bool: return false
+## Built over frames, this much of each, where the host sets it before the app enters: none, built at once.
+var builds_over_msec := 0.0
 var _probe: RefCounted  # held while it walks: a walk waiting on a frame is dropped with whatever was holding it
+var _joining: BuiltOverFrames  # what it built joining the tree, where it is built over frames
 
 
 ## Entering the tree, the whole application built under the canvas; leaving
@@ -128,7 +120,8 @@ var _probe: RefCounted  # held while it walks: a walk waiting on a frame is drop
 ## with the door, the places and the pop-ups, and the bells with the chimes.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
-		# the pool's tasks waited out first, since a task done and never waited brings the game down at its end
+		# what had not joined yet freed, and the pool's tasks waited out, since a task never waited brings the game down
+		finish_building(false)
 		jobs.stop()
 		var built := canvas.get_children()
 		built.reverse()
@@ -183,7 +176,8 @@ func _notification(what: int) -> void:
 	for node: Node in [driver, commands, prompts, inputs, notifications, sound_bus, sounds, budget, jobs, GoBack.new(self, driver, commands), Shortcuts.new(inputs, driver, commands)]:
 		ui.also(node)
 	asked.wired(self)
-	ui.start(asked.describe(), asked.broken)
+	ui.start(asked.describe(), asked.broken, builds_over_msec == 0.0)
+	_joining = BuiltOverFrames.new(self, canvas, ui, builds_over_msec) if builds_over_msec > 0.0 else null
 	# the walk begun once everything stands; it waits its own frames, so it is simply begun
 	if OS.get_cmdline_user_args().has(PROBE_SWITCH):
 		_probe = asked.probe()
@@ -206,7 +200,15 @@ func model(made: Controller) -> Controller:
 ## Let go while the game goes on: taken down `budget_msec` of a frame at a time, then freed, where leaving the tree
 ## would free all of it in one frame (take_down.gd). Hide it and stop it first; it is not drawn while it goes.
 func let_go(budget_msec: float = 8.0) -> void:
+	finish_building(false)
 	TakeDown.over_frames(self, canvas, jobs, chimes, budget_msec)
+
+
+## Built over frames and not yet all joined: the rest joined and the app started now, or, not `wanted`, let go of.
+func finish_building(wanted: bool = true) -> void:
+	if _joining != null:
+		_joining.all_now() if wanted else _joining.drop()
+		_joining = null
 
 
 ## The pieces so far, for whoever stands in for this node to hold: nothing, when nobody does.
