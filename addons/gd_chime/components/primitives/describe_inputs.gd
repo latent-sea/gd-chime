@@ -68,8 +68,9 @@ func key_capture(action: StringName, shown: Bound, asks: Variant, style: StringN
 ## step has, and its reason under it. A drag holds the value under the
 ## pointer in a local of its own, and the words and the handle show that
 ## until the release sends it. Its options are the track: minimum, maximum
-## and step, and style.
-const TRACK_OPTIONS: Array[String] = ["minimum", "maximum", "step", Options.STYLE]
+## and step, and style; and writes, a function from the value to its words
+## (75% for 0.75), where the step's places are not how it reads.
+const TRACK_OPTIONS: Array[String] = ["minimum", "maximum", "step", Options.STYLE, "writes"]
 
 func slider(action: StringName, value: Bound, options: Dictionary = {}) -> Desc:
 	Options.checked("a slider", options, TRACK_OPTIONS)
@@ -80,7 +81,8 @@ func slider(action: StringName, value: Bound, options: Dictionary = {}) -> Desc:
 	var held := local(null)
 	# what it shows: the value a drag holds under the pointer, else the model's
 	var shown: Bound = Bound.both(held, value, func(dragged: Variant, now: Variant) -> Variant: return now if dragged == null else dragged)
-	var words := text(Formats.number(shown, step_decimals(step)), Themes.FACE)
+	var written: Bound = shown.map(options["writes"]) if options.has("writes") else Formats.number(shown, step_decimals(step))
+	var words := text(written, Themes.FACE)
 	return Desc.new(&"slider", {"action": action, "value": value, "held": held, "shown": shown, "minimum": minimum, "maximum": maximum, "step": step, "style": style}, [words, reason(Themes.REASON)])
 
 

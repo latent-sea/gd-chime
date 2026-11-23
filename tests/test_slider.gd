@@ -56,6 +56,7 @@ func _init() -> void:
 	await _verdict.states(_a_refused_release_settles_back_on_the_model_s_value_with_the_reason)
 	await _verdict.states(_it_wears_its_style_s_track_fill_and_handle_and_is_inert_while_its_value_is_refused)
 	await _verdict.states(_its_first_use_the_settings_volume_sets_the_sounds_volume_through_the_door)
+	await _verdict.states(_given_how_to_write_its_value_it_writes_it_so_held_or_at_rest)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -361,4 +362,26 @@ func _its_first_use_the_settings_volume_sets_the_sounds_volume_through_the_door(
 	var bus := AudioServer.get_bus_index(sound_bus.named)
 	_verdict.check(is_equal_approx(sound_bus.volume.read(), 0.8) and is_equal_approx(AudioServer.get_bus_volume_db(bus), linear_to_db(0.8)) and _words(slider).get_text() == "0.8", "two steps down on the pad, the volume is 0.8, on the game's bus, and the slider says so: %s" % _words(slider).get_text())
 	sound_bus.told(SoundBus.SETS_VOLUME, {"value": 1.0})
+	made.done()
+
+
+## A slider told how its value reads, a share as a percentage, writes it so at rest and under a held pointer alike.
+func _given_how_to_write_its_value_it_writes_it_so_held_or_at_rest() -> void:
+	var made := Fixture.new(root, {&"sets_level": "set the level"})
+	var level := Level.new(made.chimes, &"app")
+	level.set_value(&"level", 0.5)
+	made.commands.register(&"app", &"sets_level", level)
+	var ui := made.ui
+	var percent := func(share: Variant) -> String: return "%d%%" % roundi(float(share) * 100.0)
+	ui.start(ui.app(&"app", [ui.row([ui.text("the level"), ui.slider(&"sets_level", level.of(&"level"), {minimum = 0.0, maximum = 1.0, step = 0.1, writes = percent}).named(&"slider").grow()])]))
+	await _a_frame_passes()
+	var slider: ValueSlider = ui.node_named(&"slider")
+	_verdict.check(_words(slider).get_text() == "50%", "at rest it writes the value as it was told to: %s" % _words(slider).get_text())
+	_button(_at(slider, 0.7), true)
+	await _a_frame_passes()
+	_verdict.check(_words(slider).get_text() == "70%", "held at 0.7, it writes the value under the pointer the same way: %s" % _words(slider).get_text())
+	_button(_at(slider, 0.7), false)
+	await _a_frame_passes()
+	_pointer(OUTSIDE, false)
+	level.free()
 	made.done()
