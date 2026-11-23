@@ -3,7 +3,12 @@ extends SceneTree
 ## What must be true of an application built over frames (chime_app.gd
 ## builds_over_msec, built_over_frames.gd), beside the same app built at once:
 ##   - what it built joins the tree a share of each frame at a time: no frame
-##     is near as long as the one the app built at once enters in;
+##     is near as long as the one the app built at once enters in. Judged on
+##     the best of PAIRS pairs, each the app built at once and then over
+##     frames, alone in the tree one after the other: a share too big is in
+##     every pair, while a machine loaded by other work stretches one frame
+##     of one pair or another (six of these at once on four cores, 23 Nov:
+##     a pair at 0.59, the best of each run's three never above 0.39);
 ##   - it is not started until all of it has joined: no first move is made;
 ##   - nothing is said out loud as it joins: a layout keeps what it was given
 ##     for each part that joins it late;
@@ -33,6 +38,8 @@ const ROWS := 400
 ## The share of a frame the build may spend joining, in milliseconds.
 const BUDGET_MSEC := 4.0
 const PATIENCE_FRAMES := 2000
+## How many pairs of builds the longest frame is judged on, at once and over frames.
+const PAIRS := 3
 
 
 ## An app of a big home screen, its first press focused as the reader arrives, and a screen away to go to and back from.
@@ -107,6 +114,18 @@ func _arrived(app: Big) -> Array:
 	return [frames, longest]
 
 
+## One pair: the app built at once, then over frames, each alone in the tree and freed after: the longest frame of the
+## one over frames - the one it is added in, or one it joins in - over the frame the one at once is added in.
+func _longest_against_at_once() -> float:
+	var at_once: Array = await _added(0.0)
+	await _arrived(at_once[0])
+	at_once[0].free()
+	var over: Array = await _added(BUDGET_MSEC)
+	var built: Array = await _arrived(over[0])
+	over[0].free()
+	return maxf(over[1], built[1]) / at_once[1]
+
+
 ## How `app` stands: the places its index holds, where the reader is, and the focused control by what it performs.
 func _standing(app: Big) -> Array:
 	var focused: Control = app.ui.root.get_viewport().gui_get_focus_owner()
@@ -125,8 +144,6 @@ func _built_over_frames_it_joins_a_share_at_a_time_and_stands_as_one_built_at_on
 	var built: Array = await _arrived(app)
 	var over_stands := _standing(app)
 	_verdict.check(at_once[1] > BUDGET_MSEC * 4, "built at once, the app enters in a long frame, or this proves nothing: %.1f ms" % at_once[1])
-	_verdict.check(built[0] > 2 and over[1] < at_once[1] / 2.0 and built[1] < at_once[1] / 2.0,
-		"built over frames, it joins over %d frames, the longest %.1f ms (added in %.1f), under half the %.1f ms of building it at once" % [built[0], built[1], over[1], at_once[1]])
 	_verdict.check(not started_early, "and no first move is made until all of it has joined")
 	_verdict.check(_hearing.said.size() == heard, "and nothing is said out loud as it joins: %s" % [_hearing.said.slice(heard, heard + 3)])
 	_verdict.check(once_stands == over_stands and not (once_stands[0] as Array).is_empty() and not (once_stands[2] as Array).is_empty(),
@@ -144,6 +161,13 @@ func _built_over_frames_it_joins_a_share_at_a_time_and_stands_as_one_built_at_on
 		"moved away and Back, it comes home as the one built at once does: %s against %s" % [back_home[1], back_home[0]])
 	for one: Big in [at_once[0], app]:
 		one.free()
+	var ratios: Array[float] = []
+	# each pair, built at once and over frames with nothing else standing, the share of the one at once its longest frame is
+	for pair: int in PAIRS:
+		ratios.append(await _longest_against_at_once())
+	ratios.sort()
+	_verdict.check(built[0] > 2 and ratios[0] < 0.5,
+		"built over frames, it joins over %d frames, and its longest frame is under half the frame of building it at once, in the best of %d pairs: %s" % [built[0], PAIRS, ratios.map(func(ratio: float) -> String: return "%.2f" % ratio)])
 
 
 func _finished_at_once_while_building_it_is_whole_and_started_now() -> void:
