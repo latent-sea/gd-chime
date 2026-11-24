@@ -71,7 +71,8 @@ const Handheld := preload("handheld.gd")
 ## `reads_safe_area` answers; the corners' radius, which `reads_corner_um`
 ## answers - the look's Shape/corner_um on a handheld window covering its
 ## screen; and, while a field holds the focus, `reads_keyboard`'s keyboard. The
-## look's gutter, Shape/edge, is on top on every side. The canvas lays every
+## look's gutter, Shape/edge at the sides and Shape/edge_ends at the top and
+## foot, is on top. The canvas lays every
 ## piece standing on it in what is left (easel_canvas.gd). The keyboard is
 ## read every physics frame while a field holds the focus and never
 ## otherwise: the engine says nothing as it rises, and focus moving into or
@@ -220,10 +221,11 @@ func _fit() -> void:
 		unobscured.position -= Vector2(get_window().position)
 	var corner := float(reads_corner_um.call())
 	var gutter := float(canvas.get_theme_constant(&"edge", REAL_SIZE))
+	var ends := float(canvas.get_theme_constant(&"edge_ends", REAL_SIZE))
 	# the least a base pixel may be drawn, in the rect's pixels: 25,400 thousandths of a millimetre to the inch
 	var least: float = canvas.get_theme_constant(&"least_pixel_um", REAL_SIZE) / 25400.0 * dpi
 	var steady := SafeArea.covered(window, rect, unobscured, 0.0, corner, dpi)
-	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()) / scale_by, least * scale_by, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), gutter)
+	var drawn := SafeArea.drawn_at(size, steady, Vector2(get_base()) / scale_by, least * scale_by, float(canvas.get_theme_constant(&"floor", REAL_SIZE)), maxf(gutter, ends))
 	var real_um: int = canvas.get_theme_constant(&"um_per_pixel", REAL_SIZE)
 	# a look in real millimetres: a base pixel drawn its real size, times the system's zoom and the reader's
 	if real_um > 0:
@@ -231,7 +233,7 @@ func _fit() -> void:
 	viewport.size_2d_override = Vector2i((size / drawn).round())
 	# how big a base pixel is drawn on the glass, said for every finger's target, which reads it as a finger lands
 	viewport.set_meta(Touch.PIXEL_UM, drawn * 25400.0 / dpi)
-	canvas.set_insets(SafeArea.insets(SafeArea.covered(window, rect, unobscured, _keyboard, corner, dpi), drawn, gutter))
+	canvas.set_insets(SafeArea.insets(SafeArea.covered(window, rect, unobscured, _keyboard, corner, dpi), drawn, gutter, ends))
 	if turning:
 		_measure_again.call_deferred()
 

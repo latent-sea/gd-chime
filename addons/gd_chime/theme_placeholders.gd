@@ -64,6 +64,7 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"um_per_pixel", &"Shape", 0)
 	# the safe room (safe_area.gd): no gutter round it and no rounded corners until a look names them, in base pixels and thousandths of a millimetre, and the least its short side may be, in base pixels
 	theme.set_constant(&"edge", &"Shape", 0)
+	theme.set_constant(&"edge_ends", &"Shape", 0)
 	theme.set_constant(&"corner_um", &"Shape", 0)
 	theme.set_constant(&"floor", &"Shape", 360)
 	# how wide a strip's cover of more beyond an end is, in base pixels

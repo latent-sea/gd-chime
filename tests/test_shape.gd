@@ -429,13 +429,18 @@ func _the_class_is_read_on_the_safe_room_in_base_pixels_not_on_the_device() -> v
 
 
 ## A window 910 base pixels across is regular; a gutter of 12 on each side
-## leaves 886 of safe room, under the look's compact width of 900.
+## leaves 886 of safe room, under the look's compact width of 900; the top's
+## and foot's own gutter (edge_ends) takes only from the height.
 func _the_gutter_is_part_of_the_room_the_class_is_read_on() -> void:
 	await _standing(910, 700)
 	_verdict.check(_shape.size_class.read() == Shape.REGULAR and _shape.safe_size.read() == Vector2(910, 700), "with no gutter the safe room is the whole canvas, 910 across, and regular: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
 	_easel.canvas.theme.set_constant(&"edge", Shape.TYPE, 12)
+	_easel.canvas.theme.set_constant(&"edge_ends", Shape.TYPE, 12)
 	await _a_frame_passes()
 	_verdict.check(_shape.safe_size.read() == Vector2(886, 676) and _shape.size_class.read() == Shape.COMPACT, "a gutter of 12 on every side leaves 886 by 676, and 886 across is compact: %s %s" % [_shape.safe_size.read(), _shape.size_class.read()])
+	_easel.canvas.theme.set_constant(&"edge_ends", Shape.TYPE, 4)
+	await _a_frame_passes()
+	_verdict.check(_shape.safe_size.read() == Vector2(886, 692), "a gutter of 12 at the sides and 4 at the top and foot leaves 886 by 692: %s" % [_shape.safe_size.read()])
 	_done()
 
 

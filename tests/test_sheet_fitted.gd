@@ -103,6 +103,7 @@ func _look() -> Theme:
 	var made := Themes.new(Themes.NEUTRAL)
 	made.set_constant(&"least_pixel_um", Shape.TYPE, LEAST_UM)
 	made.set_constant(&"edge", Shape.TYPE, GUTTER)
+	made.set_constant(&"edge_ends", Shape.TYPE, GUTTER)
 	made.set_constant(&"floor", Shape.TYPE, FLOOR)
 	made.set_constant(&"margin", Sheet.LOOK, MARGIN)
 	made.set_constant(&"most_wide", Sheet.LOOK, MOST)

@@ -93,7 +93,7 @@ func _a_frame_passes() -> void:
 
 ## The insets at the A55's base pixel and the cabinet's gutter, for a rect on this window with this unobscured area.
 func _insets(window: Rect2, rect: Rect2, unobscured: Rect2, keyboard_px: float = 0.0) -> PackedFloat32Array:
-	return SafeArea.insets(SafeArea.covered(window, rect, unobscured, keyboard_px, CORNER_UM, DPI), LEAST, GUTTER)
+	return SafeArea.insets(SafeArea.covered(window, rect, unobscured, keyboard_px, CORNER_UM, DPI), LEAST, GUTTER, GUTTER)
 
 
 ## 89 pixels are 41.9 base pixels, and 12 of gutter make 54; a corner of 128
@@ -105,7 +105,7 @@ func _the_a55_is_inset_54_on_the_cutout_edge_and_30_on_the_others_both_ways() ->
 	var upright := Rect2(0, 0, A55.y, A55.x)
 	var down := _insets(upright, upright, Rect2(0, CUTOUT, A55.y, A55.x - CUTOUT))
 	_verdict.check(down == PackedFloat32Array([30, 54, 30, 30]), "held upright, the cutout at the top: 54 at the top and 30 on the other three: %s" % [down])
-	var token := SafeArea.insets(SafeArea.covered(sideways, sideways, Rect2(CUTOUT, 0, A55.x - CUTOUT, A55.y), 0.0, 7500.0, DPI), LEAST, GUTTER)
+	var token := SafeArea.insets(SafeArea.covered(sideways, sideways, Rect2(CUTOUT, 0, A55.x - CUTOUT, A55.y), 0.0, 7500.0, DPI), LEAST, GUTTER, GUTTER)
 	_verdict.check(token == PackedFloat32Array([54, 30, 30, 30]), "and the cabinet's corner of 7500 thousandths of a millimetre, about 133 pixels, clears the same: %s" % [token])
 
 
@@ -113,7 +113,7 @@ func _the_a55_is_inset_54_on_the_cutout_edge_and_30_on_the_others_both_ways() ->
 ## is 50 and a home bar of 60 is 30, each with the gutter on top.
 func _a_notch_and_a_home_bar_cover_their_own_edges() -> void:
 	var screen := Rect2(0, 0, 1000, 2000)
-	var inset := SafeArea.insets(SafeArea.covered(screen, screen, Rect2(0, 100, 1000, 1840), 0.0, 0.0, 400.0), 2.0, 10.0)
+	var inset := SafeArea.insets(SafeArea.covered(screen, screen, Rect2(0, 100, 1000, 1840), 0.0, 0.0, 400.0), 2.0, 10.0, 10.0)
 	_verdict.check(inset == PackedFloat32Array([10, 60, 10, 40]), "the notch covers the top and the home bar the foot, and the sides only the gutter: %s" % [inset])
 
 
@@ -121,7 +121,9 @@ func _a_desk_is_covered_by_nothing_and_inset_by_the_gutter_alone() -> void:
 	var window := Rect2(300, 200, 1600, 900)
 	var covered := SafeArea.covered(window, window, Rect2(), 0.0, 0.0, 96.0)
 	_verdict.check(covered == PackedFloat32Array([0, 0, 0, 0]), "where the platform names no unobscured area and there are no corners, nothing is covered: %s" % [covered])
-	_verdict.check(SafeArea.insets(covered, 1.0, GUTTER) == PackedFloat32Array([12, 12, 12, 12]) and SafeArea.insets(covered, 1.0, 0.0) == PackedFloat32Array([0, 0, 0, 0]), "so the insets are the gutter, or nothing without one")
+	_verdict.check(SafeArea.insets(covered, 1.0, GUTTER, GUTTER) == PackedFloat32Array([12, 12, 12, 12]) and SafeArea.insets(covered, 1.0, 0.0, 0.0) == PackedFloat32Array([0, 0, 0, 0]), "so the insets are the gutter, or nothing without one")
+	# left, top, right, bottom: the sides' gutter at the left and right, the ends' at the top and foot
+	_verdict.check(SafeArea.insets(covered, 1.0, 12.0, 8.0) == PackedFloat32Array([12, 8, 12, 8]), "a gutter at the sides apart from one at the ends: each at its own edges")
 
 
 ## The A55 sideways with no corners: an app across its right half, away
@@ -165,6 +167,7 @@ func _look() -> Theme:
 	var made := Themes.new(Themes.NEUTRAL)
 	made.set_constant(&"least_pixel_um", Shape.TYPE, 120)
 	made.set_constant(&"edge", Shape.TYPE, int(GUTTER))
+	made.set_constant(&"edge_ends", Shape.TYPE, int(GUTTER))
 	return made
 
 

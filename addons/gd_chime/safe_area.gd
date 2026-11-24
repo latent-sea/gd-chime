@@ -70,10 +70,11 @@ static func drawn_at(rect_size: Vector2, covered_px: PackedFloat32Array, base: V
 
 
 ## The inset at each edge of the canvas, in base pixels: what is covered, at
-## this scale, with the gutter on top - each to the nearest whole base pixel.
-static func insets(covered_px: PackedFloat32Array, scale: float, gutter: float) -> PackedFloat32Array:
+## this scale, with the gutter on top, `sides` at the left and right and `ends`
+## at the top and foot - each to the nearest whole base pixel.
+static func insets(covered_px: PackedFloat32Array, scale: float, sides: float, ends: float) -> PackedFloat32Array:
 	var inset := PackedFloat32Array()
-	# every edge, in Side's order
+	# every edge, in Side's order: left, top, right, bottom
 	for side: int in 4:
-		inset.append(roundf(covered_px[side] / scale + gutter))
+		inset.append(roundf(covered_px[side] / scale + (sides if side % 2 == 0 else ends)))
 	return inset
