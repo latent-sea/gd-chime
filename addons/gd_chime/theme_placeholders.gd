@@ -86,6 +86,13 @@ static func put(theme: Theme) -> void:
 	theme.set_constant(&"rests_after", ScrollIndicator.TYPE, 700)
 	theme.set_constant(&"fades_over", ScrollIndicator.TYPE, 300)
 	theme.set_constant(&"stays", ScrollIndicator.TYPE, 0)
+	# the track the mark runs along, its ground and its edge: none, both clear, until a look draws one
+	theme.set_color(&"track", ScrollIndicator.TYPE, Color.TRANSPARENT)
+	theme.set_color(&"track_edge", ScrollIndicator.TYPE, Color.TRANSPARENT)
+	# an arrow at each end of the track, or none, how far one moves the view in base pixels, and its triangle's colour
+	theme.set_constant(&"arrows", ScrollIndicator.TYPE, 0)
+	theme.set_constant(&"step", ScrollIndicator.TYPE, 40)
+	theme.set_color(&"arrow_colour", ScrollIndicator.TYPE, Color.TRANSPARENT)
 	# a slider, in base pixels: its handle's width, its track's thickness, the least its track is long, and the gap before its value's words
 	theme.set_constant(&"handle_width", Fields.SLIDER, 20)
 	theme.set_constant(&"track_thickness", Fields.SLIDER, 8)

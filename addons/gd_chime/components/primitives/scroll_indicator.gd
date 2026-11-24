@@ -6,7 +6,9 @@ const Touch := preload("../../touch.gd")
 const Pressable := preload("pressable.gd")
 
 ## Where the reader is in what scrolls down: a thin mark drawn over it, in
-## the right padding of the box it scrolls inside, taking no room.
+## the right padding of the box it scrolls inside, taking no room; by the
+## look's track and track_edge colours, along a track the length of the box,
+## the mark drawn on it (none by default: both clear).
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
@@ -51,7 +53,10 @@ const Pressable := preload("pressable.gd")
 ##
 ## Its look is the theme type ScrollIndicator, read where the control it
 ## stands over is: thickness, inset and least_length in base pixels,
-## rests_after and fades_over, stays, and the colour it is drawn in.
+## rests_after and fades_over, stays, and the colour it is drawn in. With
+## arrows 1, an ARROW AT EACH END of the track, a square a mark thick in the
+## track's colours with a triangle in arrow_colour: pressed, it moves the
+## view step base pixels that way, and the mark runs between them.
 ##
 ## Deliberately absent: one across.
 
@@ -68,6 +73,8 @@ var _lit_at: float = -INF  # the clock's time the bar last moved, or never
 var _grip := Control.new()  # what takes the pointer, over the mark's track
 var _held: bool = false  # whether the grip is held
 var _held_at: float = 0.0  # how far down the mark the pointer took it, in base pixels
+var _up := Control.new()  # what takes the pointer over the arrow back up
+var _down := Control.new()  # and over the arrow on down
 
 
 func _init(motion: Motion, bar: Range, boxed: Control, box: StringName, when_taken: Callable) -> void:
@@ -81,6 +88,12 @@ func _init(motion: Motion, bar: Range, boxed: Control, box: StringName, when_tak
 	_grip.add_to_group(Touch.HOLDS)
 	_grip.gui_input.connect(_taken)
 	add_child(_grip)
+	_up.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_down.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_up.gui_input.connect(_stepped.bind(-1, _up))
+	_down.gui_input.connect(_stepped.bind(1, _down))
+	add_child(_up)
+	add_child(_down)
 
 
 ## The view may have moved: the bar is looked at from the next frame on.
@@ -106,8 +119,19 @@ func get_opacity() -> float:
 ## Where the mark runs, in its own space: from the box's top padding down to its bottom padding.
 func _track() -> Rect2:
 	var box := _boxed.get_theme_stylebox(_box)
-	var top := box.get_margin(SIDE_TOP)
-	return Rect2(0.0, top, _boxed.size.x, _boxed.size.y - top - box.get_margin(SIDE_BOTTOM))
+	var end := float(_boxed.get_theme_constant(&"thickness", TYPE)) if _boxed.get_theme_constant(&"arrows", TYPE) != 0 else 0.0
+	var top := box.get_margin(SIDE_TOP) + end
+	return Rect2(0.0, top, _boxed.size.x, _boxed.size.y - top - box.get_margin(SIDE_BOTTOM) - end)
+
+
+## Each arrow's square, up then down, in its own space, a mark thick at either end of the track; none without arrows.
+func get_ends() -> Array[Rect2]:
+	var thick := float(_boxed.get_theme_constant(&"thickness", TYPE))
+	if _boxed.get_theme_constant(&"arrows", TYPE) == 0:
+		return []
+	var track := _track()
+	var x := _boxed.size.x - _boxed.get_theme_constant(&"inset", TYPE) - thick
+	return [Rect2(x, track.position.y - thick, thick, thick), Rect2(x, track.end.y, thick, thick)]
 
 
 ## Where it is drawn, in its own space: its length the share shown, its
@@ -150,8 +174,25 @@ func _process(_delta: float) -> void:
 	_grip.position = grip.position
 	_grip.size = grip.size
 	_grip.mouse_filter = Control.MOUSE_FILTER_STOP if get_opacity() > 0.0 else Control.MOUSE_FILTER_IGNORE
+	var ends := get_ends()
+	# each arrow's press over its square, taking the pointer only while it shows
+	for at: int in ends.size():
+		var end: Control = [_up, _down][at]
+		end.position = ends[at].position
+		end.size = ends[at].size
+		end.mouse_filter = _grip.mouse_filter
 	if _boxed.get_theme_constant(&"stays", TYPE) != 0 or _motion.time - _lit_at >= (_boxed.get_theme_constant(&"rests_after", TYPE) + _boxed.get_theme_constant(&"fades_over", TYPE)) / 1000.0:
 		set_process(false)
+
+
+## An arrow pressed: the view moved a step of the look's `way`, up (-1) or down (1).
+func _stepped(event: InputEvent, way: int, end: Control) -> void:
+	var click := event as InputEventMouseButton
+	if click != null and click.button_index == MOUSE_BUTTON_LEFT and click.pressed:
+		_bar.value += way * _boxed.get_theme_constant(&"step", TYPE)
+		_when_taken.call()
+		moved()
+	end.accept_event()
 
 
 ## The pointer on the grip: pressed, it is held and says so, where down the
@@ -187,5 +228,23 @@ func _draw() -> void:
 	var opacity := get_opacity()
 	if opacity > 0.0:
 		var colour := _boxed.get_theme_color(&"colour", TYPE)
+		var mark := get_mark()
+		var track := Rect2(mark.position.x, _track().position.y, mark.size.x, _track().size.y)
+		var ground := _boxed.get_theme_color(&"track", TYPE)
+		var edge := _boxed.get_theme_color(&"track_edge", TYPE)
 		colour.a *= opacity
-		draw_rect(get_mark(), colour)
+		ground.a *= opacity
+		edge.a *= opacity
+		draw_rect(track, ground)
+		draw_rect(track, edge, false, 1.0)
+		draw_rect(mark, colour)
+		var arrow := _boxed.get_theme_color(&"arrow_colour", TYPE)
+		arrow.a *= opacity
+		var ends := get_ends()
+		# each arrow: its square in the track's colours, its triangle pointing away from the track
+		for at: int in ends.size():
+			var square: Rect2 = ends[at]
+			var tip := 0.2 if at == 0 else 0.8
+			draw_rect(square, ground)
+			draw_rect(square, edge, false, 1.0)
+			draw_colored_polygon(PackedVector2Array([Vector2(0.5, tip), Vector2(0.15, 1.0 - tip), Vector2(0.85, 1.0 - tip)].map(func(at_share: Vector2) -> Vector2: return square.position + at_share * square.size)), arrow)
