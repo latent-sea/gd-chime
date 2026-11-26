@@ -14,20 +14,16 @@ const PLANNED := &"gd_chime_planned"
 ##
 ## gd-chime. MIT licensed; see the LICENCE file at the root of this folder.
 ##
-## THE PLAN is asked, with the room and this (so it may read the look's
-## fonts), what stands where: {"rects": a Rect2 for each piece in order,
-## "types": a type size for each, the size all words in that piece are
-## drawn at, a field's typed words among them, 0 leaving them at their kind's, and "size": all of it}, every
-## length in base pixels. It is asked again whenever the room moves. It may
-## also say "shown", whether each piece shows, a piece it leaves out hidden;
-## "aligns", how each piece's words line up across, a HorizontalAlignment;
-## and "ground", a rect the look's `ground` box is drawn in under the
-## pieces, which may reach past this into the room round it - a bar's colour
-## running to the window's edges past the safe margin. IT FOLLOWS WHAT ITS
-## PLAN READS (chimes.gd, follow): a value the plan read moving - the tab a
-## page shows, a fact's words - lays it out again. WHILE HIDDEN AND AS IT IS
-## FIRST SHOWN AGAIN, THE LAST PLAN STANDS where nothing it read, no piece's
-## least room, its size, its scale on the screen nor the look has moved.
+## THE PLAN is asked, with the room and this (so it may read the look's fonts), what stands where: {"rects": a Rect2
+## for each piece in order, "types": a type size for each, the size all words in that piece are drawn at, a field's
+## typed words among them, 0 leaving them at their kind's, and "size": all of it}, every length in base pixels. It is
+## asked again whenever the room moves. It may also say "shown", whether each piece shows, a piece it leaves out
+## hidden; "aligns", how each piece's words line up across, a HorizontalAlignment; and "ground", a rect the look's
+## `ground` box is drawn in under the pieces, which may reach past this into the room round it - a bar's colour running
+## to the window's edges past the safe margin. IT FOLLOWS WHAT ITS PLAN READS (chimes.gd, follow): a value the plan
+## read moving - the tab a page shows, a fact's words - lays it out again. WHILE HIDDEN, AS IT IS FIRST SHOWN AGAIN AND
+## AS IT IS SCROLLED (its pieces placed again and drawn again where they now stand), THE LAST PLAN STANDS where nothing
+## it read, no piece's least room, its size, its scale nor the look has moved.
 ##
 ## WHAT DOES NOT FIT SCROLLS, WITH A BAR AND ITS ARROWS SHOWN. Where all of
 ## it is longer than the room on an axis, the bar's thickness (the look's
@@ -65,6 +61,7 @@ var _asked_in: Array = []  # its size and its scale on the screen when the plan 
 var _stale := true  # whether what the plan read or the look moved since it was last asked
 var _shown_again := false  # whether it has just been shown again, and not laid out since
 var _placing := false  # whether its pieces are being placed, when the bars' values moving lay nothing again
+var _scrolled_on := -1  # the frame a bar last moved on, when the plan stands and its pieces are only placed again
 var _least: Vector2
 var _chimes: RefCounted
 
@@ -93,6 +90,7 @@ func _init(ui: RefCounted, plan: Callable, look: StringName, least: Vector2) -> 
 ## A bar moved, by its arrows, its thumb, a wheel or a finger: the pieces placed again where it now shows them.
 func _scrolled(_to: float) -> void:
 	if not _placing:
+		_scrolled_on = Engine.get_process_frames()
 		queue_sort()
 
 
@@ -182,8 +180,8 @@ func _notification(what: int) -> void:
 		return
 	# what the plan stands on beyond what it reads: its size, its scale on the screen, each piece's least room
 	var asked_in: Array = [size, get_global_transform_with_canvas().get_scale(), pieces().map(func(piece: Control) -> Vector2: return piece.get_combined_minimum_size())]
-	# the last plan kept while hidden, and on the first layout after being shown again, nothing it stood on having moved
-	if not ((_shown_again or not is_visible_in_tree()) and not _stale and asked_in == _asked_in):
+	# the last plan kept while hidden, on the first layout after being shown again, and scrolled, nothing it stood on having moved
+	if not ((_shown_again or _scrolled_on == Engine.get_process_frames() or not is_visible_in_tree()) and not _stale and asked_in == _asked_in):
 		var answer: Array = _planned()
 		_laid = answer[0]
 		_room = answer[1]
@@ -212,6 +210,8 @@ func _notification(what: int) -> void:
 				words.remove_theme_font_size_override(&"font_size")
 		var rect: Rect2 = _laid["rects"][at]
 		fit_child_in_rect(held[at], Rect2(rect.position - offset, rect.size))
+		# scrolled, drawn again where it now stands, as when every scroll asked the plan again: some draw on whole pixels
+		if _scrolled_on == Engine.get_process_frames(): held[at].queue_redraw()
 		held[at].visible = _laid["shown"][at] if _laid.has("shown") else true
 		# the piece's words lined up as the plan says, where it says
 		for words: Label in labels_in(held[at]) if _laid.has("aligns") and not held[at].is_in_group(PLANNED) else []:

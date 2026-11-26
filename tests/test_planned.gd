@@ -5,7 +5,9 @@ extends SceneTree
 ## at its kind's where the plan leaves it; asked again when the room moves;
 ## where all of it is taller than the room, the bar's room is set aside and
 ## the plan asked in what is left, the bar shown, and the pieces moved up
-## as it scrolls by an arrow's step or a wheel's; where it then fits, no bar
+## as it scrolls by an arrow's step or a wheel's, each drawn again where it
+## now stands and the plan not asked again (it moved nothing the plan stands
+## on: the optimisation review, 26 Nov); where it then fits, no bar
 ## shows and no room is lost to one; a piece the plan leaves out is hidden,
 ## a height of its own is its least, a ground may reach past it, unclipped,
 ## and a piece's words line up as the plan says; and a value its plan read
@@ -116,9 +118,15 @@ func _taller_than_the_room_it_scrolls_with_the_bar_s_room_set_aside() -> void:
 	_verdict.check(drawn.find(planned.bars()[0]) > drawn.find(two) and drawn.find(planned.bars()[1]) > drawn.find(two) and not drawn.back().visible,
 		"and both bars are drawn after every piece, over any piece scrolled into their room; the corner, after them, shows only where both do: %s"
 			% [drawn.map(func(child: Node) -> String: return child.name)])
+	var asked := _asked.size()
+	# how often the second piece is drawn, kept where the drawing's call can count it
+	var drawn_again := {"times": 0}
+	two.draw.connect(func() -> void: drawn_again["times"] += 1)
 	down.value += down.custom_step
 	await _a_frame_passes()
 	_verdict.check(is_equal_approx(two.position.y, 200.0 - STEP), "an arrow's step moves the pieces up by 40: %s" % two.position)
+	_verdict.check(_asked.size() == asked and drawn_again["times"] > 0,
+		"scrolled, the plan is not asked again and the piece is drawn again where it now stands: asked %d then %d, drawn %d" % [asked, _asked.size(), drawn_again["times"]])
 	var wheel := InputEventMouseButton.new()
 	wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
 	wheel.pressed = true
