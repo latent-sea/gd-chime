@@ -73,10 +73,17 @@ static func _shown_first(control: Control, does: Callable) -> void:
 	await tree.process_frame
 	if is_instance_valid(control) and control.is_inside_tree():
 		does.call()
-	# each frame until the face has been down HELD on the clock
-	while (Time.get_ticks_usec() - down_at) / 1e6 < HELD:
-		await tree.process_frame
-	_hold(control, false)
+	# the face up once it has been down HELD on the clock, by a tween's delayed call, so nothing waits on frames after a
+	# QUIT the press made (crash-hunt CH-3: a leak at every exit); the press may have been freed meanwhile, its screen
+	# made again, and then it has no face to raise (CH-2)
+	var raise := func() -> void:
+		if is_instance_valid(control):
+			_hold(control, false)
+	var left: float = HELD - (Time.get_ticks_usec() - down_at) / 1e6
+	if left > 0.0:
+		tree.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).tween_callback(raise).set_delay(left)
+	else:
+		raise.call()
 
 
 ## `control`'s face held down or let up, where it is still there to show it: down AT ONCE, at the look's press scale,
@@ -112,7 +119,9 @@ static func _dimmed(control: Control, does: Callable) -> void:
 	# each frame until SHOWN has passed on the clock: a timer counts frames' time, and the frame the work held up counts it all at once
 	while (Time.get_ticks_usec() - shown_at) / 1e6 < SHOWN:
 		await tree.process_frame
-	_show(control, false)
+	# the press may have been freed while the dim stood, its screen made again: the dim lifted all the same, as the first
+	# shown is (crash-hunt CH-2's twin: a freed control as the typed argument)
+	_show(control if is_instance_valid(control) else null, false)
 	# the face stays down HELD at the least, so a tap is seen whatever the dim did
 	while (Time.get_ticks_usec() - shown_at) / 1e6 < HELD:
 		await tree.process_frame

@@ -186,10 +186,11 @@ func _glowed() -> void:
 
 
 ## One sound asked for: nothing while muted, nothing twice in a frame for one
-## moment, and nothing where the look has none for it.
+## moment, nothing where the look has none for it, and nothing once this has
+## left the tree - its app being left, a move rung as it went (crash-hunt CH-5).
 func _play(moment: StringName, style: StringName) -> void:
 	var frame := Engine.get_process_frames()
-	if _bus.muted.read() or _sounded.get(moment) == frame:
+	if not is_inside_tree() or _bus.muted.read() or _sounded.get(moment) == frame:
 		return
 	var found := LookSounds.get_sound(Look.worn_by(_root), moment, style)
 	if found.is_empty():

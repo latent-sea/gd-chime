@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## What must be true of Back (go_back.gd): the system's go-back goes back a
-## screen, and at the app's root runs the app's at_root and nothing else;
+## screen, and at the app's root runs the app's at_root and nothing else, once a frame;
 ## with two apps in one window only the one whose easel held the focus last
 ## answers it; the cancel key lowers the pop-up on top once, never that and
 ## a screen too, and goes back a screen with none up; and a pop-up a model
@@ -161,6 +161,11 @@ func _the_system_go_back_goes_back_a_screen_and_at_the_root_runs_at_root_alone()
 	_verdict.check(app.driver.get_top() == HOME and app.at_roots == 0, "the system's go-back goes back a screen, home: %s" % [app.driver.get_top()])
 	await _system_go_back()
 	_verdict.check(app.driver.get_top() == HOME and app.at_roots == 1, "at the root, with nothing to go back to, it runs the app's at_root once and moves nothing: %d" % app.at_roots)
+	# two go-backs in one frame, as the cancel key and the back gesture at once: the app's at_root asked once
+	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await process_frame
+	_verdict.check(app.at_roots == 2, "two go-backs at the root in one frame run its at_root once, an app left at the frame's end never let go twice (crash-hunt CH-1): %d" % app.at_roots)
 	_verdict.check(is_instance_valid(app) and app.is_inside_tree(), "and the app still stands")
 	app.free()
 

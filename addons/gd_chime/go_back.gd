@@ -17,7 +17,10 @@ const Commands := preload("commands.gd")
 ## go back to, the app's at_root runs instead (chime_app.gd): nothing,
 ## unless the host says - asking before the game quits is the host's - and
 ## the cancel key is left untaken, going on to the host as a key no app
-## takes does (easel.gd).
+## takes does (easel.gd). It runs once a frame: a second Back in the frame
+## it ran in (the cancel key and the back gesture at once) runs nothing, the
+## host asked already - an app left at the frame's end was let go twice
+## (crash-hunt CH-1).
 ##
 ## ONE APP ANSWERS. The engine tells every node in the window of a go-back,
 ## so two apps in one window would both go back: it is answered only while
@@ -44,6 +47,7 @@ const Commands := preload("commands.gd")
 var _app: Control
 var _driver: Driver
 var _commands: Commands
+var _at_root_in := -1  # the frame the app's at_root last ran in
 
 
 func _init(app: Control, moves: Driver, door: Commands) -> void:
@@ -74,7 +78,8 @@ func _go_back() -> bool:
 	if _app.takes_back.call():
 		return true
 	if not _driver.can_go_back():
-		if _app.at_root.is_valid():
+		if _app.at_root.is_valid() and _at_root_in != Engine.get_process_frames():
+			_at_root_in = Engine.get_process_frames()
 			_app.at_root.call()
 		return false
 	_commands.dispatch(_driver.get_top().back(), Driver.GOES_BACK, {})
