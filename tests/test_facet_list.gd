@@ -79,6 +79,8 @@ func _settled(filters: Filters, view: QueriedRows) -> void:
 	while frames < PATIENCE and (frames < 3 or filters.facets.get_busy() or view.get_busy()):
 		await process_frame
 		frames += 1
+	# and one frame more: the last answer rang at the end of its frame, and what draws it draws on the frame after (own_bell.gd)
+	await process_frame
 
 
 func _value(words: String) -> Pressable:

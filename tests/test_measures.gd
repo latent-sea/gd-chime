@@ -55,7 +55,7 @@ func _incidents(count: int) -> PackedRows:
 	return rows
 
 
-## The filters and the measures over these rows, on the engine's threads, all in the tree.
+## The filters, the measures over these rows and the pool they run on, on the engine's threads, all in the tree.
 func _made(made: Fixture, rows: PackedRows) -> Array:
 	var budget := FrameBudget.new(made.chimes, 16.0, 0.9, 3)
 	var pool := Jobs.new(made.chimes, budget, 2, 4, false)
@@ -66,7 +66,7 @@ func _made(made: Fixture, rows: PackedRows) -> Array:
 		root.add_child(node)
 	var measures := Measures.new(made.chimes, rows, Bound.new(filters.get_rollup), pool, SPEC, TIMES)
 	root.add_child(measures)
-	return [filters, measures]
+	return [filters, measures, pool]
 
 
 ## Frames until nothing is out: how many it took.
@@ -100,10 +100,14 @@ func _a_filter_moving_leaves_the_last_figures_shown_and_the_stale_answer_is_neve
 	var measures: Measures = both[1]
 	await _landed(measures)
 	var everywhere: float = measures.get_figures()[&"reported"]["now"]
+	# the pool lands nothing while it is held, so Wales's rollup is still out when it is looked at and when London is pressed
+	var pool: Jobs = both[2]
+	pool.process_mode = Node.PROCESS_MODE_DISABLED
 	made.commands.dispatch(REGION, Filters.picks_of(&"region"), {"picked": "Wales"})
 	await process_frame
 	_verdict.check(measures.get_busy() and measures.get_figures()[&"reported"]["now"] == everywhere, "a region pressed: a rollup is out as the filters ring, and the last figures are still shown meanwhile")
 	made.commands.dispatch(REGION, Filters.picks_of(&"region"), {"picked": "London"})
+	pool.process_mode = Node.PROCESS_MODE_INHERIT
 	var seen: Array = []
 	# a frame at a time until nothing is out, every count shown on the way noted
 	while measures.get_busy():
