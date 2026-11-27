@@ -146,10 +146,12 @@ func _one_bad_frame_alone_moves_nothing() -> void:
 	await _frames(4)
 
 	burner.ms = BURN_MS
-	await _frames(2)
+	await _frames(1)
 	burner.ms = 0
+	var measured := budget.get_step_ms()
 	await _frames(8)
 
+	_verdict.check(measured >= BURN_MS - 1, "the bad frame was measured as the work that was done")
 	_verdict.check(not budget.is_over(), "one bad frame does not take it over")
 	_verdict.check(ear.arrivals.is_empty(), "and nothing sounded")
 	await _done(made)
