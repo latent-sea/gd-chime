@@ -73,17 +73,16 @@ static func _shown_first(control: Control, does: Callable) -> void:
 	await tree.process_frame
 	if is_instance_valid(control) and control.is_inside_tree():
 		does.call()
-	# the face up once it has been down HELD on the clock, by a tween's delayed call, so nothing waits on frames after a
-	# QUIT the press made (crash-hunt CH-3: a leak at every exit); the press may have been freed meanwhile, its screen
-	# made again, and then it has no face to raise (CH-2)
-	var raise := func() -> void:
-		if is_instance_valid(control):
-			_hold(control, false)
+	# the press may have been freed by its work, its screen made again: then it has no face to raise (CH-2)
+	if not is_instance_valid(control):
+		return
 	var left: float = HELD - (Time.get_ticks_usec() - down_at) / 1e6
+	# the face up once it has been down HELD on the clock, by the press's own tween, which the engine kills with the
+	# press: nothing waits after a QUIT (CH-3), nor is called on a press freed meanwhile (CH-15)
 	if left > 0.0:
-		tree.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).tween_callback(raise).set_delay(left)
+		control.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).tween_callback(_hold.bind(control, false)).set_delay(left)
 	else:
-		raise.call()
+		_hold(control, false)
 
 
 ## `control`'s face held down or let up, where it is still there to show it: down AT ONCE, at the look's press scale,

@@ -42,12 +42,13 @@ func drop_target(action: StringName, content: Array = [], style: Variant = &"Pre
 ## goes to; refused, a local keeping its refusal in place of its reason
 ## under it; number, true for a line a phone types with its digits; and
 ## keeps, a local every change and Enter set, asking no door - its action
-## then none, &"".
-const FIELD_OPTIONS: Array[String] = ["changes", "shows", "carries", "leaves", "refused", "number", "keeps"]
+## then none, &""; and most, the most letters it takes, typing stopped there
+## (0, none).
+const FIELD_OPTIONS: Array[String] = ["changes", "shows", "carries", "leaves", "refused", "number", "keeps", "most"]
 
 func field(action: StringName, style: StringName = &"", options: Dictionary = {}) -> Desc:
 	Options.checked("a line", options, FIELD_OPTIONS)
-	return Desc.new(&"field", {"action": action, "style": style, "takes_focus": false, "changes": options.get("changes", &""), "shows": options.get("shows"), "carries": options.get("carries", Callable()), "leaves": options.get("leaves", &""), "refused": options.get("refused"), "number": options.get("number", false), "keeps": options.get("keeps")})
+	return Desc.new(&"field", {"action": action, "style": style, "takes_focus": false, "changes": options.get("changes", &""), "shows": options.get("shows"), "carries": options.get("carries", Callable()), "leaves": options.get("leaves", &""), "refused": options.get("refused"), "number": options.get("number", false), "keeps": options.get("keeps"), "most": options.get("most", 0)})
 
 
 ## Words typed over many lines, every change dispatched as the action, the

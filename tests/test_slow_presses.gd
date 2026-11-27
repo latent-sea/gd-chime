@@ -43,6 +43,7 @@ func _init() -> void:
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(800, 600)
 	await _verdict.states(_a_slow_press_dims_first_its_work_follows_and_the_dim_lifts)
+	await _verdict.states(_a_press_freed_with_its_face_down_leaves_nothing_to_raise_it)
 	# the dims' longest stands run out before the engine stops, so no lift is still waiting on a timer at exit
 	await create_timer(SlowPresses.LONGEST + 0.1).timeout
 	quit(_verdict.deliver(get_script()))
@@ -60,6 +61,15 @@ func _seconds(seconds: float) -> void:
 	# each frame until the time has passed
 	while (Time.get_ticks_usec() - from) / 1e6 < seconds:
 		await process_frame
+
+
+## A model whose one action frees the press that asked for it, as a screen made again does (crash-hunt CH-15).
+class Frees extends Fixture.Model:
+	var press: Control = null
+
+	func told(action: StringName, payload: Dictionary) -> Phrase:
+		press.queue_free()
+		return super(action, payload)
 
 
 ## A hand's press of this control, landing and lifting, as interaction.gd hears it.
@@ -122,4 +132,26 @@ func _a_slow_press_dims_first_its_work_follows_and_the_dim_lifts() -> void:
 		"a quick press dims too, the first time, and lifts as soon as it is done: %.2f s" % quick_for)
 	SlowPresses.enabled = false
 	SlowPresses.dims = false
+	made.done()
+
+
+
+## A press freed by its own work while its face is down: no tween is left to raise a face that is gone (crash-hunt
+## CH-15: the delayed raise called on a freed press, "Lambda capture at index 0 was freed", on most moves).
+func _a_press_freed_with_its_face_down_leaves_nothing_to_raise_it() -> void:
+	var made := Fixture.new(root, {SLOWLY: "slow"})
+	var ui := made.ui
+	var model := Frees.new(made.chimes)
+	model.answering = [SLOWLY]
+	ui.start(ui.app(&"app", [ui.column([ui.pressable(SLOWLY, {}, [ui.text("slow", Themes.FACE)]).named(&"slow")])], model))
+	await _frames(3)
+	model.press = ui.node_named(&"slow")
+	SlowPresses.enabled = true
+	_hand(model.press)
+	await _frames(3)
+	var freed := not is_instance_valid(model.press)
+	var waiting: int = get_processed_tweens().size()
+	_verdict.check(freed and waiting == 0, "a press freed by its work leaves no tween waiting to raise its face: freed %s, %d waiting" % [freed, waiting])
+	await _seconds(SlowPresses.HELD + 0.1)
+	SlowPresses.enabled = false
 	made.done()

@@ -58,6 +58,7 @@ func _init() -> void:
 	await _verdict.states(_the_floor_s_typed_line_is_edged_on_all_four_sides_and_ringed_thicker_with_the_focus)
 	await _verdict.states(_a_line_that_is_a_number_asks_a_phone_for_its_digits_and_any_other_for_its_letters)
 	await _verdict.states(_a_line_keeping_a_local_types_into_it_and_asks_no_door)
+	await _verdict.states(_a_line_with_a_most_stops_at_that_many_letters)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -197,4 +198,24 @@ func _a_line_keeping_a_local_types_into_it_and_asks_no_door() -> void:
 	ui.node_named(&"up").pressed()
 	await _a_frame_passes()
 	_verdict.check(field.get_line() == "310", "the local stepped elsewhere is the line's: %s" % field.get_line())
+	made.done()
+
+
+## A line taking at most n letters stops typing there, counting letters, not bytes: an accented letter one of them; a
+## line with no most takes them all.
+func _a_line_with_a_most_stops_at_that_many_letters() -> void:
+	var made := Fixture.new(root, {&"names": "name"})
+	var ui := made.ui
+	var model := Named.new(made.chimes, &"app")
+	model.answering = [&"names"]
+	ui.start(ui.app(&"app", [ui.screen(&"first", [ui.column([ui.field(&"names", Fields.FIELD, {"most": 5}).named(&"short"), ui.field(&"names", Fields.FIELD).named(&"any")])], model)]))
+	await _a_frame_passes()
+	var typed := func(name: StringName) -> String:
+		var line: LineEdit = ui.node_named(name).find_children("*", "LineEdit", true, false)[0]
+		line.insert_text_at_caret("Élodie Swift")
+		return line.text
+	var short: String = typed.call(&"short")
+	var any: String = typed.call(&"any")
+	_verdict.check(short == "Élodi" and any == "Élodie Swift", "a line taking at most 5 letters stops at 5, the É one of them, and one with no most takes all: \"%s\", \"%s\"" % [short, any])
+	model.free()
 	made.done()
