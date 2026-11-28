@@ -62,12 +62,16 @@ static func make(ui: Ui, narrowing: Object, types: StringName, picks: StringName
 	return ui.column([line, count, ui.scroll(listed).grow()], style)
 
 
-## One option: its words, pressing the caller's action with its value read
+## One option: its words, wrapping onto as many lines as they need, the row
+## growing, never cut, and never shorter inside than its look's
+## "least_height"; pressing the caller's action with its value read
 ## through the handle as the press lands, and whatever else it carries;
 ## drawn current while it is the one `chosen` reads, where that is given.
 static func _option(ui: Ui, picks: StringName, option: Bound, then: StringName, beside: Dictionary, chosen: Bound, looks: StringName) -> Desc:
 	var carried: Bound = option.map(func(item: Variant) -> Dictionary: return {} if item == null else beside.merged({"value": item["value"]}, true))
-	var made := ui.pressable(picks, carried, [ui.text(option.field("words"), Themes.FACE)], looks).goes_to(then)
+	# its words over a drawing of nothing as tall as the look's least_height, so a row of one line is never shorter
+	var held := ui.canvas(func(_on: Control, _nothing: Variant) -> void: pass, null, looks)
+	var made := ui.pressable(picks, carried, [ui.stack([held, ui.text(option.field("words"), Themes.FACE).wraps()])], looks).goes_to(then)
 	return made if chosen == null else made.current_while(ui.bound(func() -> bool: return option.read() != null and chosen.read() == option.read()["value"]))
 
 

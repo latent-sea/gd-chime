@@ -34,6 +34,7 @@ func _init() -> void:
 	await _verdict.states(_a_press_picks_the_option_s_value_and_the_picker_is_walked_by_key)
 	await _verdict.states(_the_source_is_read_once_per_move_and_the_matching_once_per_keystroke)
 	await _verdict.states(_a_kept_first_option_stays_first_uncounted_the_count_waits_for_typing_and_the_chosen_is_current)
+	await _verdict.states(_a_long_option_wraps_its_row_growing_and_the_chosen_hidden_by_typing_lights_nothing)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -181,6 +182,31 @@ func _a_kept_first_option_stays_first_uncounted_the_count_waits_for_typing_and_t
 	_types(picker, "P")
 	await _a_frame_passes()
 	_verdict.check(_options(picker) == ["every fruit", "pear", "apple", "plum", "grape"] and counts.call() == ["4 matches"], "typed: the kept option still first, and the count the matches alone: %s %s" % [_options(picker), counts.call()])
+	narrowing.free()
+	source.free()
+	made.done()
+
+
+func _a_long_option_wraps_its_row_growing_and_the_chosen_hidden_by_typing_lights_nothing() -> void:
+	var made := Fixture.new(root, {&"types": "type", &"picks": "pick"})
+	var ui := made.ui
+	var source := Fixture.Model.new(made.chimes, &"app")
+	var long := " ".join(range(60).map(func(_at: int) -> String: return "plum"))
+	source.set_value(&"items", _entries(["pear", long]))
+	source.set_value(&"chosen", "PEAR")
+	var narrowing := Narrowing.new(made.chimes, source.of(&"items"), 20)
+	made.commands.register(&"app", &"types", narrowing)
+	made.commands.register(&"app", &"picks", source)
+	ui.start(ui.app(&"app", [TypeAhead.make(ui, narrowing, &"types", &"picks", {"chosen": source.of(&"chosen")}).named(&"picker")]))
+	await _a_frame_passes()
+	var picker: Node = ui.node_named(&"picker")
+	var rows: Array = _pressables(picker)
+	var widest: float = picker.get_viewport_rect().size.x
+	_verdict.check(rows.size() == 2 and rows[1].size.y > 1.5 * rows[0].size.y and rows[1].size.x <= widest, "a long option wraps onto lines, its row taller than a short one's and no wider than the window: %s" % [rows.map(func(row: Control) -> Vector2: return row.size)])
+	_types(picker, "plum")
+	await _a_frame_passes()
+	var lit: Array = _pressables(picker).filter(func(part: Pressable) -> bool: return part.get_state() == &"current")
+	_verdict.check(_pressables(picker).size() == 1 and lit.is_empty(), "the chosen option hidden by typing, nothing is drawn current: %d lit" % lit.size())
 	narrowing.free()
 	source.free()
 	made.done()
