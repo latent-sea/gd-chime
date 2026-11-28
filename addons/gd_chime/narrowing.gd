@@ -33,6 +33,10 @@ extends "controller.gd"
 ## source, not once per keystroke: a palette over a few thousand entries
 ## narrows as fast as the reader types.
 ##
+## KEPT FIRST: the source's first `kept` entries - an "all of them" a reader
+## must always be able to go back to - stand first whatever is typed, and
+## are never counted among the matches.
+##
 ## Deliberately absent: a chosen option, an order of its own, and any
 ## scoring of one match as better than another - the source's order is the
 ## order, since only whoever reads the source knows what is worth showing
@@ -42,6 +46,7 @@ const Reads := preload("reads.gd")
 
 var _source: Bound
 var _limit: int
+var _kept: int  # the source's first entries, shown first whatever is typed and never counted
 var _types: StringName  # the action the typing into it is told, where whoever made it stands it up on its own
 var _typed := value("")  # what the reader has typed so far
 var _lowered: Array = []  # the source's entries each [its words lowered, the entry], worked out once and let go as the source moves (reads.gd)
@@ -50,11 +55,12 @@ var _found: Array = []  # the entries matching what is typed, worked out once an
 
 ## Over these options, so many shown at once, told this action where it
 ## is stood up on its own rather than through the model that holds it.
-func _init(chimes: Chimes, source: Bound, limit: int = 8, types: StringName = &"") -> void:
+func _init(chimes: Chimes, source: Bound, limit: int = 8, types: StringName = &"", kept: int = 0) -> void:
 	super(chimes)
 	_source = source
 	_types = types
 	_limit = limit
+	_kept = kept
 	follow(&"source", _source_moved)
 
 
@@ -63,12 +69,12 @@ func get_typed() -> String:
 	return _typed.read()
 
 
-## The matching options, in the source's order, as many as the limit allows.
+## The kept entries, then the matching options, in the source's order, as many as the limit allows.
 func get_options() -> Array:
-	return _matching().slice(0, _limit)
+	return _lower().slice(0, _kept).map(func(pair: Array) -> Dictionary: return pair[1]) + _matching().slice(0, _limit - _kept)
 
 
-## How many options match in all, however few are shown.
+## How many options match in all, however few are shown, the kept ones never among them.
 func get_count() -> int:
 	return _matching().size()
 
@@ -99,7 +105,7 @@ func _lower() -> Array:
 ## every entry while nothing is typed - worked out once until either moves.
 func _matching() -> Array:
 	return Reads.worked(_found, func() -> Array:
-		var lowered: Array = _lower()
+		var lowered: Array = _lower().slice(_kept)
 		var wanted := (_typed.read() as String).to_lower()
 		var found: Array = []
 		# every entry, kept where its lowered words hold what was typed - all of them for nothing typed, since the engine finds no empty needle in any word

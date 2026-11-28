@@ -100,7 +100,8 @@ static func over(ui: Ui, content: Array, style: StringName, ground: Desc = null)
 
 ## A sheet as wide as a fitted one and as tall as the whole room, however
 ## little what it holds needs - a table of rows, whose list scrolls itself
-## in the room it is given - over the whole window's shade.
-static func tall(ui: Ui, content: Array, style: StringName) -> Desc:
+## in the room it is given - over the whole window's shade; its cap the
+## look `cap` names, the fitted sheets' unless given.
+static func tall(ui: Ui, content: Array, style: StringName, cap: StringName = LOOK) -> Desc:
 	var sheet := ui.surface(style, [ui.column(content)]).arrives(Transition.SCALE)
-	return ui.stack([band(ui), shade(ui), capped(ui, sheet, Capped.SPANS, Capped.FILLS)])
+	return ui.stack([band(ui), shade(ui), ui.capped(sheet, cap, Capped.SPANS, Capped.FILLS)])

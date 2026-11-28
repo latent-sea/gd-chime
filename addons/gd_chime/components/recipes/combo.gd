@@ -64,12 +64,20 @@ static func short(ui: Ui, action: StringName, opens: StringName, options: Dictio
 ## taking what the title and the line leave.
 ## Its options: narrowing, the model the type-ahead narrows; types, the
 ## action a keystroke in it goes to; title, the words over the list;
-## payload, what a pick carries beside its value; and style.
-const LONG_OPTIONS: Array[String] = ["narrowing", "types", "title", Options.PAYLOAD, Options.STYLE]
+## payload, what a pick carries beside its value; style; and, for the
+## overlay, chosen, quiet and option_style as the type-ahead takes them,
+## sheet_style, title_style and cap, the sheet's, its title's and its
+## cap's looks (sheet.gd).
+const LONG_OPTIONS: Array[String] = ["narrowing", "types", "title", Options.PAYLOAD, Options.STYLE, "chosen", "quiet", "option_style", "sheet_style", "title_style", "cap"]
 
 static func long(ui: Ui, action: StringName, opens: StringName, shown: Bound, options: Dictionary = {}) -> Desc:
 	Options.checked("a long combo", options, LONG_OPTIONS)
 	var title: Variant = options["title"]
-	var picker := TypeAhead.make(ui, options["narrowing"], options["types"], action, {then = Driver.BACK, payload = options.get(Options.PAYLOAD, {})})
-	var overlay := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, [ui.text(title, Themes.FACE), picker.grow()], Setting.SHEET))
+	var picked := {then = Driver.BACK, payload = options.get(Options.PAYLOAD, {})}
+	# each of the type-ahead's own the combo was given, handed on
+	for own: String in ["chosen", "quiet", "option_style"]:
+		if options.has(own):
+			picked[own] = options[own]
+	var picker := TypeAhead.make(ui, options["narrowing"], options["types"], action, picked)
+	var overlay := ui.pop_up(KIND, func(_which: Bound) -> Desc: return Sheet.tall(ui, [ui.text(title, options.get("title_style", Themes.FACE)), picker.grow()], options.get("sheet_style", Setting.SHEET), options.get("cap", Sheet.LOOK)))
 	return ui.pressable(opens, {}, [ui.text(shown, Themes.FACE).wraps()], options.get(Options.STYLE, Fields.COMBO)).opens(overlay)

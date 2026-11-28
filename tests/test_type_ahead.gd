@@ -33,6 +33,7 @@ func _init() -> void:
 	await _verdict.states(_typing_narrows_the_options_and_the_count_to_what_the_source_holds)
 	await _verdict.states(_a_press_picks_the_option_s_value_and_the_picker_is_walked_by_key)
 	await _verdict.states(_the_source_is_read_once_per_move_and_the_matching_once_per_keystroke)
+	await _verdict.states(_a_kept_first_option_stays_first_uncounted_the_count_waits_for_typing_and_the_chosen_is_current)
 	quit(_verdict.deliver(get_script()))
 
 
@@ -155,6 +156,31 @@ func _the_source_is_read_once_per_move_and_the_matching_once_per_keystroke() -> 
 	source.set_value(&"items", _entries(["papaya", "kiwi"]))
 	await process_frame
 	_verdict.check(narrowing.get_options().map(func(option: Dictionary) -> String: return option["words"]) == ["papaya"] and reads[0] == 2, "the source moving, it is read again, once, and narrowed by what is typed: %d" % reads[0])
+	narrowing.free()
+	source.free()
+	made.done()
+
+
+## A picker whose first option is "all of them": kept first whatever is typed and never counted; a quiet count says
+## nothing until something is typed; the option chosen now is drawn current.
+func _a_kept_first_option_stays_first_uncounted_the_count_waits_for_typing_and_the_chosen_is_current() -> void:
+	var made := Fixture.new(root, {&"types": "type", &"picks": "pick"})
+	var ui := made.ui
+	var source := Fixture.Model.new(made.chimes, &"app")
+	source.set_value(&"items", _entries(["every fruit"] + WORDS))
+	source.set_value(&"chosen", "EVERY FRUIT")
+	var narrowing := Narrowing.new(made.chimes, source.of(&"items"), 20, &"", 1)
+	made.commands.register(&"app", &"types", narrowing)
+	made.commands.register(&"app", &"picks", source)
+	ui.start(ui.app(&"app", [TypeAhead.make(ui, narrowing, &"types", &"picks", {"quiet": true, "chosen": source.of(&"chosen")}).named(&"picker")]))
+	await _a_frame_passes()
+	var picker: Node = ui.node_named(&"picker")
+	var current: Array = _pressables(picker).filter(func(part: Pressable) -> bool: return part.get_state() == &"current").map(func(part: Pressable) -> Array[String]: return _texts(part))
+	var counts := func() -> Array: return _texts(picker).filter(func(said: String) -> bool: return said.contains("match"))
+	_verdict.check(counts.call().is_empty() and _options(picker)[0] == "every fruit" and current == [["every fruit"]], "nothing typed: no count, the kept option first, and the one chosen drawn current: %s %s" % [counts.call(), current])
+	_types(picker, "P")
+	await _a_frame_passes()
+	_verdict.check(_options(picker) == ["every fruit", "pear", "apple", "plum", "grape"] and counts.call() == ["4 matches"], "typed: the kept option still first, and the count the matches alone: %s %s" % [_options(picker), counts.call()])
 	narrowing.free()
 	source.free()
 	made.done()
